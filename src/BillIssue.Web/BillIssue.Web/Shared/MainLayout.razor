@@ -1,0 +1,87 @@
+﻿@using BillIssue.Web.Services
+
+@inject IJSRuntime JSRuntime
+@inject StateService stateService
+
+@inject AccountService AccountService
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+
+<PageTitle>BillIssue</PageTitle>
+
+@if (isLoading)
+{
+    @*TODO add Spinner*@
+    <div>LOADING.....</div>
+}
+else
+{
+    <div class="page">
+        <MainHeader />
+
+        <NavMenu />
+
+        <!-- Start::app-content -->
+        <div class="main-content app-content" @onclick="() => icontextCloseFn()">
+            <div class="container-fluid">
+                @Body
+            </div>
+        </div>
+
+        <Footer />
+
+        <Modal />
+
+        @if (ShowButton)
+        {
+            <!-- Scroll To Top -->
+            <div class="scrollToTop" @onclick="ScrollToTop">
+                <span class="arrow"><i class="ri-arrow-up-s-fill fs-20"></i></span>
+            </div>
+            <!-- Scroll To Top -->
+        }
+
+    </div>
+}
+@code {
+    private bool isLoading;
+    bool ShowButton { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        isLoading = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("interop.updateScrollVisibility", DotNetObjectReference.Create(this));
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+
+    [JSInvokable]
+    public void UpdateScrollVisibility(int scrollHeight)
+    {
+        ShowButton = scrollHeight >= 100;
+        StateHasChanged();
+    }
+
+    async Task ScrollToTop()
+    {
+        await JSRuntime.InvokeVoidAsync("interop.scrollToTop");
+    }
+
+    private async void icontextCloseFn()
+    {
+        var dataToggled = await JSRuntime.InvokeAsync<string>("interop.getAttributeToHtml", "data-toggled");
+        if (dataToggled == "icon-text-close")
+        {
+            await JSRuntime.InvokeAsync<string>("interop.removeAttributeFromHtml", "data-icon-text");
+        }
+    }
+}

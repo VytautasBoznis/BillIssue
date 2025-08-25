@@ -1,0 +1,147 @@
+﻿@page "/project-users"
+@using BillIssue.Web.Domain.Constants
+@using BillIssue.Web.Services
+
+@inject MultilanguageService multilanguageService
+
+@if (isLoading)
+{
+    @*TODO add Spinner*@
+    <div>LOADING.....</div>
+}
+else
+{
+ <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+            <h1 class="page-title fw-semibold fs-18 mb-0">@translations[MultilanguageKeyConstants.ProjectUsersTitle]</h1>
+            <div class="ms-md-1 ms-0">
+                <nav>
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="javascript:void(0);">@translations[MultilanguageKeyConstants.SharedBreadcrumbsProject]</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">@translations[MultilanguageKeyConstants.SharedBreadcrumbsProjectUsers]</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title">
+                            @translations[MultilanguageKeyConstants.ProjectUsersTableTitle]
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <div>
+                                <input class="form-control form-control-sm" type="text" placeholder="@translations[MultilanguageKeyConstants.SharedSearchTitle]" aria-label=".form-control-sm example">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table text-nowrap table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">@translations[MultilanguageKeyConstants.ProjectUsersTableFirstNameColumn]</th>
+                                        <th scope="col">@translations[MultilanguageKeyConstants.ProjectUsersTableLastNameColumn]</th>
+                                        <th scope="col">@translations[MultilanguageKeyConstants.ProjectUsersTableEmailColumn]</th>
+                                        <th scope="col">@translations[MultilanguageKeyConstants.ProjectUsersTableJoinDateColumn]</th>
+                                        <th scope="col">@translations[MultilanguageKeyConstants.ProjectUsersTableProjectRoleColumn]</th>
+                                        <th scope="col">@translations[MultilanguageKeyConstants.ProjectUsersTableActions]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span>Vardenis</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>Pavardenis</span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span>testemail@gmail.com</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>2024-01-01</span>
+                                        </td>
+                                        <td>
+                                            <span>Admin</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary-light btn-icon btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@translations[MultilanguageKeyConstants.SharedEdit]"><i class="ri-edit-2-fill"></i></button>
+                                            <button class="btn btn-danger-light btn-icon ms-1 btn-sm task-delete-btn" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@translations[MultilanguageKeyConstants.SharedDelete]"><i class="ri-delete-bin-5-line"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @*<div class="card-footer">
+                        <nav aria-label="@translations[MultilanguageKeyConstants.SharedPageNavigation]">
+                            <ul class="pagination mb-0 float-end">
+                                <li class="page-item disabled">
+                                    <a class="page-link">@translations[MultilanguageKeyConstants.SharedPrevious]</a>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="javascript:void(0);">1</a></li>
+                                <li class="page-item active" aria-current="page">
+                                    <a class="page-link" href="javascript:void(0);">2</a>
+                                </li>
+                                <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="javascript:void(0);">@translations[MultilanguageKeyConstants.SharedNext]</a>
+                                </li>
+                            </ul>
+                        </nav>
+                </div>*@
+                </div>
+            </div>
+        </div>
+</div>
+}
+
+@code {
+    private bool isLoading;
+
+    private string[] usedTranslationKeys = {
+        MultilanguageKeyConstants.ProjectUsersTitle,
+        MultilanguageKeyConstants.SharedBreadcrumbsProject,
+        MultilanguageKeyConstants.SharedBreadcrumbsProjectUsers,
+        MultilanguageKeyConstants.ProjectUsersTableTitle,
+        MultilanguageKeyConstants.ProjectUsersTableFirstNameColumn,
+        MultilanguageKeyConstants.ProjectUsersTableLastNameColumn,
+        MultilanguageKeyConstants.ProjectUsersTableEmailColumn,
+        MultilanguageKeyConstants.ProjectUsersTableJoinDateColumn,
+        MultilanguageKeyConstants.ProjectUsersTableProjectRoleColumn,
+        MultilanguageKeyConstants.ProjectUsersTableActions,
+        MultilanguageKeyConstants.SharedSearchTitle,
+        MultilanguageKeyConstants.SharedEdit,
+        MultilanguageKeyConstants.SharedDelete,
+        MultilanguageKeyConstants.SharedPageNavigation,
+        MultilanguageKeyConstants.SharedPrevious,
+        MultilanguageKeyConstants.SharedNext,
+    };
+
+    private Dictionary<string, string> translations = new Dictionary<string, string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        isLoading = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            translations = await multilanguageService.GetTranslations(usedTranslationKeys);
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}

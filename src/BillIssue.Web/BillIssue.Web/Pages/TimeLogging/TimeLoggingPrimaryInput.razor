@@ -1,0 +1,60 @@
+﻿<div class="card custom-card">
+    <div class="card-body">
+        <div class="row">
+                <label class="form-label col-sm-12">Time entry mode</label>
+                <div class="d-flex flex-row gap-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" value="true" id="time-entry-manual" name="time-entry-mode">
+                        <label class="form-check-label" for="time-entry-manual">
+                            Manual
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" value="" id="time-entry-timer" name="time-entry-mode" checked>
+                        <label class="form-check-label" for="time-entry-timer">
+                            Timer
+                        </label>
+                    </div>
+                </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <label for="hs-textarea-with-corner-hint" class="ti-form-label p-2">Title</label>
+            <span class="p-2 text-xs text-gray-500 mb-2 dark:text-white/70">Required</span>
+        </div>
+        <input id="work-title" class="form-control" placeholder="Work title" />
+
+        <div class="d-flex justify-content-between">
+            <div class="col-xl-5">
+                <div class="d-flex justify-content-between">
+                    <label for="hs-textarea-with-corner-hint" class="ti-form-label p-2">Project</label>
+                    <span class="p-2 text-xs text-gray-500 mb-2 dark:text-white/70">Required</span>
+                </div>
+                <select class="custom-select">
+                    <option selected>Project #1</option>
+                    <option value="1">Project #2</option>
+                </select>
+            </div>
+            <div class="col-xl-5">
+                <div class="d-flex justify-content-between">
+                    <label for="hs-textarea-with-corner-hint" class="ti-form-label p-2">Worktype</label>
+                    <span class="p-2 text-xs text-gray-500 mb-2 dark:text-white/70">Required</span>
+                </div>
+                <select class="custom-select">
+                    <option selected>Worktype #1</option>
+                    <option value="1">Worktype #2</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-between">
+            <label for="hs-textarea-with-corner-hint" class="ti-form-label p-2">Description</label>
+            <span class="p-2 text-xs text-gray-500 mb-2 dark:text-white/70">Optional</span>
+        </div>
+        <textarea id="hs-textarea-with-corner-hint" class="form-control" rows="3" placeholder="Work extended descriptio"></textarea>
+    </div>
+</div>
+
+@code {
+
+}

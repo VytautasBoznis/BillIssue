@@ -1,0 +1,160 @@
+html, body, #reactapp, .App {
+  height: 100%;
+  background-color: rgb(242, 244, 245);
+  font-size: .8rem;
+}
+
+.App {
+ display: flex;
+}
+
+.input-label {
+  font-weight: bold;
+  font-size: .8rem;
+}
+
+.subheader-label {
+  font-size: .9rem;
+}
+
+.link-label {
+  font-size: .8rem;
+}
+
+.required-label {
+  font-size: .8rem;
+  color: darkred;
+}
+
+.error-label {
+  font-size: .85rem;
+  color: darkred;
+}
+
+.error-text {
+  font-size: .9rem;
+  color: #bb0303;
+}
+
+.optional-label {
+  font-size: .8rem;
+}
+
+.right-spacer {
+  padding-right: .5rem;
+}
+
+.spacer-left {
+  margin-left: 10px;
+}
+
+.label-container {
+  display: inline;
+}
+
+.select {
+  appearance: none; /* Removes default styles */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  width: 100%;
+  line-height: 1.5;
+  border-radius: .375rem;
+  background: #FFF url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 20 20"><polygon points="0,5 20,5 10,15" fill="black"/></svg>') no-repeat right 10px center;
+  border: 1px solid #dee2e6;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.select:hover {
+  border-radius: .375rem;
+  background-color: #FFF;
+  border: 1px solid #dee2e6;
+}
+
+.textarea {
+  width: 100%;
+  border: 1px solid #dee2e6;
+  border-radius: .375rem;
+  padding: .375rem .75rem;
+}
+
+.datepicker {
+  width: 100%;
+  cursor: pointer;
+  border: 1px solid #dee2e6;
+  border-radius: .375rem;
+  padding: .375rem .75rem;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.input-bottom-spacer {
+  padding-bottom: .75rem;
+}
+
+.margin-spacer-bottom {
+  margin-bottom: 1rem;;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-spin {
+  height: 17px;
+  animation: spin 1s linear infinite;
+}
+
+.content-container {
+  width: 98%;
+  background-color: #FFF;
+  padding: 1.5rem;
+  margin: 1.5rem;
+}
+
+.breadcrumbs {
+  padding-left: 0.5rem;
+  padding-top: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.styled-table {
+
+}
+
+.styled-table td,
+.styled-table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-overflow: ellipsis;
+}
+
+.styled-table thead {
+  font-weight: bold;
+}
+
+.styled-table tbody tr:hover {
+  cursor: pointer;
+  background-color: #f0f0f0;
+}
+
+.breadcrumb-link {
+  color: #212529;
+}
+
+.disclaimer {
+  padding-bottom: 1rem;
+  font-style: italic;
+  font-size: 0.9rem;
+  font-weight: bold;
+}

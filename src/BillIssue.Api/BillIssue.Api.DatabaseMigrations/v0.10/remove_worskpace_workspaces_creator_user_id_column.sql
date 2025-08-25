@@ -1,0 +1,1 @@
+ALTER TABLE workspace_workspaces DROP COLUMN creator_user_id

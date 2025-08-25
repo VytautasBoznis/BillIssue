@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="v0.04\add_workspace.sql" />
+    <None Remove="v0.15\add_title_to_timelog_entries.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="v0.04\add_workspace.sql" />
+    <Compile Include="v0.15\add_title_to_timelog_entries.sql" />
+  </ItemGroup>
+
+</Project>

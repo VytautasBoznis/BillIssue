@@ -1,0 +1,22 @@
+.history-item-container {
+  margin-bottom: 0.5rem;
+  background-color: #f1f2f3;
+}
+
+.history-item-header {
+  cursor: pointer;
+  padding: .5rem;
+  border-radius: .375rem;
+  background-color: #FFF;
+  border: 1px solid #dee2e6;
+}
+
+.history-item-title {
+  margin-right: 15px;
+}
+
+.history-item-content {
+  padding: .25rem;
+  border: 1px solid #dee2e6;
+  border-top: none;
+}

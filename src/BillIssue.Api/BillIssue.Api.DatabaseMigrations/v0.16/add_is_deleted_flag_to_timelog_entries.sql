@@ -1,0 +1,2 @@
+ALTER TABLE time_log_entries
+ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE;

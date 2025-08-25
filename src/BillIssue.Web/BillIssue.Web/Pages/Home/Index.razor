@@ -1,0 +1,17 @@
+
+@page "/"
+@page "/home"
+@using BlazorStrap
+@inject NavigationManager NavigationManager
+
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await base.OnInitializedAsync();
+            NavigationManager.NavigateTo("time-logging");
+        }
+    }
+}

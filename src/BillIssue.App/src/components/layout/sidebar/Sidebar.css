@@ -1,0 +1,32 @@
+.menu-button {
+  height: 36px;
+}
+
+.extended {
+  width: 200px;
+}
+
+.minimized {
+  width: 55px;
+}
+
+.sidebar-menu-button {
+  text-decoration: none;
+}
+
+.sidebar-menu-button:hover{
+  background-color: rgb(54, 61, 68);
+}
+
+.sidebar-menu-image {
+  appearance: none;
+  width: 30px;
+  height: 30px;;
+}
+
+.sidebar-menu-text{
+  color: #dee2e6;
+  padding-top: 3px;
+  padding-left: 10px;
+  text-align: center;
+}

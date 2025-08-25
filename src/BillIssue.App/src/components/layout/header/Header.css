@@ -1,0 +1,56 @@
+.app-header {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-content {
+  display: flex;
+  width: 100%;
+  height: 60px;
+}
+
+.user-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.logo {
+  height: 42px;
+  width: 42px;
+}
+
+.menu-button-container {
+  color: #6e6e6e;
+  padding: 1.5rem .75rem;
+}
+
+.menu-button {
+  cursor: pointer;
+}
+
+.stilized-dropdown {
+  margin-right: 2px;
+  background-color: #ffffff !important;
+  border: none !important;
+  color: #6e6e6e !important;
+}
+
+.name-holder {
+  margin: 0 5px 0 5px;
+}
+
+.logo-container {
+  padding: 0;
+  width: 200px;
+  border-right: rgb(244, 244, 244) solid 1px;
+  padding: 1.5rem .5rem;
+  text-align: center;
+}
+
+.dropdown-container {
+  flex: 1;
+  padding: .85rem .75rem;
+}
+
+.dropdown-button {
+  border: none;
+}

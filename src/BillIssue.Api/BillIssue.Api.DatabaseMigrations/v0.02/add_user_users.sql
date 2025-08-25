@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS user_users (
+   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+   password VARCHAR(512) NOT NULL,
+   email VARCHAR(512) UNIQUE NOT NULL,
+   role INTEGER NOT NULL DEFAULT 1,
+   is_banned BOOLEAN NOT NULL DEFAULT false,
+   created_on TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+   created_by VARCHAR(512) NOT NULL,
+   modified_on TIMESTAMP WITH TIME ZONE,
+   modified_by VARCHAR(512),
+   last_login TIMESTAMP WITH TIME ZONE,
+   UNIQUE (email)
+);

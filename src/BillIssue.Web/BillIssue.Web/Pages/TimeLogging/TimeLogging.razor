@@ -1,0 +1,64 @@
+﻿@page "/time-logging"
+
+@using BillIssue.Web.Domain.Constants
+@using BillIssue.Web.Services
+
+@inject MultilanguageService multilanguageService
+
+@if (isLoading)
+{
+    @*TODO add Spinner*@
+    <div>LOADING.....</div>
+}
+else
+{
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+            <h1 class="page-title fw-semibold fs-18 mb-0">@translations[MultilanguageKeyConstants.TimeLoggingTitle]</h1>
+            <div class="ms-md-1 ms-0">
+                <nav>
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item active" aria-current="page">@translations[MultilanguageKeyConstants.SharedBreadcrumbsTimeLogging]</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+
+        <div class="row">
+            <TimeLoggingPrimaryInput />
+        </div>
+        <div class="row">
+            <TimeLoggingEntryHistory />
+        </div>
+    </div>
+}
+
+@code {
+    private bool isLoading;
+    private int count = 0;
+
+    private string[] usedTranslationKeys = {
+        MultilanguageKeyConstants.TimeLoggingTitle,
+        MultilanguageKeyConstants.SharedBreadcrumbsTimeLogging,
+    };
+
+    private Dictionary<string, string> translations = new Dictionary<string, string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        isLoading = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            translations = await multilanguageService.GetTranslations(usedTranslationKeys);
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,55 @@
+.btn-theme {
+  border: 1px solid #dee2e6;
+  color: #FFF !important;
+  background-color: rgb(33, 37, 41) !important;
+}
+
+.calendor-control-text {
+  padding: .25rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.calendar-container {
+  height: 180px;
+}
+
+.calendar-day {
+  height: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  padding: .25rem;
+}
+
+.calendar-weekday {
+  font-size: 1rem;
+  border-bottom: 1px solid rgb(33, 37, 41);
+  text-align: center;
+}
+
+.calendar-cell{
+  border: 1px solid rgb(33, 37, 41);
+  cursor: pointer;
+}
+
+.calendar-elements {
+  height: 137px;
+  padding: .5rem;
+}
+
+.weekend-cell {
+  background-color: #e4eef8;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+}
+
+.hour-badge {
+  font-size: .5rem;
+}
+
+.selected-day {
+  background-color: #dbe5ec;
+}

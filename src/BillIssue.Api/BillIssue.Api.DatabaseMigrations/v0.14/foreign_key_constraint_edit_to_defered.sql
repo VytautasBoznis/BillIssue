@@ -1,0 +1,43 @@
+ALTER TABLE workspace_user_assignments
+ALTER CONSTRAINT workspace_user_assignments_workspace_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE workspace_user_assignments
+ALTER CONSTRAINT workspace_user_assignments_user_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE project_projects
+ALTER CONSTRAINT project_projects_workspace_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE project_user_assignments
+ALTER CONSTRAINT project_user_assignments_project_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE project_user_assignments
+ALTER CONSTRAINT project_user_assignments_user_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE project_worktypes
+ALTER CONSTRAINT project_worktypes_project_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE time_log_entries
+ALTER CONSTRAINT time_log_entries_workspace_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE time_log_entries
+ALTER CONSTRAINT time_log_entries_project_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE time_log_entries
+ALTER CONSTRAINT time_log_entries_project_worktype_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE time_log_entries
+ALTER CONSTRAINT time_log_entries_user_id_fkey
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE user_confirmations
+ALTER CONSTRAINT user_confirmations_user_id_fkey
+DEFERRABLE INITIALLY DEFERRED;

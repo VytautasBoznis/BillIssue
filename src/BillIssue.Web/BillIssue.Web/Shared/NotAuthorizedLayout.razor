@@ -1,0 +1,40 @@
+﻿@using BillIssue.Web.Services
+
+@inherits LayoutComponentBase
+
+@inject AccountService AccountService
+@inject NavigationManager NavigationManager
+
+@if (isLoading)
+{
+    @*TODO add Spinner*@
+    <div>LOADING.....</div>
+}
+else
+{
+    @Body
+}
+
+@code {
+    private bool isLoading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        isLoading = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if(await AccountService.IsLoggedIn())
+            {
+                NavigationManager.NavigateTo("home");
+            }
+
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}
