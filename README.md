@@ -1,1 +1,2 @@
-# BillIssue
+# BillIssue.Web
+BillIssue Blazor implementation
