@@ -1,0 +1,14 @@
+/.vs/BillIssue.All.Projects/CopilotIndices
+/.vs
+/src/BillIssue.Api/BillIssue.Api.Business/bin
+/src/BillIssue.Api/BillIssue.Api.Business/obj
+/src/BillIssue.Api/BillIssue.Api.DatabaseMigrations/obj
+/src/BillIssue.Api/BillIssue.Api.Interfaces/bin
+/src/BillIssue.Api/BillIssue.Api.Interfaces/obj
+/src/BillIssue.Api/BillIssue.Api.Models/bin
+/src/BillIssue.Api/BillIssue.Api.Models/obj
+/src/BillIssue.Api/BillIssue.Api/bin
+/src/BillIssue.Api/BillIssue.Api/obj
+/src/BillIssue.Api/Logs
+/src/Shared/BillIssue.Shared.Models/bin
+/src/Shared/BillIssue.Shared.Models/obj

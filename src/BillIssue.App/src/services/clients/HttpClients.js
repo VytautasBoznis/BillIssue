@@ -79,7 +79,7 @@ class WorkspaceHttpClient extends HttpClient {
     return this.request(`/Workspace/GetAllWorkspacesForUser/${userId}`, "GET", null, onError, authToken);
   }
   async GetAllWorkspaceSelections(authToken, userId, onError) {
-    return this.request(`/Workspace/GetAllWorkspaceSelectionsForUser/${+userId}`, "GET", null, onError, authToken);
+    return this.request(`/Workspace/GetAllWorkspaceSelectionsForUser/${userId}`, "GET", null, onError, authToken);
   }
 }
 

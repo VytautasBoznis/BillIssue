@@ -35,12 +35,12 @@ internal class Program
         builder.Services.AddCors(options =>
         {
             options.AddPolicy(name: AllowedCorsOrigins,
-                              policy =>
-                              {
-                                  policy.WithOrigins("*")
-                                        .AllowAnyMethod()
-                                        .AllowAnyHeader();
-                              });
+                policy =>
+                {
+                    policy.WithOrigins("*")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
         });
 
         builder.Services.AddControllers( options => 
