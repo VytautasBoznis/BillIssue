@@ -1,4 +1,4 @@
-import { AnonymousLayout, MainLayout, WorkspaceDetailsContainer } from "../components";
+import { AnonymousLayout, MainLayout, ProjectUserManagementContainer, WorkspaceDetailsContainer } from "../components";
 import ProjectCreationContainer from "../components/projectCreationContainer/ProjectCreationContainer";
 import ProjectDetailsContainer from "../components/projectDetailsContainer/ProjectDetailsContainer";
 import ProjectManagementContainer from "../components/projectManagementContainer/ProjectManagementContainer";
@@ -94,7 +94,12 @@ export const routes = [
         component: ProjectWorktypeDetailsContainer,
         path: '/project/:projectid/project-worktype/:id'
       },
-
+      {
+        name: 'project user management page',
+        title: 'Project user management',
+        component: ProjectUserManagementContainer,
+        path: '/project/:projectid/project-users/'
+      },
 
       // {
       //   name: 'analyticsPage',

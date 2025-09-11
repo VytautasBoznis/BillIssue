@@ -391,7 +391,7 @@ namespace BillIssue.Api.Business.Project
         private ProjectDto GetProjectDataWithPermissionCheck(Guid userId, Guid projectId, ProjectUserRoles minimumRole, bool isUserAdmin)
         {
             var dictionary = new Dictionary<string, object> { { "@id", projectId } };
-            ProjectDto projectDto = _dbConnection.Query<ProjectDto>("SELECT id as ProjectId, name, is_deleted as IsDeleted, description FROM project_projects WHERE id = @id", dictionary).FirstOrDefault();
+            ProjectDto projectDto = _dbConnection.Query<ProjectDto>("SELECT id as ProjectId, workspace_id as WorkspaceId, name, is_deleted as IsDeleted, description FROM project_projects WHERE id = @id", dictionary).FirstOrDefault();
 
             if (projectDto == null)
             {
@@ -585,7 +585,7 @@ namespace BillIssue.Api.Business.Project
             var dictionary = new Dictionary<string, object> { { "@ui", userId }, { "@wi", workspaceId} };
 
             List<ProjectSearchDto> projectSearchDtos = _dbConnection.Query<ProjectSearchDto>(@"
-                SELECT
+                SELECT DISTINCT
 	                ww.id as WorkspaceId, 
 	                pp.id as ProjectId,
 	                pp.name as Name,
@@ -810,7 +810,7 @@ namespace BillIssue.Api.Business.Project
         {
             var dictionary = new Dictionary<string, object> { { "@pid", projectId } };
             List<ProjectUserAssignmentDto> projectUserAssignments = _dbConnection.Query<ProjectUserAssignmentDto>(@"
-                SELECT pua.id as UserAssignmentId, pua.project_id as ProjectId, uu.id as UserId, uu.first_name, uu.last_name, pua.project_role
+                SELECT pua.id as UserAssignmentId, pua.project_id as ProjectId, uu.id as UserId, uu.email, uu.first_name, uu.last_name, pua.project_role as Role
                 FROM Project_projects pp
                     JOIN Project_user_assignments pua
                         ON pp.id = pua.project_id
@@ -830,7 +830,7 @@ namespace BillIssue.Api.Business.Project
                     Parameters =
                     {
                         new("@projectId", newUserAssignment.ProjectId),
-                        new("@userId", userId),
+                        new("@userId", newUserAssignment.UserId),
                         new("@projectRole", (int) newUserAssignment.Role),
                         new("@createdBy", userEmail),
                     }
@@ -855,7 +855,7 @@ namespace BillIssue.Api.Business.Project
         {
             try
             {
-                await using NpgsqlCommand modifyUserAssginment = new NpgsqlCommand("INSERT INTO project_user_assignments (project_role, modified_by, modified_on) VALUES (@projectRole, @modifiedBy, @modifiedOn) WHERE id = @id", _dbConnection, transaction)
+                await using NpgsqlCommand modifyUserAssginment = new NpgsqlCommand("UPDATE project_user_assignments SET project_role = @projectRole, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE id = @id", _dbConnection, transaction)
                 {
                     Parameters =
                     {

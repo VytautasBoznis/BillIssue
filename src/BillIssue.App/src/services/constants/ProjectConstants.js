@@ -12,3 +12,9 @@ export const PROJECT_USER_ROLES = [
     name: 'Owner',
   }
 ];
+
+export const PROJECT_USER_ROLE_ENUM = {
+  Contributor:1,
+  TeamLead:2,
+  Owner:3
+}

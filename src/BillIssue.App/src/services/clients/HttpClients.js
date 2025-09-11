@@ -66,6 +66,9 @@ class WorkspaceHttpClient extends HttpClient {
   async GetWorkspaceById(authToken, workspaceId, onError) {
     return this.request(`/Workspace/GetWorkspace/${workspaceId}`, "GET", null, onError, authToken);
   }
+  async GetAllWorkspaceUsers(authToken, workspaceId, onError) {
+    return this.request(`/Workspace/GetAllWorkspaceUsers/${workspaceId}`, "GET", null, onError, authToken);
+  }
   async UpdateWorkspace(authToken, workspaceData, onError) {
     return this.request(`/Workspace/UpdateWorkspace`, "PATCH", workspaceData, onError, authToken);
   }
@@ -99,8 +102,8 @@ class TimeLoggingHttpClient extends HttpClient {
 }
 
 class ProjectHttpClient extends HttpClient {
-  async GetProjectById(authToken, projectId, onError) {
-    return this.request(`/Project/GetProject/${projectId}`, "GET", null, onError, authToken);
+  async GetProjectById(authToken, projectId, loadUserAssignments, onError) {
+    return this.request(`/Project/GetProject/${projectId}?loadUserAssignments=${loadUserAssignments ? 'true' : 'false'}`, "GET", null, onError, authToken);
   }
   async GetProjectsForUserInWorkspace(authToken, workspaceId, onError) {
     return this.request(`/Project/GetProjectsForUserInWorkspace/${workspaceId}`, "GET", null, onError, authToken);
@@ -113,6 +116,15 @@ class ProjectHttpClient extends HttpClient {
   }
   async RemoveProject(authToken, projectId, onError) {
     return this.request(`/Project/RemoveProject/${projectId}`, "DELETE", null, onError, authToken);
+  }
+  async CreateUserAssignmentToProject(authToken, request, onError) {
+    return this.request(`/Project/AddUserAssignmentToProject`, "POST", request, onError, authToken);
+  }
+  async RemoveUserAssingmentFromProject(authToken, request, onError) {
+    return this.request(`/Project/RemoveUserAssingmentFromProject/${request.projectId}/${request.projectUserAssignmentId}`, "DELETE", null, onError, authToken);
+  }
+  async ModifyUserAssingmentInProject(authToken, request, onError) {
+    return this.request(`/Project/ModifyUserAssingmentInProject`, "PATCH", request, onError, authToken);
   }
 }
 

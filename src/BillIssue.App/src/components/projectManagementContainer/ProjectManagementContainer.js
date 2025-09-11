@@ -61,7 +61,7 @@ const ProjectManagementContainer = () => {
             </tr>
           </thead>
           <tbody>
-            {projectData.map((project) => (
+            {projectData?.map((project) => (
               <tr key={project.projectId} onClick={() => handleProjectClick(project.projectId)}>
                 <td>{project.name}</td>
                 <td>{project.description}</td>

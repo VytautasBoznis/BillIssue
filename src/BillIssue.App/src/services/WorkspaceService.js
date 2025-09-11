@@ -12,6 +12,15 @@ const WorkspaceService = {
       onError(error.response?.data?.message || "Failed to get workspace data");
     }
   },
+  async getAllWorkspaceUsers(workspaceId, onError) {
+    try {
+      const sessionData = getUserSessionData();
+      const response = await workspaceClient.GetAllWorkspaceUsers(sessionData.authToken, workspaceId, onError);
+      return response.workspaceUserDtos;
+    } catch (error) {
+      onError(error.response?.data?.message || "Failed to get all workspace users");
+    }
+  },
   async updateWorkspace(workspaceData, onError) {
     try {
       const sessionData = getUserSessionData();

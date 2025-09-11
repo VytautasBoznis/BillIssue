@@ -4,6 +4,7 @@ import Header from "./layout/header/Header";
 import ClientManagementContainer from "./clientManagementContainer/ClientManagementContainer";
 import ClientEditContainer from "./clientEditContainer/ClientEditContainer";
 import ProjectEditContainer from "./projectEditContainer/ProjectEditContainer";
+import ProjectUserManagementContainer from "./projectUserManagementContainer/ProjectUserManagementContainer";
 import TimeLoggingContainer from "./timeLoggingContainer/TimeLoggingContainer";
 import WorkspaceManagementContainer from "./workspaceManagementContainer/WorkspaceManagementContainer";
 import WorkspaceCreationContainer from "./workspaceCreationContainer/WorkspaceCreationContainer";
@@ -19,5 +20,6 @@ export {
   TimeLoggingContainer,
   WorkspaceManagementContainer,
   WorkspaceCreationContainer,
-  WorkspaceDetailsContainer
+  WorkspaceDetailsContainer,
+  ProjectUserManagementContainer
 }

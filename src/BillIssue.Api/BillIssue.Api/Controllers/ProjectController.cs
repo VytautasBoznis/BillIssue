@@ -24,10 +24,10 @@ namespace BillIssue.Api.Controllers
 
         [HttpGet("GetProject/{projectId}")]
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
-        public async Task<IActionResult> GetProject(Guid projectId)
+        public async Task<IActionResult> GetProject(Guid projectId, bool loadUserAssignments)
         {
             string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            ProjectDto result = await _projectFacade.GetProject(sessionId, new GetProjectRequest { ProjectId = projectId });
+            ProjectDto result = await _projectFacade.GetProject(sessionId, new GetProjectRequest { ProjectId = projectId, LoadUserAssignments = loadUserAssignments });
 
             return Ok(new GetProjectResponse { ProjectDto = result});
         }
