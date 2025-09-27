@@ -48,10 +48,10 @@ Prerequisites:
 
 * Timelogging to a workspace
 * Workspaces can be managed in teams
+* Add user to workspace with notifications
 * Projects can have specific work types to log time to
 
 ## Missing features at this time
 
-* Invites to Workspaces/teams
 * Password reset/account confirmation
 * UI part for timelog search
