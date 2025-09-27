@@ -21,6 +21,8 @@ using Npgsql;
 using Serilog;
 using StackExchange.Redis;
 using System.Data;
+using BillIssue.Api.Interfaces.Alerts;
+using BillIssue.Api.Business.Alerts;
 
 internal class Program
 {
@@ -110,6 +112,7 @@ internal class Program
 
         services.AddScoped<IAuthFacade, AuthFacade>();
         services.AddScoped<IUserFacade, UserFacade>();
+        services.AddScoped<INotificationFacade, NotificationFacade>();
         services.AddScoped<IWorkspaceFacade, WorkspaceFacade>();
         services.AddScoped<IProjectFacade, ProjectFacade>();
         services.AddScoped<IScheduleFacade, ScheduleFacade>();

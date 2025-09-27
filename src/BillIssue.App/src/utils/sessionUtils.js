@@ -89,6 +89,11 @@ export const getAvailableWorkspaces = () => {
   }
 }
 
+export const getNotifications = () => {
+  const sessionData = getUserSessionData();
+  return sessionData?.notifications;
+}
+
 export const logout = (redirect) => {
   Cookies.remove(USER_SESSION_DATA); 
   Cookies.remove(USER_COMPANY_WORKSPACE_DATA);

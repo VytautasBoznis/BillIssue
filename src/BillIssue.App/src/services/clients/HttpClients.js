@@ -63,8 +63,8 @@ class UserHttpClient extends HttpClient {
 }
 
 class WorkspaceHttpClient extends HttpClient {
-  async GetWorkspaceById(authToken, workspaceId, onError) {
-    return this.request(`/Workspace/GetWorkspace/${workspaceId}`, "GET", null, onError, authToken);
+  async GetWorkspaceById(authToken, workspaceId, loadUserData, onError) {
+    return this.request(`/Workspace/GetWorkspace/${workspaceId}?loadUserAssignments=${loadUserData}`, "GET", null, onError, authToken);
   }
   async GetAllWorkspaceUsers(authToken, workspaceId, onError) {
     return this.request(`/Workspace/GetAllWorkspaceUsers/${workspaceId}`, "GET", null, onError, authToken);
@@ -83,6 +83,15 @@ class WorkspaceHttpClient extends HttpClient {
   }
   async GetAllWorkspaceSelections(authToken, userId, onError) {
     return this.request(`/Workspace/GetAllWorkspaceSelectionsForUser/${userId}`, "GET", null, onError, authToken);
+  }
+  async AddUserToWorkspace(authToken, addUserRequest, onError) {
+    return this.request(`/Workspace/AddUserToWorkspace`, "POST", addUserRequest, onError, authToken);
+  }
+  async UpdateUserInWorkspace(authToken, modifyUserRequest, onError) {
+    return this.request(`/Workspace/UpdateUserInWorkspace`, "PATCH", modifyUserRequest, onError, authToken);
+  }  
+  async RemoveUserAssingmentFromProject(authToken, request, onError) {
+    return this.request(`/Workspace/RemoveUserFromWorkspace`, "DELETE", request, onError, authToken);
   }
 }
 
@@ -140,6 +149,15 @@ class ProjectWorktypeHttpClient extends HttpClient {
   }
 }
 
+class NotificationHttpClient extends HttpClient {
+  async GetNotifications(authToken, onError) {
+    return this.request(`/Notification/GetNotifications/`, "GET", null, onError, authToken);
+  }  
+  async DoNotificationDecision(authToken, request, onError) {
+    return this.request(`/Notification/DoNotificationDecision`, "POST", request, onError, authToken);
+  }
+}
+
 const baseURL = process.env.REACT_APP_API_URL;
 const authClient = new AuthHttpClient(baseURL);
 const userClient = new UserHttpClient(baseURL);
@@ -147,6 +165,7 @@ const workspaceClient = new WorkspaceHttpClient(baseURL);
 const timeloggingClient = new TimeLoggingHttpClient(baseURL);
 const projectClient = new ProjectHttpClient(baseURL);
 const projectWorktypeClient = new ProjectWorktypeHttpClient(baseURL);
+const notificationsClient = new NotificationHttpClient(baseURL);
 
 export { 
   authClient,
@@ -154,5 +173,6 @@ export {
   workspaceClient,
   timeloggingClient,
   projectClient,
-  projectWorktypeClient
+  projectWorktypeClient,
+  notificationsClient
 };

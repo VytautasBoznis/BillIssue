@@ -85,7 +85,7 @@ const ProjectDetailsContainer = () => {
               <a className="breadcrumb-link" href='/project-management'>Project management</a> / {projectDetails.name}
             </div>
             <div className='col-sm-6 d-flex justify-content-end'>
-              <button onClick={() => handleProjectUsersClick()} type="submit" className="color-white btn btn-info"><UserIcon size={12} fill="#fff" classProperty="user-management-button-icon"></UserIcon> User Management</button>
+              <button onClick={() => handleProjectUsersClick()} type="submit" className="color-white btn btn-primary"><UserIcon size={12} fill="#fff" classProperty="user-management-button-icon"></UserIcon> User Management</button>
               <button onClick={() => handleWorkspaceDeleteClick()} type="submit" className="spacer-left btn btn-danger"><XIcon size={12} classProperty="delete-button-icon"></XIcon> Delete Project</button>
             </div>
           </div>

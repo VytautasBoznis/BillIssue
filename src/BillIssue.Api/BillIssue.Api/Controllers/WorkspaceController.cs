@@ -22,12 +22,13 @@ namespace BillIssue.Api.Controllers
 
         [HttpGet("GetWorkspace/{WorkspaceId}")]
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
-        public async Task<IActionResult> GetWorkspace(Guid WorkspaceId)
+        public async Task<IActionResult> GetWorkspace(Guid WorkspaceId, bool loadUserAssignments)
         {
             string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
             WorkspaceDto result = await _workspaceFacade.GetWorkspace(sessionId, new GetWorkspaceRequest
             {
-                WorkspaceId = WorkspaceId
+                WorkspaceId = WorkspaceId,
+                LoadWorkspaceUsers = loadUserAssignments
             });
 
             return Ok(new GetWorkspaceResponse { WorkspaceDto = result });

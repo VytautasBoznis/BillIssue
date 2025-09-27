@@ -1,4 +1,6 @@
-﻿namespace BillIssue.Shared.Models.Response.Auth.Dto
+﻿using BillIssue.Shared.Models.Response.Notifications.Dto;
+
+namespace BillIssue.Shared.Models.Response.Auth.Dto
 {
     public class SessionDto
     {
@@ -7,5 +9,6 @@
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public List<NotificationDto> Notifications { get; set; }
     }
 }

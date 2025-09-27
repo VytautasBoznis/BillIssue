@@ -3,10 +3,10 @@ import { workspaceClient } from "./clients/HttpClients";
 import { getAvailableWorkspaces, setAvailableWorkspaces } from "../utils/sessionUtils";
 
 const WorkspaceService = {
-  async getWorkspaceById(workspaceId, onError) {
+  async getWorkspaceById(workspaceId, loadUserData = false, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await workspaceClient.GetWorkspaceById(sessionData.authToken, workspaceId, onError);
+      const response = await workspaceClient.GetWorkspaceById(sessionData.authToken, workspaceId, loadUserData, onError);
       return response.workspaceDto;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to get workspace data");
@@ -82,6 +82,33 @@ const WorkspaceService = {
       return response.workspaceSelections || [];
     } catch (error) {
       onError(error.response?.data?.message || "Workspace data loading failed");
+    }
+  },
+  async addWorkspaceUser(addUserRequest, onError) {
+    try {
+      const sessionData = getUserSessionData();
+      await workspaceClient.AddUserToWorkspace(sessionData.authToken, addUserRequest, onError);
+      return true;
+    } catch (error) {
+      onError(error.response?.data?.message || "Failed to add user to user to workspace");
+    }
+  },
+  async modifyWorkspaceUser(modifyUserRequest, onError) {
+    try {
+      const sessionData = getUserSessionData();
+      await workspaceClient.UpdateUserInWorkspace(sessionData.authToken, modifyUserRequest, onError);
+      return true;
+    } catch (error) {
+      onError(error.response?.data?.message || "Failed to modify user in workspace");
+    }
+  },  
+  async removeWorkspaceUser(removeUserRequest, onError) {
+    try {
+      const sessionData = getUserSessionData();
+      await workspaceClient.RemoveUserAssingmentFromProject(sessionData.authToken, removeUserRequest, onError);
+      return true;
+    } catch (error) {
+      onError(error.response?.data?.message || "Failed to remove user in workspace");
     }
   },
 }

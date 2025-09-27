@@ -5,7 +5,6 @@ using BillIssue.Api.Interfaces.User;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Api.Models.Exceptions;
 using BillIssue.Api.Models.Models.Auth;
-using BillIssue.Api.Models.Models.Projects;
 using BillIssue.Shared.Models.Constants;
 using BillIssue.Shared.Models.Enums.Workspace;
 using BillIssue.Shared.Models.Request.Workspace;
@@ -17,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using Npgsql;
 using Pipelines.Sockets.Unofficial.Arenas;
 using System.Data;
+using BillIssue.Api.Interfaces.Alerts;
+using BillIssue.Shared.Models.Request.Notifications;
 
 namespace BillIssue.Api.Business.Workspace
 {
@@ -28,6 +29,7 @@ namespace BillIssue.Api.Business.Workspace
         private readonly ISessionFacade _sessionFacade;
         private readonly IUserFacade _userFacade;
         private readonly IProjectFacade _projectFacade;
+        private readonly INotificationFacade _alertFacade;
 
         private const string NewUsersWorkspaceTagline = "{0}'s personal workspace";
         private const string NewProjectTagLine = "First workspace project";
@@ -37,6 +39,7 @@ namespace BillIssue.Api.Business.Workspace
             ISessionFacade sessionFacade,
             IUserFacade userFacade,
             IProjectFacade projectFacade,
+            INotificationFacade alertFacade,
             NpgsqlConnection dbConnection,
             ILogger<WorkspaceFacade> logger
         )
@@ -47,6 +50,7 @@ namespace BillIssue.Api.Business.Workspace
 
             _userFacade = userFacade;
             _projectFacade = projectFacade;
+            _alertFacade = alertFacade;
         }
 
         #region Workspace Controll
@@ -89,15 +93,20 @@ namespace BillIssue.Api.Business.Workspace
         {
             SessionModel sessionModel = await _sessionFacade.GetSessionModel(sessionId);
 
-            WorkspaceDto WorkspaceDto = GetWorkspaceDataWithPermissionCheck(sessionModel.Id, request.WorkspaceId, WorkspaceUserRole.Manager, sessionModel.Role == UserRole.Admin);
+            WorkspaceDto workspaceDto = GetWorkspaceDataWithPermissionCheck(sessionModel.Id, request.WorkspaceId, WorkspaceUserRole.Manager, sessionModel.Role == UserRole.Admin);
 
-            if (WorkspaceDto == null)
+            if (workspaceDto == null)
             {
                 _logger.LogError($"User with user id: {sessionModel.Id} tried to access an unknow workspace with id: {request.WorkspaceId}.");
                 throw new WorkspaceException("Workspace not found", ExceptionCodes.WORKSPACE_NOT_FOUND);
             }
 
-            return WorkspaceDto;
+            if (request.LoadWorkspaceUsers)
+            {
+                workspaceDto.WorkspaceUsers = GetAllWorkspaceUsers(workspaceDto.Id);
+            }
+
+            return workspaceDto;
         }
 
         public async Task<List<WorkspaceSearchDto>> GetAllWorkspacesForUser(string sessionId, GetAllWorkspacesForUserRequest request)
@@ -196,18 +205,33 @@ namespace BillIssue.Api.Business.Workspace
         public async Task AddUserToWorkspace(string sessionId, AddUserToWorkspaceRequest request)
         {
             SessionModel sessionModel = await _sessionFacade.GetSessionModel(sessionId);
-            WorkspaceDto WorkspaceDto = GetWorkspaceDataWithPermissionCheck(sessionModel.Id, request.WorkspaceId, WorkspaceUserRole.Manager, sessionModel.Role == UserRole.Admin);
+            WorkspaceDto workspaceDto = GetWorkspaceDataWithPermissionCheck(sessionModel.Id, request.WorkspaceId, WorkspaceUserRole.Manager, sessionModel.Role == UserRole.Admin);
 
-            if (WorkspaceDto == null)
+            if (workspaceDto == null)
             {
                 _logger.LogError($"User with user id: {sessionModel.Id} tried to access an unknow workspace with id: {request.WorkspaceId}.");
                 throw new WorkspaceException("Workspace not found", ExceptionCodes.WORKSPACE_NOT_FOUND);
             }
 
+            List<WorkspaceUserDto> workspaceUsers = GetAllWorkspaceUsers(workspaceDto.Id);
+
+            if (workspaceUsers.Any(user => string.Equals(user.Email, request.NewUserEmail, StringComparison.OrdinalIgnoreCase)))
+            {
+                _logger.LogWarning($"User with id {sessionModel.Id} tried to add a new user to workspace id: {request.WorkspaceId} that is already present {request.NewUserEmail} in that workspace");
+            }
+
             NpgsqlTransaction transaction = _dbConnection.BeginTransaction();
 
-            WorkspaceUserAssignmentDto WorkspaceUserAssignmentDto = new WorkspaceUserAssignmentDto { WorkspaceId = request.WorkspaceId, UserId = request.UserId, WorkspaceRole = request.Role };
-            await CreateWorkspaceUserAssignmentInTransaction(request.UserId, sessionModel.Email, WorkspaceUserAssignmentDto, transaction);
+            await _alertFacade.CreateWorkspaceNotificationInTransaction(
+                sessionId, 
+                new CreateWorkspaceNotificationRequest { 
+                    WorkspaceId = request.WorkspaceId, 
+                    TargetUserEmail = request.NewUserEmail 
+                },
+                transaction
+            );
+
+            //TODO: send email to user that there is an invite to a new workspace
 
             transaction.Commit();
         }
@@ -332,27 +356,6 @@ namespace BillIssue.Api.Business.Workspace
                 _logger.LogError($"User with user id: {userId} tried to get an company workspace that was deleted with id: {WorkspaceId}.");
                 throw new ProjectException("Company workspace not found", ExceptionCodes.WORKSPACE_NOT_FOUND);
             }
-
-            //dictionary.Add("@ui", userId);
-            //dictionary.Add("@wur", minimalRole);
-            //WorkspaceUserAssignmentDto WorkspaceUserAssignmentDto = _dbConnection.Query<WorkspaceUserAssignmentDto>(@"
-            //    SELECT id as WorkspaceUserAssignmentId, workspace_id as WorkspaceId, user_id as UserId, workspace_role as WorkspaceRole
-            //    FROM workspace_user_assignments
-            //    WHERE
-	           //     user_id = @ui
-	           //     AND workspace_id = @wi
-	           //     AND workspace_role >= @wur", dictionary).FirstOrDefault();
-
-            //if (WorkspaceUserAssignmentDto == null && !isAdmin)
-            //{
-            //    _logger.LogError($"User with user id: {userId} tried to access company workspace with id: {WorkspaceId} that he did not have access to.");
-            //    throw new ProjectException("Company workspace not found", ExceptionCodes.WORKSPACE_NOT_FOUND);
-            //}
-
-            //if (WorkspaceUserAssignmentDto != null)
-            //{
-            //    WorkspaceDto.UserAssignment = new List<WorkspaceUserAssignmentDto> { WorkspaceUserAssignmentDto };
-            //}
 
             return WorkspaceDto;
         }
@@ -501,7 +504,7 @@ namespace BillIssue.Api.Business.Workspace
         {
             try
             {
-                await using NpgsqlCommand updateUserAssignment = new NpgsqlCommand("UPDATE workspace_user_assignments SET role = @newRole, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE workspace_id = @cwi AND user_id = @targetUserId", _dbConnection, transaction)
+                await using NpgsqlCommand updateUserAssignment = new NpgsqlCommand("UPDATE workspace_user_assignments SET workspace_role = @newRole, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE workspace_id = @cwi AND user_id = @targetUserId", _dbConnection, transaction)
                 {
                     Parameters =
                     {

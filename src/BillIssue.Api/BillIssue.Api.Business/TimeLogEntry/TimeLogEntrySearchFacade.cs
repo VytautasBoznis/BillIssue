@@ -75,7 +75,7 @@ namespace BillIssue.Api.Business.TimeLogEntry
 
         private List<TimeLogEntryDto> GetTimelogEntriesInDateRangeForUser(Guid userId, Guid WorkspaceId, DateTime startTime, DateTime endTime)
         {
-            var dictionary = new Dictionary<string, object> { { "@ui", userId}, { "@ci", WorkspaceId }, { "@st", startTime}, { "@et", endTime } };
+            var dictionary = new Dictionary<string, object> { { "@ui", userId}, { "@ci", WorkspaceId }, { "@st", startTime.AddDays(-1) }, { "@et", endTime.Date } };
 
             string searchQuery = @"SELECT
 	            tle.id as TimeLogEntryId,
@@ -111,6 +111,7 @@ namespace BillIssue.Api.Business.TimeLogEntry
                 AND tle.user_id = @ui
                 AND tle.is_deleted = false
                 AND tle.log_date BETWEEN @st AND @et";
+
 
             List<TimeLogEntryDto> timeLogEntries = _dbConnection.Query<TimeLogEntryDto>(searchQuery, dictionary).ToList();
             return timeLogEntries;

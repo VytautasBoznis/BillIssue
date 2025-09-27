@@ -60,5 +60,13 @@
         public const string USER_NOT_FOUND = "USER_NOT_FOUND";
 
         #endregion
+
+        #region Notifications
+
+        public const string NOTIFICATION_UNKNOWN_TYPE = "NOTIFICATION_UNKNOWN_TYPE";
+        public const string NOTIFICATION_NOT_FOUND = "NOTIFICATION_NOT_FOUND";
+        public const string NOTIFICATION_NOT_ALLOWED_DECISION = "NOTIFICATION_NOT_ALLOWED_DECISION";
+
+        #endregion
     }
 }

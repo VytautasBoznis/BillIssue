@@ -15,6 +15,8 @@ using BillIssue.Shared.Models.Constants;
 using BillIssue.Api.Interfaces.Workspace;
 using System.Transactions;
 using BillIssue.Shared.Models.Response.Auth.Dto;
+using BillIssue.Api.Interfaces.Alerts;
+using BillIssue.Shared.Models.Response.Notifications.Dto;
 
 namespace BillIssue.Api.Business.Auth
 {
@@ -28,6 +30,7 @@ namespace BillIssue.Api.Business.Auth
         private readonly ISessionFacade _sessionFacade;
         private readonly IEmailFacade _emailFacade;
         private readonly IWorkspaceFacade _WorkspaceFacade;
+        private readonly INotificationFacade _alertFacade;
 
         private const int PasswordWorkFactor = 12;
 
@@ -37,7 +40,8 @@ namespace BillIssue.Api.Business.Auth
             ILogger<AuthFacade> logger,
             IEmailFacade emailFacade,
             IWorkspaceFacade WorkspaceFacade,
-            ISessionFacade sessionFacade
+            ISessionFacade sessionFacade,
+            INotificationFacade alertFacade
         )
         {
             _redisConnection = redisConnection;
@@ -45,6 +49,7 @@ namespace BillIssue.Api.Business.Auth
             _redisDBAsync = _redisConnection.GetDatabase();
             _logger = logger;
             _WorkspaceFacade = WorkspaceFacade;
+            _alertFacade = alertFacade;
             _sessionFacade = sessionFacade;
         }
 
@@ -245,6 +250,8 @@ namespace BillIssue.Api.Business.Auth
 
             Guid authToken = await _sessionFacade.SetSession(sessionModel);
 
+            List<NotificationDto> userNotifications = _alertFacade.GetWorkspaceNotificationAsNotifications(email);
+
             return new SessionDto
             {
                 AuthToken = authToken,
@@ -252,6 +259,7 @@ namespace BillIssue.Api.Business.Auth
                 Email = email,
                 FirstName = sessionModel.FirstName,
                 LastName = sessionModel.LastName,
+                Notifications = userNotifications,
             };
         }
 

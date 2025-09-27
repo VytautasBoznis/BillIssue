@@ -1,8 +1,8 @@
-import React from 'react';
 import './Header.css';
 import MenuIcon from './MenuIcon';
 import UserIcon from '../../icons/UserIcon';
 import Dropdown from 'react-bootstrap/Dropdown';
+import NotificationsOverlay from '../../notificationsOverlay/NotificationsOverlay';
 import XIcon from '../../icons/XIcon';
 import { getUserSessionData, logout } from '../../../utils/sessionUtils';
 import { useWorkspace } from '../../../utils/workspaceHandling/WorkspaceProvider';
@@ -47,12 +47,10 @@ const Header = ({setIsOpen, sidebarOpen}) => {
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item href='/'>Time tracking</Dropdown.Item>
-            {/* <Dropdown.Item href="/analytics">Analytics</Dropdown.Item> */}
-            <Dropdown.Item href='/client-management'>Client management</Dropdown.Item>
-            <Dropdown.Item href='/account-management'>Account management</Dropdown.Item>
             <Dropdown.Item onClick={() => logout(true)}>Logout</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
+        <NotificationsOverlay></NotificationsOverlay>
         {/* TODO: Add normal spinner for workspace load */}
         {workspaceLoading ? (<div>LOADING</div>) : (
           <select className="select" onChange={handleWorkspaceChange}>

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import XIcon from "../icons/XIcon";
 
 import "./WorkspaceDetailsContainer.css";
+import UserIcon from "../icons/UserIcon";
 
 const WorkspaceDetailsContainer = () => {
   const { id } = useParams();
@@ -34,7 +35,7 @@ const WorkspaceDetailsContainer = () => {
 
   const loadWorkspaceDetails = async () => {
     setLoading(true);
-    const workspaceResult = await WorkspaceService.getWorkspaceById(id, showError);
+    const workspaceResult = await WorkspaceService.getWorkspaceById(id, false, showError);
     setWorkspaceDetails(workspaceResult);
     reset(workspaceResult);
     setLoading(false);
@@ -46,6 +47,10 @@ const WorkspaceDetailsContainer = () => {
     if (result) {
       window.location.href = "/workspace-management";
     }
+  }
+
+  const handleProjectUsersClick = () => {
+    window.location.href = `/workspace/${id}/workspace-users`;
   }
 
   useEffect(() => {
@@ -75,7 +80,8 @@ const WorkspaceDetailsContainer = () => {
               <a className="breadcrumb-link" href='/workspace-management'>Workspace management</a> / {workspaceDetails.name}
             </div>
             <div className='col-sm-6 d-flex justify-content-end'>
-              <button onClick={() => handleWorkspaceDeleteClick()} type="submit" className="btn btn-danger"><XIcon size={12} classProperty="delete-button-icon"></XIcon> Delete workspace</button>
+              <button onClick={() => handleProjectUsersClick()} type="submit" className="color-white btn btn-primary"><UserIcon size={12} fill="#fff" classProperty="user-management-button-icon"></UserIcon> User Management</button>
+              <button onClick={() => handleWorkspaceDeleteClick()} type="submit" className="btn btn-danger spacer-left"><XIcon size={12} classProperty="delete-button-icon"></XIcon> Delete workspace</button>
             </div>
           </div>
           <hr/>

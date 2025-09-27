@@ -1,4 +1,5 @@
-import { AnonymousLayout, MainLayout, ProjectUserManagementContainer, WorkspaceDetailsContainer } from "../components";
+import { AnonymousLayout, MainLayout, ProjectUserManagementContainer, WorkspaceDetailsContainer, WorkspaceUserManagementContainer } from "../components";
+import NotificationContainer from "../components/notificationContainer/NotificationContainer";
 import ProjectCreationContainer from "../components/projectCreationContainer/ProjectCreationContainer";
 import ProjectDetailsContainer from "../components/projectDetailsContainer/ProjectDetailsContainer";
 import ProjectManagementContainer from "../components/projectManagementContainer/ProjectManagementContainer";
@@ -8,9 +9,6 @@ import {
   LoginPage, 
   RegisterPage,
   ForgotPasswordPage,
-  ClientManagementPage, 
-  AccountManagementPage,
-  ClientDataPage,
   WorkspaceManagementPage,
   WorkspaceCreationPage,
 } from "../pages";
@@ -71,6 +69,12 @@ export const routes = [
         path: '/workspace/:id',
       },
       {
+        name: 'workspace user management page',
+        title: 'Workspace user management',
+        component: WorkspaceUserManagementContainer,
+        path: '/workspace/:id/workspace-users/'
+      },
+      {
         name: 'project management page',
         title: 'Project management',
         component: ProjectManagementContainer,
@@ -100,30 +104,11 @@ export const routes = [
         component: ProjectUserManagementContainer,
         path: '/project/:projectid/project-users/'
       },
-
-      // {
-      //   name: 'analyticsPage',
-      //   title: 'Analytics page',
-      //   component: AnalyticsPage,
-      //   path: '/analytics'
-      // },
       {
-        name: 'client management page',
-        title: 'Client management',
-        component: ClientManagementPage,
-        path: '/client-management'
-      },
-      {
-        name: 'client data page',
-        title: 'Client data',
-        component: ClientDataPage,
-        path: '/client-data'
-      },
-      {
-        name: 'Account management page',
-        title: 'Account management page',
-        component: AccountManagementPage,
-        path: '/account-management'
+        name: 'notification page',
+        title: 'Notifications',
+        component: NotificationContainer,
+        path: '/notifications'
       },
     ]
   }

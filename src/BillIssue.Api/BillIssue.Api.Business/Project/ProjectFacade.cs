@@ -126,7 +126,7 @@ namespace BillIssue.Api.Business.Project
             ProjectDto projectDto = new ProjectDto { WorkspaceId = newWorkspaceId, Name = string.Format(NewUsersProjectTagline, firstName), Description = string.Format(NewUsersProjectTagline, firstName) };
 
             Guid newProjectId = await CreateProjectInTransaction(newUserId, email, projectDto, transaction);
-            ProjectUserAssignmentDto projectUserAssignmentDto = new ProjectUserAssignmentDto { ProjectId = newProjectId, Role = ProjectUserRoles.Owner };
+            ProjectUserAssignmentDto projectUserAssignmentDto = new ProjectUserAssignmentDto { ProjectId = newProjectId, UserId = newUserId, Role = ProjectUserRoles.Owner };
             await CreateUserAssignmentInTransaction(newUserId, email, projectUserAssignmentDto, transaction);
             await CreateProjectDefaultWorktypesInTransaction(newProjectId, email, transaction);
         }
