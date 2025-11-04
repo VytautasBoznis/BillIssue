@@ -9,6 +9,7 @@
         public string ProjectName { get; set; }
         public Guid ProjectWorktypeId { get; set; }
         public string ProjectWorktypeName { get; set; }
+        public bool IsBillable { get; set; }
         public Guid UserId { get; set; }
         public string Title { get; set; }
         public string FirstName { get; set; }

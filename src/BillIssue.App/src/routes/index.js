@@ -4,6 +4,7 @@ import ProjectCreationContainer from "../components/projectCreationContainer/Pro
 import ProjectDetailsContainer from "../components/projectDetailsContainer/ProjectDetailsContainer";
 import ProjectManagementContainer from "../components/projectManagementContainer/ProjectManagementContainer";
 import ProjectWorktypeDetailsContainer from "../components/projectWorktypeDetailsContainer/ProjectWorktypeDetailsContainer";
+import TimeLoggingSearchContainer from "../components/timeLoggingSearchContainer/TimeLoggingSearchContainer";
 import { 
   TimeLoggingPage,
   LoginPage, 
@@ -109,6 +110,12 @@ export const routes = [
         title: 'Notifications',
         component: NotificationContainer,
         path: '/notifications'
+      },
+      {
+        name: 'reports page',
+        title: 'Reports',
+        component: TimeLoggingSearchContainer,
+        path: '/reports'
       },
     ]
   }

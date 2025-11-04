@@ -108,6 +108,9 @@ class TimeLoggingHttpClient extends HttpClient {
   async GetWeekOfTimeEntries(authToken, timeEntryLookupFilter, onError) {
     return this.request(`/TimeLogging/GetWeekOfTimeEntries`, "POST", timeEntryLookupFilter, onError, authToken);
   }
+  async SearchTimeLogEntries(authToken, searchTimeLoggingEntriesRequest, onError) {
+    return this.request(`/TimeLogging/SearchTimeLogEntries`, "POST", searchTimeLoggingEntriesRequest, onError, authToken);
+  }
 }
 
 class ProjectHttpClient extends HttpClient {

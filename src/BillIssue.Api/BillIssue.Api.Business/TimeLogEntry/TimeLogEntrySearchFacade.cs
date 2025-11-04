@@ -129,6 +129,7 @@ namespace BillIssue.Api.Business.TimeLogEntry
 	            pp.name as ProjectName,
 	            pw.id as ProjectWorktypeId,
 	            pw.name as ProjectWorktypeName,
+	            pw.is_billable as IsBillable,
 	            uu.id as UserId,
 	            uu.first_name as FirstName,
 	            uu.last_name as LastName,
@@ -175,8 +176,8 @@ namespace BillIssue.Api.Business.TimeLogEntry
 
             if (!string.IsNullOrEmpty(request.SearchContent))
             {
-                dictionary.Add("@sc", request.SearchContent);
-                searchQuery += "AND tle.work_description like '%@sc%' \n";
+                dictionary.Add("@sc", "%" + request.SearchContent + "%");
+                searchQuery += "AND tle.title ilike @sc \n";
             }
 
             DateTime endDate = request.EndDate ?? DateTime.Now;
@@ -218,7 +219,8 @@ namespace BillIssue.Api.Business.TimeLogEntry
             dictionary.Add("@sdate", startDate.ToString("yyyy-MM-dd"));
             dictionary.Add("@edate", endDate.ToString("yyyy-MM-dd"));
 
-            searchQuery += "AND tle.log_date BETWEEN '@sdate' AND '@edate'";
+            searchQuery += "AND tle.log_date >= @sdate::date ";
+            searchQuery += "AND tle.log_date <= @edate::date";
 
             List<TimeLogEntryDto> timeLogEntries = _dbConnection.Query<TimeLogEntryDto>(searchQuery, dictionary).ToList();
 

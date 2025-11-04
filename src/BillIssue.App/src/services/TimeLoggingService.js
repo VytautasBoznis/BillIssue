@@ -38,6 +38,15 @@ const TimeLoggingService = {
       onError(error.response?.data?.message || "Failed load time entries for week");
     }
   },
+  async searchTimeLoggingEntries(searchTimeLoggingEntriesRequest, onError) {
+    try {
+      const sessionData = getUserSessionData();
+      const response = await timeloggingClient.SearchTimeLogEntries(sessionData.authToken, searchTimeLoggingEntriesRequest, onError);
+      return response.timeLogEntryDtos;
+    } catch (error) {
+      onError(error.response?.data?.message || "Failed searching for time entries");
+    }
+  },
 }
 
 export default TimeLoggingService;

@@ -3,6 +3,7 @@ import './Sidebar.css';
 import SandClockIcon from '../../icons/SandClockIcon';
 import WorkspaceIcon from '../../icons/WorkspaceIcon';
 import ProjectIcon from '../../icons/ProjectIcon';
+import ReportIcon from '../../icons/ReportIcon';
 
 const Sidebar = ({sidebarOpen}) => {
 
@@ -20,6 +21,10 @@ const Sidebar = ({sidebarOpen}) => {
         <a href="/project-management" className="d-flex items-center space-x-2 p-2 sidebar-menu-button">
           <ProjectIcon className='sidebar-menu-image'></ProjectIcon>
           {sidebarOpen && <span className='sidebar-menu-text'>Projects</span>}
+        </a>
+        <a href="/reports" className="d-flex items-center space-x-2 p-2 sidebar-menu-button">
+          <ReportIcon className='sidebar-menu-image'></ReportIcon>
+          {sidebarOpen && <span className='sidebar-menu-text'>Reports</span>}
         </a>
       </nav>
     </div>
