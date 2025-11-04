@@ -50,8 +50,8 @@ Prerequisites:
 * Workspaces can be managed in teams
 * Add user to workspace with notifications
 * Projects can have specific work types to log time to
+* Minimal time log lookup
 
 ## Missing features at this time
 
 * Password reset/account confirmation
-* UI part for timelog search
