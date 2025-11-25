@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
-import { CaretDown, CaretUp } from "../../../icons/CaretIcons";
+import { CaretDown, CaretUp } from "../../icons/CaretIcons";
 
 import "./TimeLoggingHistoryItem.css";
 import "react-datepicker/dist/react-datepicker.css";
-import { dateToTimestamp, getSecondsToHoursAndMinutesDisplay, timestampToDate } from "../../../../utils/timeFormatUtils";
-import { useWorkspace } from "../../../../utils/workspaceHandling/WorkspaceProvider";
+import { dateToTimestamp, getSecondsToHoursAndMinutesDisplay, timestampToDate } from "../../../utils/timeFormatUtils";
+import { useWorkspace } from "../../../utils/workspaceHandling/WorkspaceProvider";
 
-const TimeLoggingHistoryItem = ({ timeEntry, editTimeLogEntry, deleteTimeLogEntry }) => {
+const TimeLoggingHistoryItem = ({ timeEntry, editTimeLogEntry = null, deleteTimeLogEntry = null }) => {
   const { selectedWorkspace, workspaceLoading } = useWorkspace();
   const [startDate, setStartDate] = useState(timestampToDate(timeEntry.logDate));
   const [isExpanded, setIsExpanded] = useState(false);
@@ -200,8 +200,8 @@ const TimeLoggingHistoryItem = ({ timeEntry, editTimeLogEntry, deleteTimeLogEntr
             </div>
             <div className="row controls-row">
               <div className="col-md-12 d-flex flex-row-reverse ">
-                <button type="submit" className="btn btn-success">Save</button>
-                <button onClick={() => deleteTimeLogEntry(timeEntry.timeLogEntryId)} type="button" className="btn btn-danger mx-2">Delete</button>
+                { editTimeLogEntry ? <button type="submit" className="btn btn-success">Save</button> : <></> }
+                { deleteTimeLogEntry ? <button onClick={() => deleteTimeLogEntry(timeEntry.timeLogEntryId)} type="button" className="btn btn-danger mx-2">Delete</button> : <></> }
               </div>
             </div>
         </div>}

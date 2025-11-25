@@ -1,0 +1,10 @@
+.success-popup {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgb(20, 105, 65);
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+}

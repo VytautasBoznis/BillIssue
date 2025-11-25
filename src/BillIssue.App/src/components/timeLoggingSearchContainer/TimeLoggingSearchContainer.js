@@ -3,12 +3,16 @@ import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import { useWorkspace } from "../../utils/workspaceHandling/WorkspaceProvider";
 import { dateToTimestamp, getSecondsToHoursAndMinutesDisplay, timestampToDate } from "../../utils/timeFormatUtils";
+import TimeLoggingHistoryItem from "../shared/TimeLoggingHistoryItem/TimeLoggingHistoryItem";
 import TimeLoggingService from "../../services/TimeLoggingService";
 import { useError } from "../../utils/errorHandling/ErrorProvider";
+import { useSuccess } from "../../utils/successHandling/SuccessProvider";
 
 const TimeLoggingSearchContainer = () => {
     
     const { showError } = useError();
+    const { showSuccess } = useSuccess(); 
+
     const { selectedWorkspace, workspaceLoading } = useWorkspace();
     const [selectedProject, setSelectedProject] = useState(null);
     const [selectedWorktype, setSelectedWorktype] = useState(null);
@@ -34,6 +38,18 @@ const TimeLoggingSearchContainer = () => {
         const selection = selectedProject.worktypes.find(w => w.id === worktypeId);
         setSelectedWorktype(selection);
     };
+
+    const handleEditTimeEntry = async (timeEntry) => {
+        await TimeLoggingService.editTimeEntry(timeEntry, showError);
+        showSuccess("Entry edited successfully!")
+        handleSubmit();
+    }
+
+    const handleDeleteTimeEntry = async (timeEntryId) => {
+        await TimeLoggingService.deleteTimeEntry(timeEntryId, showError);
+        showSuccess("Entry deleted successfully!")
+        handleSubmit();
+    }
 
     const onSubmit = async (data) => {
         setSearching(true);
@@ -132,28 +148,11 @@ const TimeLoggingSearchContainer = () => {
                 <hr className='col-sm-12 p-1'/>
                 <div>
                     {searching ? (<div>Searching</div>) : (
-                    <table className='col-sm-12 styled-table'>
-                        <thead>
-                            <tr>
-                                <td>Title</td> 
-                                <td>Description</td>
-                                <td>Date</td>
-                                <td>Is Billable</td>
-                                <td>Time spent (Total)</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {searchResult.length > 0 ? searchResult.map((result) => (
-                                <tr key={result.timeLogEntryId}>
-                                    <td>{result.title}</td>
-                                    <td>{result.workDescription}</td>
-                                    <td>{dateToTimestamp(timestampToDate(result.logDate))}</td>
-                                    <td>{result.isBillable ? 'Yes' : 'No'}</td>
-                                    <td>{getSecondsToHoursAndMinutesDisplay(result.secondsTotalAmount)}</td>
-                                </tr>
-                            )) : <></>}
-                        </tbody>
-                    </table>
+                        <>
+                            {searchResult.length > 0 ? searchResult?.map(entry => (
+                                <TimeLoggingHistoryItem key={entry.timeLogEntryId} timeEntry={entry} editTimeLogEntry={handleEditTimeEntry} deleteTimeLogEntry={handleDeleteTimeEntry} />
+                            )) : <h4 className="text-center p-5">No time logging entries to display</h4>}
+                        </>
                     )}
                     
                 </div>

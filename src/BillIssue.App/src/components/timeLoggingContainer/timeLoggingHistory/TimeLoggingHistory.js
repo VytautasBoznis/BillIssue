@@ -1,5 +1,5 @@
 import "./TimeLoggingHistory.css";
-import TimeLoggingHistoryItem from "./TimeLoggingHistoryItem/TimeLoggingHistoryItem";
+import TimeLoggingHistoryItem from "../../shared/TimeLoggingHistoryItem/TimeLoggingHistoryItem";
 
 const TimeLoggingHistory = ({ timeLoggingEntries, editTimeLogEntry, deleteTimeLogEntry }) => {
 
