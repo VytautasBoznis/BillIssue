@@ -4,13 +4,9 @@
     {
         public const string DatabaseConnectionKey = "Database:ConnectionString";
 
-        public const string RedisHostKey = "Redis:Host";
-        public const string RedisPortKey = "Redis:Port";
-        public const string RedisSslEnabledKey = "Redis:SslEnabled";
+        public const string RedisSection = "Redis";
+        public const string JwtSection = "Jwt";
+        public const string SendgridSection = "Sendgrid";
 
-        public const string SendgridApiKeyKey = "Sendgrid:ApiKey";
-        public const string SendgridFromEmailKey = "Sendgrid:FromEmail";
-        public const string SendgridFromEmailDisplayNameKey = "Sendgrid:FromEmailDisplayName";
-        public const string SendgridPasswordReminderLinkTemplateKey = "Sendgrid:PasswordReminderLinkTemplate";
     }
 }

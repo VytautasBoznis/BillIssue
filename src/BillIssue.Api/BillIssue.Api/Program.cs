@@ -17,12 +17,17 @@ using BillIssue.Api.Interfaces.TimeLogEntry;
 using BillIssue.Api.Interfaces.User;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.OperationFilters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Npgsql;
 using Serilog;
 using StackExchange.Redis;
-using System.Data;
 using BillIssue.Api.Interfaces.Alerts;
 using BillIssue.Api.Business.Alerts;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
+using BillIssue.Api.Models.ConfigurationOptions;
+using BillIssue.Api.Extensions;
 
 internal class Program
 {
@@ -54,34 +59,98 @@ internal class Program
         builder.Services.AddSwaggerGen(c =>
         {
             c.OperationFilter<AddCustomHeaderParameter>();
+
+            // Swagger JWT support
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter 'Bearer {token}'"
+            });
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                    },
+                    new string[] { }
+                }
+            });
         });
 
         IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
         Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
         builder.Host.UseSerilog();
 
-        builder.Services.AddSingleton<NpgsqlConnection>(sp =>
-        {
-            NpgsqlConnection connection = new NpgsqlConnection(builder.Configuration.GetValue<string>(AppSettingKeys.DatabaseConnectionKey));
-            connection.Open();
+        var jwtOptions = configuration.GetSection(AppSettingKeys.JwtSection).Get<JwtOptions>();
 
-            return connection;
+        if (jwtOptions == null)
+        {
+            throw new InvalidOperationException("Jwt configuration is missing or invalid in appsettings.json.");
         }
+
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey));
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = false;
+            options.SaveToken = true;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = signingKey,
+                ValidateIssuer = !string.IsNullOrEmpty(jwtOptions.Issuer),
+                ValidIssuer = jwtOptions.Issuer,
+                ValidateAudience = !string.IsNullOrEmpty(jwtOptions.Audience),
+                ValidAudience = jwtOptions.Audience,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromMinutes(2),
+            };
+        });
+
+        builder.Services.AddAuthorization();
+
+        builder.Services.AddSingleton<NpgsqlConnection>(sp =>
+            {
+                NpgsqlConnection connection = new NpgsqlConnection(builder.Configuration.GetValue<string>(AppSettingKeys.DatabaseConnectionKey));
+                connection.Open();
+
+                return connection;
+            }
         );
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
+        var redisOptions = configuration.GetSection(AppSettingKeys.RedisSection).Get<RedisOptions>();
+
+        if(redisOptions == null)
+        {
+            throw new InvalidOperationException("Redis configuration is missing or invalid in appsettings.json.");
+        }
+
         builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
                 ConnectionMultiplexer.Connect(new ConfigurationOptions
                 {
-                    EndPoints = { $"{builder.Configuration.GetValue<string>(AppSettingKeys.RedisHostKey)}:{builder.Configuration.GetValue<string>(AppSettingKeys.RedisPortKey)}" },
-                    Ssl = builder.Configuration.GetValue<bool>(AppSettingKeys.RedisSslEnabledKey),
+                    EndPoints = { $"{redisOptions.Host}:{redisOptions.Port}" },
+                    Ssl = redisOptions.SslEnabled,
                     AbortOnConnectFail = false,
                 }
             )
         );
 
-        RegisterServices(builder.Services);
+        builder.Services
+            .AddConfig(configuration)
+            .RegisterServices();
 
         var app = builder.Build();
 
@@ -95,6 +164,8 @@ internal class Program
         app.UseHttpsRedirection();
         app.UseCors(AllowedCorsOrigins);
 
+        // Enable authentication middleware
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllerRoute(
@@ -102,21 +173,5 @@ internal class Program
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
         app.Run();
-    }
-
-    private static void RegisterServices(IServiceCollection services)
-    {
-        services.AddSingleton<IEmailFacade, EmailFacade>();
-        services.AddSingleton<IMultilanguageFacade, MultilanguageFacade>();
-        services.AddSingleton<ISessionFacade, SessionFacade>();
-
-        services.AddScoped<IAuthFacade, AuthFacade>();
-        services.AddScoped<IUserFacade, UserFacade>();
-        services.AddScoped<INotificationFacade, NotificationFacade>();
-        services.AddScoped<IWorkspaceFacade, WorkspaceFacade>();
-        services.AddScoped<IProjectFacade, ProjectFacade>();
-        services.AddScoped<IScheduleFacade, ScheduleFacade>();
-        services.AddScoped<ITimeLogEntryFacade, TimeLogEntryFacade>();
-        services.AddScoped<ITimeLogEntrySearchFacade, TimeLogEntrySearchFacade>();
     }
 }
