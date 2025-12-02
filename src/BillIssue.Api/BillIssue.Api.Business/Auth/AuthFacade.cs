@@ -6,17 +6,21 @@ using Dapper;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using StackExchange.Redis;
-using System.Data;
 using LoginRequest = BillIssue.Shared.Models.Request.Auth.LoginRequest;
 using RegisterRequest = BillIssue.Shared.Models.Request.Auth.RegisterRequest;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Api.Interfaces.Email;
 using BillIssue.Shared.Models.Constants;
 using BillIssue.Api.Interfaces.Workspace;
-using System.Transactions;
 using BillIssue.Shared.Models.Response.Auth.Dto;
 using BillIssue.Api.Interfaces.Alerts;
 using BillIssue.Shared.Models.Response.Notifications.Dto;
+using BillIssue.Api.Models.ConfigurationOptions;
+using Microsoft.Extensions.Options;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BillIssue.Api.Business.Auth
 {
@@ -31,6 +35,7 @@ namespace BillIssue.Api.Business.Auth
         private readonly IEmailFacade _emailFacade;
         private readonly IWorkspaceFacade _WorkspaceFacade;
         private readonly INotificationFacade _alertFacade;
+        private readonly JwtOptions _jwtOptions;
 
         private const int PasswordWorkFactor = 12;
 
@@ -41,7 +46,8 @@ namespace BillIssue.Api.Business.Auth
             IEmailFacade emailFacade,
             IWorkspaceFacade WorkspaceFacade,
             ISessionFacade sessionFacade,
-            INotificationFacade alertFacade
+            INotificationFacade alertFacade,
+            IOptions<JwtOptions> jwtOptions
         )
         {
             _redisConnection = redisConnection;
@@ -51,6 +57,7 @@ namespace BillIssue.Api.Business.Auth
             _WorkspaceFacade = WorkspaceFacade;
             _alertFacade = alertFacade;
             _sessionFacade = sessionFacade;
+            _jwtOptions = jwtOptions?.Value ?? throw new ArgumentNullException(nameof(jwtOptions));
         }
 
         #region Facade implementation
@@ -248,19 +255,58 @@ namespace BillIssue.Api.Business.Auth
                 throw new LoginException("There is an issue with your account, please contact support for further details", ExceptionCodes.AUTH_CONTACT_SUPPORT);
             }
 
+            // preserve existing session behavior (stores session in Redis and returns guid)
             Guid authToken = await _sessionFacade.SetSession(sessionModel);
+
+            // generate JWT for the authenticated user
+            string jwtToken = GenerateJwtToken(sessionModel);
 
             List<NotificationDto> userNotifications = _alertFacade.GetWorkspaceNotificationAsNotifications(email);
 
             return new SessionDto
             {
                 AuthToken = authToken,
+                JwtToken = jwtToken,
                 UserId = sessionModel.Id,
                 Email = email,
                 FirstName = sessionModel.FirstName,
                 LastName = sessionModel.LastName,
                 Notifications = userNotifications,
             };
+        }
+
+        private string GenerateJwtToken(SessionModel sessionModel)
+        {
+            if (string.IsNullOrEmpty(_jwtOptions?.SecretKey))
+            {
+                _logger.LogError("JWT SecretKey is not configured. Cannot generate JWT token.");
+                throw new InvalidOperationException("JWT SecretKey is not configured.");
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, sessionModel.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, sessionModel.Email ?? string.Empty),
+                new Claim("role", ((int)sessionModel.Role).ToString()),
+                new Claim("given_name", sessionModel.FirstName ?? string.Empty),
+                new Claim("family_name", sessionModel.LastName ?? string.Empty),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpiryInMinutes > 0 ? _jwtOptions.ExpiryInMinutes : 60);
+
+            var token = new JwtSecurityToken(
+                issuer: string.IsNullOrEmpty(_jwtOptions.Issuer) ? null : _jwtOptions.Issuer,
+                audience: string.IsNullOrEmpty(_jwtOptions.Audience) ? null : _jwtOptions.Audience,
+                claims: claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         private async Task ChangeUserPassword(Guid userId, string password, string passwordConfirmation, string modifiedBy, NpgsqlTransaction transaction)

@@ -1,11 +1,13 @@
 ﻿using BillIssue.Api.ActionFilters;
 using BillIssue.Api.Controllers.Base;
+using BillIssue.Api.Interfaces.Auth;
 using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Response.Workspace;
 using BillIssue.Shared.Models.Response.Workspace.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BillIssue.Api.Controllers
@@ -15,23 +17,31 @@ namespace BillIssue.Api.Controllers
     public class WorkspaceController : BaseController
     {
         private readonly IWorkspaceFacade _workspaceFacade;
-        public WorkspaceController(IWorkspaceFacade WorkspaceFacade)
+        private readonly ISessionFacade _sessionFacade;
+
+        public WorkspaceController(IWorkspaceFacade WorkspaceFacade, ISessionFacade sessionFacade)
         {
             _workspaceFacade = WorkspaceFacade;
+            _sessionFacade = sessionFacade;
         }
 
+        [Authorize]
         [HttpGet("GetWorkspace/{WorkspaceId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
         public async Task<IActionResult> GetWorkspace(Guid WorkspaceId, bool loadUserAssignments)
         {
             string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            WorkspaceDto result = await _workspaceFacade.GetWorkspace(sessionId, new GetWorkspaceRequest
+
+            /*string jwtToken = Request.Headers[]
+
+            /*WorkspaceDto result = await _workspaceFacade.GetWorkspace(sessionId, new GetWorkspaceRequest
             {
                 WorkspaceId = WorkspaceId,
                 LoadWorkspaceUsers = loadUserAssignments
             });
 
-            return Ok(new GetWorkspaceResponse { WorkspaceDto = result });
+            return Ok(new GetWorkspaceResponse { WorkspaceDto = result });*/
+
+            return Ok();
         }
 
         [HttpGet("GetAllWorkspaceSelectionsForUser/{userId}")]

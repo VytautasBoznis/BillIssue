@@ -6,5 +6,6 @@ namespace BillIssue.Api.Interfaces.Auth
     {
         public Task<Guid> SetSession(SessionModel sessionModel);
         public Task<SessionModel> GetSessionModel(string sessionId);
+        public Task<SessionModel> GetSessionModelFromJwt(string jwtToken);
     }
 }
