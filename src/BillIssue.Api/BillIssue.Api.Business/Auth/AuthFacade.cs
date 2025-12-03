@@ -21,6 +21,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BillIssue.Api.Models.Constants;
 
 namespace BillIssue.Api.Business.Auth
 {
@@ -285,12 +286,11 @@ namespace BillIssue.Api.Business.Auth
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, sessionModel.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, sessionModel.Email ?? string.Empty),
-                new Claim("role", ((int)sessionModel.Role).ToString()),
-                new Claim("given_name", sessionModel.FirstName ?? string.Empty),
-                new Claim("family_name", sessionModel.LastName ?? string.Empty),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtTokenClaimNames.UserId, sessionModel.Id.ToString()),
+                new Claim(JwtTokenClaimNames.Email, sessionModel.Email ?? string.Empty),
+                new Claim(JwtTokenClaimNames.Role, ((int)sessionModel.Role).ToString()),
+                new Claim(JwtTokenClaimNames.FirstName, sessionModel.FirstName ?? string.Empty),
+                new Claim(JwtTokenClaimNames.LastName, sessionModel.LastName ?? string.Empty),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));

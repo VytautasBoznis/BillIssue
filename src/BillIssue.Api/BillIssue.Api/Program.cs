@@ -1,33 +1,35 @@
 using BillIssue.Api.ActionFilters;
+using BillIssue.Api.Authorization;
+using BillIssue.Api.Business.Alerts;
 using BillIssue.Api.Business.Auth;
-using BillIssue.Api.Business.Workspace;
 using BillIssue.Api.Business.Email;
 using BillIssue.Api.Business.Multilanguage;
 using BillIssue.Api.Business.Project;
 using BillIssue.Api.Business.Schedule;
 using BillIssue.Api.Business.TimeLogEntry;
 using BillIssue.Api.Business.Users;
+using BillIssue.Api.Business.Workspace;
+using BillIssue.Api.Extensions;
+using BillIssue.Api.Interfaces.Alerts;
 using BillIssue.Api.Interfaces.Auth;
-using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Interfaces.Email;
 using BillIssue.Api.Interfaces.Multilanguage;
 using BillIssue.Api.Interfaces.Project;
 using BillIssue.Api.Interfaces.Schedule;
 using BillIssue.Api.Interfaces.TimeLogEntry;
 using BillIssue.Api.Interfaces.User;
+using BillIssue.Api.Interfaces.Workspace;
+using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
+using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Api.OperationFilters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Npgsql;
 using Serilog;
 using StackExchange.Redis;
-using BillIssue.Api.Interfaces.Alerts;
-using BillIssue.Api.Business.Alerts;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.OpenApi.Models;
-using BillIssue.Api.Models.ConfigurationOptions;
-using BillIssue.Api.Extensions;
 
 internal class Program
 {
@@ -150,7 +152,8 @@ internal class Program
 
         builder.Services
             .AddConfig(configuration)
-            .RegisterServices();
+            .RegisterServices()
+            .AddAuthorizationPolicies();
 
         var app = builder.Build();
 

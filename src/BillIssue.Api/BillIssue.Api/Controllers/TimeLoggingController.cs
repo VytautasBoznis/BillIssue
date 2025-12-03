@@ -17,7 +17,11 @@ namespace BillIssue.Api.Controllers
         private readonly ITimeLogEntryFacade _timeLogEntryFacade;
         private readonly ITimeLogEntrySearchFacade _timeLogEntrySearchFacade;
 
-        public TimeLoggingController(ITimeLogEntryFacade timeLogEntryFacade, ITimeLogEntrySearchFacade timeLogEntrySearchFacade)
+        public TimeLoggingController(
+            ITimeLogEntryFacade timeLogEntryFacade,
+            ITimeLogEntrySearchFacade timeLogEntrySearchFacade,
+            ILogger<TimeLoggingController> logger
+        ) : base(logger)
         {
             _timeLogEntryFacade = timeLogEntryFacade;
             _timeLogEntrySearchFacade = timeLogEntrySearchFacade;

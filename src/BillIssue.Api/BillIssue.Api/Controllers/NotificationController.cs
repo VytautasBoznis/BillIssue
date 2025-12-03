@@ -16,9 +16,8 @@ namespace BillIssue.Api.Controllers
     {
         private readonly INotificationFacade _notificationFacade;
 
-        public NotificationController(
-            INotificationFacade notificationFacade
-        ) {
+        public NotificationController(INotificationFacade notificationFacade, ILogger<NotificationController> logger) : base(logger)
+        {
             _notificationFacade = notificationFacade;
         }
 

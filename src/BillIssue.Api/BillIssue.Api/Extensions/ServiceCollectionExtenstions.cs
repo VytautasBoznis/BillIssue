@@ -1,4 +1,5 @@
-﻿using BillIssue.Api.Business.Alerts;
+﻿using BillIssue.Api.Authorization;
+using BillIssue.Api.Business.Alerts;
 using BillIssue.Api.Business.Auth;
 using BillIssue.Api.Business.Email;
 using BillIssue.Api.Business.Multilanguage;
@@ -18,6 +19,8 @@ using BillIssue.Api.Interfaces.User;
 using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
+using BillIssue.Api.Models.Enums.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 
 namespace BillIssue.Api.Extensions
@@ -34,6 +37,8 @@ namespace BillIssue.Api.Extensions
 
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
+            services.AddSingleton<IAuthorizationHandler, RoleRequirementHandler>();
+
             services.AddSingleton<IEmailFacade, EmailFacade>();
             services.AddSingleton<IMultilanguageFacade, MultilanguageFacade>();
             services.AddSingleton<ISessionFacade, SessionFacade>();
@@ -46,6 +51,19 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<IScheduleFacade, ScheduleFacade>();
             services.AddScoped<ITimeLogEntryFacade, TimeLogEntryFacade>();
             services.AddScoped<ITimeLogEntrySearchFacade, TimeLogEntrySearchFacade>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddAuthorizationPolicies(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AuthConstants.UserRequiredPolicyName, policy =>
+                    policy.Requirements.Add(new RoleRequirement(UserRole.User)));
+                options.AddPolicy(AuthConstants.AdminRequiredPolicyName, policy =>
+                    policy.Requirements.Add(new RoleRequirement(UserRole.Admin)));
+            });
 
             return services;
         }

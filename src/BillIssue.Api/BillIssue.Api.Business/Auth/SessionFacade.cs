@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BillIssue.Api.Models.Enums.Auth;
@@ -21,8 +20,6 @@ namespace BillIssue.Api.Business.Auth
         private readonly IDatabaseAsync _redisDBAsync;
         private readonly ILogger<SessionFacade> _logger;
         private readonly JwtOptions _jwtOptions;
-
-        private const string BearerPrefix = "Bearer ";
 
         private readonly TimeSpan SessionDuration = TimeSpan.FromMinutes(AuthConstants.SessionTimeInMinutes);
 
@@ -76,8 +73,8 @@ namespace BillIssue.Api.Business.Auth
                 throw new SessionExpiredException("Invalid token");
             }
 
-            string token = jwtToken.StartsWith(BearerPrefix, StringComparison.OrdinalIgnoreCase)
-                ? jwtToken[BearerPrefix.Length..].Trim()
+            string token = jwtToken.StartsWith(AuthConstants.BearerPrefix, StringComparison.OrdinalIgnoreCase)
+                ? jwtToken[AuthConstants.BearerPrefix.Length..].Trim()
                 : jwtToken.Trim();
 
             if (string.IsNullOrEmpty(_jwtOptions?.SecretKey))

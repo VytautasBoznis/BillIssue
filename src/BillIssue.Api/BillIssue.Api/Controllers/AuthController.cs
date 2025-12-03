@@ -16,7 +16,7 @@ namespace BillIssue.Api.Controllers
     {
         private readonly IAuthFacade _authFacade;
 
-        public AuthController(IAuthFacade authFacade)
+        public AuthController(IAuthFacade authFacade, ILogger<AuthController> logger): base(logger)
         {
             _authFacade = authFacade;
         }

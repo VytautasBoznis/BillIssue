@@ -15,7 +15,7 @@ namespace BillIssue.Api.Controllers
     public class ProjectController : BaseController
     {
         private readonly IProjectFacade _projectFacade;
-        public ProjectController(IProjectFacade projectFacade)
+        public ProjectController(IProjectFacade projectFacade, ILogger<ProjectController> logger) : base(logger)
         {
             _projectFacade = projectFacade;
         }

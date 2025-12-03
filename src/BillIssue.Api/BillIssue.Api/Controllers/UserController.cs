@@ -14,7 +14,7 @@ namespace BillIssue.Api.Controllers
     public class UserController : BaseController
     {
         private readonly IUserFacade _userFacade;
-        public UserController(IUserFacade userFacade)
+        public UserController(IUserFacade userFacade, ILogger<UserController> logger) : base(logger)
         {
             _userFacade = userFacade;
         }

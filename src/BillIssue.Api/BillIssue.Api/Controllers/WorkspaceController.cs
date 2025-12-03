@@ -4,6 +4,7 @@ using BillIssue.Api.Interfaces.Auth;
 using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
+using BillIssue.Api.Models.Models.Auth;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Response.Workspace;
 using BillIssue.Shared.Models.Response.Workspace.Dto;
@@ -19,17 +20,19 @@ namespace BillIssue.Api.Controllers
         private readonly IWorkspaceFacade _workspaceFacade;
         private readonly ISessionFacade _sessionFacade;
 
-        public WorkspaceController(IWorkspaceFacade WorkspaceFacade, ISessionFacade sessionFacade)
+        public WorkspaceController(IWorkspaceFacade WorkspaceFacade, ISessionFacade sessionFacade, ILogger<WorkspaceController> logger) : base(logger)
         {
             _workspaceFacade = WorkspaceFacade;
             _sessionFacade = sessionFacade;
         }
 
-        [Authorize]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         [HttpGet("GetWorkspace/{WorkspaceId}")]
         public async Task<IActionResult> GetWorkspace(Guid WorkspaceId, bool loadUserAssignments)
         {
             string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
+
+            SessionModel session = GetSessionModelFromJwt();
 
             /*string jwtToken = Request.Headers[]
 

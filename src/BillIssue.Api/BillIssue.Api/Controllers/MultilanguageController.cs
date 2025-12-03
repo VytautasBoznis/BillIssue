@@ -15,7 +15,7 @@ namespace BillIssue.Api.Controllers
     {
         private readonly IMultilanguageFacade _multilanguageFacade;
 
-        public MultilanguageController(IMultilanguageFacade multilanguageFacade)
+        public MultilanguageController(IMultilanguageFacade multilanguageFacade, ILogger<MultilanguageController> logger) : base(logger)
         {
             _multilanguageFacade = multilanguageFacade;
         }

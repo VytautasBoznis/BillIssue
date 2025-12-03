@@ -15,7 +15,7 @@ namespace BillIssue.Api.Controllers
     public class ScheduleController : BaseController
     {
         private readonly IScheduleFacade _scheduleFacade;
-        public ScheduleController(IScheduleFacade scheduleFacade)
+        public ScheduleController(IScheduleFacade scheduleFacade, ILogger<ScheduleController> logger) : base(logger)
         {
             _scheduleFacade = scheduleFacade;
         }
