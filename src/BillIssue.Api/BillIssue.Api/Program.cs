@@ -153,6 +153,8 @@ internal class Program
         builder.Services
             .AddConfig(configuration)
             .RegisterServices()
+            .AddValidators()
+            .AddOperations()
             .AddAuthorizationPolicies();
 
         var app = builder.Build();

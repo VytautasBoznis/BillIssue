@@ -1,6 +1,7 @@
 ﻿using BillIssue.Api.Authorization;
 using BillIssue.Api.Business.Alerts;
 using BillIssue.Api.Business.Auth;
+using BillIssue.Api.Business.Base;
 using BillIssue.Api.Business.Email;
 using BillIssue.Api.Business.Multilanguage;
 using BillIssue.Api.Business.Project;
@@ -20,6 +21,9 @@ using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
+using BillIssue.Shared.Models.Request.Auth;
+using BillIssue.Shared.Models.Validators.Auth;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 
@@ -64,6 +68,22 @@ namespace BillIssue.Api.Extensions
                 options.AddPolicy(AuthConstants.AdminRequiredPolicyName, policy =>
                     policy.Requirements.Add(new RoleRequirement(UserRole.Admin)));
             });
+
+            return services;
+        }
+
+        public static IServiceCollection AddValidators(this IServiceCollection services)
+        {
+            services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddOperations(this IServiceCollection services)
+        {
+            services.AddScoped<OperationFactory>();
+
+            services.AddScoped<LoginOperation>();
 
             return services;
         }

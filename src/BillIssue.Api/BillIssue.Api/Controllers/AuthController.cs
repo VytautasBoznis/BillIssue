@@ -1,12 +1,16 @@
 ﻿using BillIssue.Api.ActionFilters;
+using BillIssue.Api.Business.Auth;
+using BillIssue.Api.Business.Base;
 using BillIssue.Api.Controllers.Base;
 using BillIssue.Api.Interfaces.Auth;
+using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Shared.Models.Request.Auth;
 using BillIssue.Shared.Models.Response.Auth;
 using BillIssue.Shared.Models.Response.Auth.Dto;
 using Microsoft.AspNetCore.Mvc;
+using SendGrid;
 
 namespace BillIssue.Api.Controllers
 {
@@ -15,21 +19,20 @@ namespace BillIssue.Api.Controllers
     public class AuthController : BaseController
     {
         private readonly IAuthFacade _authFacade;
+        private readonly OperationFactory _operationFactory;
 
-        public AuthController(IAuthFacade authFacade, ILogger<AuthController> logger): base(logger)
+        public AuthController(IAuthFacade authFacade, OperationFactory operationFactory, ILogger<AuthController> logger): base(logger)
         {
+            _operationFactory = operationFactory;
             _authFacade = authFacade;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            SessionDto sessionDto = await _authFacade.Login(request);
+            LoginResponse response = _operationFactory.Get<LoginOperation>(typeof(LoginOperation)).Run(request);
 
-            return Ok(new LoginResponse
-            {
-                Session = sessionDto,
-            });
+            return Ok(response);
         }
 
         [HttpPost("register")]
