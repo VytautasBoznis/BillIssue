@@ -1,16 +1,10 @@
-﻿using BillIssue.Api.ActionFilters;
-using BillIssue.Api.Business.Auth;
+﻿using BillIssue.Api.Business.Auth;
 using BillIssue.Api.Business.Base;
 using BillIssue.Api.Controllers.Base;
 using BillIssue.Api.Interfaces.Auth;
-using BillIssue.Api.Interfaces.Base;
-using BillIssue.Api.Models.Constants;
-using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Shared.Models.Request.Auth;
 using BillIssue.Shared.Models.Response.Auth;
-using BillIssue.Shared.Models.Response.Auth.Dto;
 using Microsoft.AspNetCore.Mvc;
-using SendGrid;
 
 namespace BillIssue.Api.Controllers
 {
@@ -18,13 +12,11 @@ namespace BillIssue.Api.Controllers
     [ApiController]
     public class AuthController : BaseController
     {
-        private readonly IAuthFacade _authFacade;
         private readonly OperationFactory _operationFactory;
 
-        public AuthController(IAuthFacade authFacade, OperationFactory operationFactory, ILogger<AuthController> logger): base(logger)
+        public AuthController(OperationFactory operationFactory, ILogger<AuthController> logger): base(logger)
         {
             _operationFactory = operationFactory;
-            _authFacade = authFacade;
         }
 
         [HttpPost("login")]
@@ -65,14 +57,19 @@ namespace BillIssue.Api.Controllers
         public async Task<OkResult> RemindPassword(RemindPasswordRequest request)
         {
             //TODO add critical error handlers (E.G sendgrid is down so we handle the 500 but we need to say to the user to comeback later)
-            await _authFacade.RemindPassword(request);
+            RemindPasswordResponse response = await _operationFactory
+                                                       .Get<RemindPasswordOperation>(typeof(RemindPasswordOperation))
+                                                       .Run(request);
+
             return Ok();
         }
 
         [HttpPost("remindPasswordConfirmation")]
         public async Task<OkResult> RemindPasswordConfirmation(RemindPasswordConfirmRequest request)
         {
-            await _authFacade.RemindPasswordConfirm(request);
+            RemindPasswordConfirmResponse response = await _operationFactory
+                                                               .Get<RemindPasswordConfirmOperation>(typeof(RemindPasswordConfirmOperation))
+                                                               .Run(request);
             return Ok();
         }
     }

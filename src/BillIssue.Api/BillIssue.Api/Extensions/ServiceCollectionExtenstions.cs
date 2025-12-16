@@ -23,10 +23,12 @@ using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Shared.Models.Request.Auth;
+using BillIssue.Shared.Models.Request.Email;
 using BillIssue.Shared.Models.Request.Notifications;
 using BillIssue.Shared.Models.Request.Project;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Validators.Auth;
+using BillIssue.Shared.Models.Validators.Email;
 using BillIssue.Shared.Models.Validators.Notifications;
 using BillIssue.Shared.Models.Validators.Project;
 using BillIssue.Shared.Models.Validators.Workspace;
@@ -55,7 +57,6 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IMultilanguageFacade, MultilanguageFacade>();
             services.AddSingleton<ISessionFacade, SessionFacade>();
 
-            services.AddScoped<IAuthFacade, AuthFacade>();
             services.AddScoped<IUserFacade, UserFacade>();
             services.AddScoped<INotificationFacade, NotificationFacade>();
             services.AddScoped<IWorkspaceFacade, WorkspaceFacade>();
@@ -85,6 +86,11 @@ namespace BillIssue.Api.Extensions
             // Auth validators
             services.AddSingleton<IValidator<LoginRequest>, LoginRequestValidator>();
             services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
+            services.AddSingleton<IValidator<RemindPasswordRequest>, RemindPasswordRequestValidator>();
+            services.AddSingleton<IValidator<RemindPasswordConfirmRequest>, RemindPasswordConfirmRequestValidator>();
+
+            // Email validators
+            services.AddSingleton<IValidator<SendPasswordReminderEmailRequest>, SendPasswordReminderEmailRequestValidator>();
 
             // Notification validators
             services.AddSingleton<IValidator<GetNotificationsRequest>, GetNotificationsRequestValidator>();
@@ -107,7 +113,12 @@ namespace BillIssue.Api.Extensions
             // Auth Operations
             services.AddScoped<LoginOperation>();
             services.AddScoped<RegisterOperation>();
-            
+            services.AddScoped<RemindPasswordOperation>();
+            services.AddScoped<RemindPasswordConfirmOperation>();
+
+            // Email Operations
+            services.AddScoped<SendPasswordReminderEmailOperation>();
+
             // Notification Operations
             services.AddScoped<GetNotificationsOperation>();
 

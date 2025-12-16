@@ -10,5 +10,7 @@
 
         public const int SessionTimeInMinutes = 20;
         public const string AuthTokenHeaderName = "AuthToken";
+
+        public const int PasswordWorkFactor = 12;
     }
 }

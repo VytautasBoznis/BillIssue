@@ -1,6 +1,7 @@
 ﻿using BillIssue.Api.Business.Base;
 using BillIssue.Api.Business.Workspace;
 using BillIssue.Api.Interfaces.Base;
+using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Exceptions;
 using BillIssue.Api.Models.Models.Auth;
 using BillIssue.Shared.Models.Authentication;
@@ -19,7 +20,6 @@ namespace BillIssue.Api.Business.Auth
 {
     public class RegisterOperation : BaseOperation<RegisterRequest, RegisterResponse>
     {
-        private const int PasswordWorkFactor = 12;
         private const string NewUsersWorkspaceTagline = "{0}'s personal workspace";
 
         public RegisterOperation(
@@ -32,7 +32,7 @@ namespace BillIssue.Api.Business.Auth
 
         protected override async Task<RegisterResponse> Execute(RegisterRequest request, IUnitOfWork unitOfWork)
         {
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, PasswordWorkFactor);
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, AuthConstants.PasswordWorkFactor);
 
             try
             {
