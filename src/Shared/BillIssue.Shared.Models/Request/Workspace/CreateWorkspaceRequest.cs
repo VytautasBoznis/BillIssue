@@ -2,7 +2,7 @@
 
 namespace BillIssue.Shared.Models.Request.Workspace
 {
-    public class CreateWorkspaceRequest: BaseRequest
+    public class CreateWorkspaceRequest: AuthenticatedRequest
     {
         public string Name { get; set; }
         public string Description { get; set; }

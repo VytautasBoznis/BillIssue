@@ -1,4 +1,5 @@
-﻿using BillIssue.Shared.Models.Enums.Workspace;
+﻿using BillIssue.Api.Models.Models.Base;
+using BillIssue.Shared.Models.Enums.Workspace;
 
 namespace BillIssue.Api.Models.Models.Workspace
 {

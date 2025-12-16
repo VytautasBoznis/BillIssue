@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BillIssue.Api.Models.Models
+namespace BillIssue.Api.Models.Models.Base
 {
     public class BaseModel
     {

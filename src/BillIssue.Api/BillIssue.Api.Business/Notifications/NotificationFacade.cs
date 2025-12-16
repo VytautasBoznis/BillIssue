@@ -1,5 +1,5 @@
-﻿using BillIssue.Api.Interfaces.Alerts;
-using BillIssue.Api.Interfaces.Auth;
+﻿using BillIssue.Api.Interfaces.Auth;
+using BillIssue.Api.Interfaces.Notifications;
 using BillIssue.Api.Models.Exceptions;
 using BillIssue.Api.Models.Models.Auth;
 using BillIssue.Shared.Models.Constants;
@@ -8,13 +8,12 @@ using BillIssue.Shared.Models.Enums.Workspace;
 using BillIssue.Shared.Models.Errors;
 using BillIssue.Shared.Models.Request.Notifications;
 using BillIssue.Shared.Models.Response.Notifications.Dto;
-using BillIssue.Shared.Models.Response.Project.Dto;
 using BillIssue.Shared.Models.Response.Workspace.Dto;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace BillIssue.Api.Business.Alerts
+namespace BillIssue.Api.Business.Notifications
 {
     public class NotificationFacade : INotificationFacade
     {
@@ -61,7 +60,7 @@ namespace BillIssue.Api.Business.Alerts
             }
         }
 
-        public async Task<List<NotificationDto>> GetUserNotifications(string sessionId, GetNotificationRequest request)
+        public async Task<List<NotificationDto>> GetUserNotifications(string sessionId, GetNotificationsRequest request)
         {
             SessionModel sessionModel = await _sessionFacade.GetSessionModel(sessionId);
 

@@ -1,4 +1,6 @@
-﻿namespace BillIssue.Api.Models.Models.Workspace
+﻿using BillIssue.Api.Models.Models.Base;
+
+namespace BillIssue.Api.Models.Models.Workspace
 {
     public class WorkspaceModel: BaseModel
     {

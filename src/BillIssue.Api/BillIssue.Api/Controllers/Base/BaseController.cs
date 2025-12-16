@@ -1,7 +1,7 @@
 ﻿using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Api.Models.Exceptions;
-using BillIssue.Api.Models.Models.Auth;
+using BillIssue.Shared.Models.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,7 +17,7 @@ namespace BillIssue.Api.Controllers.Base
             _logger = logger;
         }
 
-        protected SessionModel GetSessionModelFromJwt()
+        protected SessionUserData GetSessionModelFromJwt()
         {
             if (Request.HttpContext.User?.Identity?.IsAuthenticated != true)
             {
@@ -56,7 +56,7 @@ namespace BillIssue.Api.Controllers.Base
                 throw new SessionExpiredException("Invalid token");
             }
 
-            return new SessionModel
+            return new SessionUserData
             {
                 Id = userId,
                 Email = email ?? string.Empty,

@@ -1,6 +1,6 @@
 ﻿using BillIssue.Api.ActionFilters;
 using BillIssue.Api.Controllers.Base;
-using BillIssue.Api.Interfaces.Alerts;
+using BillIssue.Api.Interfaces.Notifications;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Shared.Models.Request.Notifications;
@@ -23,12 +23,12 @@ namespace BillIssue.Api.Controllers
 
         [HttpGet("GetNotifications")]
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
-        public async Task<GetNotificationResponse> GetNotifications()
+        public async Task<GetNotificationsResponse> GetNotifications()
         {
             string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<NotificationDto> notificationDtos = await _notificationFacade.GetUserNotifications(sessionId, new GetNotificationRequest());
+            List<NotificationDto> notificationDtos = await _notificationFacade.GetUserNotifications(sessionId, new GetNotificationsRequest());
 
-            return new GetNotificationResponse
+            return new GetNotificationsResponse
             {
                 NotificationDtos = notificationDtos,
             };

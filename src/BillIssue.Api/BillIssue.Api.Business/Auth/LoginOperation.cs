@@ -1,19 +1,22 @@
 ﻿using BillIssue.Api.Business.Base;
+using BillIssue.Api.Business.Notifications;
 using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Exceptions;
 using BillIssue.Api.Models.Models.Auth;
+using BillIssue.Shared.Models.Authentication;
 using BillIssue.Shared.Models.Constants;
 using BillIssue.Shared.Models.Request.Auth;
+using BillIssue.Shared.Models.Request.Notifications;
 using BillIssue.Shared.Models.Response.Auth;
 using BillIssue.Shared.Models.Response.Auth.Dto;
+using BillIssue.Shared.Models.Response.Notifications;
 using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Npgsql;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -23,23 +26,26 @@ namespace BillIssue.Api.Business.Auth
     public class LoginOperation : BaseOperation<LoginRequest, LoginResponse>
     {
         private readonly JwtOptions _jwtOptions;
-        private readonly NpgsqlConnection _dbConnection;
-
+        
         public LoginOperation(
             ILogger<LoginOperation> logger,
             IValidator<LoginRequest> validator,
-            NpgsqlConnection dbConnection,
-            IOptions<JwtOptions> jwtOptions) : base(logger, validator)
+            IUnitOfWorkFactory unitOfWorkFactory,
+            OperationFactory operationFactory,
+            IOptions<JwtOptions> jwtOptions) : base(logger, unitOfWorkFactory, operationFactory, validator)
         {
-
-            _dbConnection = dbConnection;
             _jwtOptions = jwtOptions?.Value ?? throw new ArgumentNullException(nameof(jwtOptions));
         }
 
-        protected override LoginResponse Execute(LoginRequest request)
+        protected override async Task<LoginResponse> Execute(LoginRequest request, IUnitOfWork unitOfWork)
         {
             var dictionary = new Dictionary<string, object> { { "@email", request.Email } };
-            SessionModel? sessionModel = _dbConnection.Query<SessionModel>("SELECT id, password, email, role, is_banned as isBanned, first_name as FirstName, last_name as LastName FROM user_users WHERE email = @email", dictionary).FirstOrDefault();
+
+            var sessionModels = await unitOfWork
+                                        .Connection
+                                        .QueryAsync<SessionModel>("SELECT id, password, email, role, is_banned as isBanned, first_name as FirstName, last_name as LastName FROM user_users WHERE email = @email", dictionary);
+            
+            SessionModel? sessionModel = sessionModels.FirstOrDefault();
 
             if (sessionModel == null || !BCrypt.Net.BCrypt.Verify(request.Password, sessionModel.Password))
             {
@@ -54,7 +60,19 @@ namespace BillIssue.Api.Business.Auth
             // generate JWT for the authenticated user
             string jwtToken = GenerateJwtToken(sessionModel);
 
-            //List<NotificationDto> userNotifications = _alertFacade.GetWorkspaceNotificationAsNotifications(email);
+            GetNotificationsResponse notificationsResponse = await _operationFactory
+                                                                        .Get<GetNotificationsOperation>(typeof(GetNotificationsOperation))
+                                                                        .Run(new GetNotificationsRequest
+                                                                        {
+                                                                            SessionUserData = new SessionUserData
+                                                                            {
+                                                                                Id = sessionModel.Id,
+                                                                                Role = sessionModel.Role,
+                                                                                Email = request.Email,
+                                                                                FirstName = sessionModel.FirstName,
+                                                                                LastName = sessionModel.LastName,
+                                                                            } 
+                                                                        }, unitOfWork);
 
             return new LoginResponse
             {
@@ -65,7 +83,7 @@ namespace BillIssue.Api.Business.Auth
                     Email = request.Email,
                     FirstName = sessionModel.FirstName,
                     LastName = sessionModel.LastName,
-                    //Notifications = userNotifications,
+                    Notifications = notificationsResponse.NotificationDtos,
                 }
             };
         }
@@ -80,11 +98,11 @@ namespace BillIssue.Api.Business.Auth
 
             var claims = new List<Claim>
             {
-                new Claim(JwtTokenClaimNames.UserId, sessionModel.Id.ToString()),
-                new Claim(JwtTokenClaimNames.Email, sessionModel.Email ?? string.Empty),
-                new Claim(JwtTokenClaimNames.Role, ((int)sessionModel.Role).ToString()),
-                new Claim(JwtTokenClaimNames.FirstName, sessionModel.FirstName ?? string.Empty),
-                new Claim(JwtTokenClaimNames.LastName, sessionModel.LastName ?? string.Empty),
+                new(JwtTokenClaimNames.UserId, sessionModel.Id.ToString()),
+                new(JwtTokenClaimNames.Email, sessionModel.Email ?? string.Empty),
+                new(JwtTokenClaimNames.Role, ((int)sessionModel.Role).ToString()),
+                new(JwtTokenClaimNames.FirstName, sessionModel.FirstName ?? string.Empty),
+                new(JwtTokenClaimNames.LastName, sessionModel.LastName ?? string.Empty),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));

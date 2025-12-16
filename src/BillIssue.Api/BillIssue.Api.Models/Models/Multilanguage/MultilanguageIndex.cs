@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BillIssue.Api.Models.Models.Base;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BillIssue.Api.Models.Models.Multilanguage
 {

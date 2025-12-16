@@ -30,7 +30,9 @@ namespace BillIssue.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            LoginResponse response = _operationFactory.Get<LoginOperation>(typeof(LoginOperation)).Run(request);
+            LoginResponse response = await _operationFactory
+                                                .Get<LoginOperation>(typeof(LoginOperation))
+                                                .Run(request);
 
             return Ok(response);
         }
@@ -38,12 +40,11 @@ namespace BillIssue.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
-            SessionDto sessionDto = await _authFacade.Register(request);
+            RegisterResponse response = await _operationFactory
+                                               .Get<RegisterOperation>(typeof(RegisterOperation))
+                                               .Run(request);
 
-            return Ok(new LoginResponse
-            {
-                Session = sessionDto,
-            });
+            return Ok(response);
         }
 
         /*[HttpPost("validateEmail")]

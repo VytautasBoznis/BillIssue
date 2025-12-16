@@ -10,25 +10,33 @@ namespace BillIssue.Api.Business.Base
     public abstract class BaseOperation<TRequest, TResponse> where TRequest : BaseRequest where TResponse: BaseResponse
     {
         protected ILogger _logger;
+        protected IUnitOfWorkFactory _unitOfWorkFactory;
+        protected OperationFactory _operationFactory;
+
         private IValidator<TRequest> _validator;
 
-        public BaseOperation(ILogger logger, IValidator<TRequest> validator)
+        public BaseOperation(ILogger logger, IUnitOfWorkFactory unitOfWorkFactory, OperationFactory operationFactory, IValidator<TRequest> validator)
         {
             _logger = logger;
+            _unitOfWorkFactory = unitOfWorkFactory;
+            _operationFactory = operationFactory;
             _validator = validator;
         }
 
-        public TResponse Run(TRequest request)
+        public async Task<TResponse> Run(TRequest request, IUnitOfWork? unitOfWork = null)
         {
             ValidateRequest(request);
 
             _logger.LogInformation("Starting operation {OperationName}", this.GetType().Name);
-            var response = Execute(request);
+
+            IUnitOfWork internalUnitOfWork = unitOfWork ?? await _unitOfWorkFactory.CreateAsync();
+            var response = await Execute(request, internalUnitOfWork);
+            
             _logger.LogInformation("Finished operation {OperationName}", this.GetType().Name);
             return response;
         }
 
-        protected abstract TResponse Execute(TRequest request);
+        protected abstract Task<TResponse> Execute(TRequest request, IUnitOfWork unitOfWork);
 
         protected bool ValidateRequest(TRequest request)
         {

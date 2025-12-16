@@ -13,7 +13,6 @@ using BillIssue.Api.Interfaces.Email;
 using BillIssue.Shared.Models.Constants;
 using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Shared.Models.Response.Auth.Dto;
-using BillIssue.Api.Interfaces.Alerts;
 using BillIssue.Shared.Models.Response.Notifications.Dto;
 using BillIssue.Api.Models.ConfigurationOptions;
 using Microsoft.Extensions.Options;
@@ -22,6 +21,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BillIssue.Api.Models.Constants;
+using BillIssue.Api.Interfaces.Notifications;
 
 namespace BillIssue.Api.Business.Auth
 {

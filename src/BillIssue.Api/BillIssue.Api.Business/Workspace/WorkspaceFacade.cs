@@ -16,8 +16,8 @@ using Microsoft.Extensions.Logging;
 using Npgsql;
 using Pipelines.Sockets.Unofficial.Arenas;
 using System.Data;
-using BillIssue.Api.Interfaces.Alerts;
 using BillIssue.Shared.Models.Request.Notifications;
+using BillIssue.Api.Interfaces.Notifications;
 
 namespace BillIssue.Api.Business.Workspace
 {

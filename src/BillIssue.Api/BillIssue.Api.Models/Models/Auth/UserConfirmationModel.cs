@@ -1,4 +1,5 @@
 ﻿using BillIssue.Api.Models.Enums.Auth;
+using BillIssue.Api.Models.Models.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BillIssue.Api.Models.Models.Auth

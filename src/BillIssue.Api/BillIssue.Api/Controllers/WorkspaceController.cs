@@ -5,6 +5,7 @@ using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Api.Models.Models.Auth;
+using BillIssue.Shared.Models.Authentication;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Response.Workspace;
 using BillIssue.Shared.Models.Response.Workspace.Dto;
@@ -32,7 +33,7 @@ namespace BillIssue.Api.Controllers
         {
             string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
 
-            SessionModel session = GetSessionModelFromJwt();
+            SessionUserData session = GetSessionModelFromJwt();
 
             /*string jwtToken = Request.Headers[]
 

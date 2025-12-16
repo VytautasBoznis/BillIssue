@@ -2,7 +2,8 @@
 
 namespace BillIssue.Shared.Models.Request.Notifications
 {
-    public class GetNotificationRequest: BaseRequest
+    public class GetNotificationsRequest : AuthenticatedRequest
     {
+
     }
 }

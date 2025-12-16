@@ -1,4 +1,5 @@
-﻿using BillIssue.Data.Enums;
+﻿using BillIssue.Api.Models.Models.Base;
+using BillIssue.Data.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BillIssue.Api.Models.Models.Multilanguage
