@@ -1,9 +1,10 @@
 ﻿using BillIssue.Shared.Models.Request.Workspace;
+using BillIssue.Shared.Models.Validators.Base;
 using FluentValidation;
 
 namespace BillIssue.Shared.Models.Validators.Workspace
 {
-    public class CreateWorkspaceRequestValidator: AbstractValidator<CreateWorkspaceRequest>
+    public class CreateWorkspaceRequestValidator: BaseValidator<CreateWorkspaceRequest>
     {
         public CreateWorkspaceRequestValidator()
         {

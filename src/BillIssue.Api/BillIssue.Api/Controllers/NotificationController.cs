@@ -1,11 +1,10 @@
-﻿using BillIssue.Api.ActionFilters;
+﻿using BillIssue.Api.Business.Base;
+using BillIssue.Api.Business.Notifications;
 using BillIssue.Api.Controllers.Base;
-using BillIssue.Api.Interfaces.Notifications;
 using BillIssue.Api.Models.Constants;
-using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Shared.Models.Request.Notifications;
 using BillIssue.Shared.Models.Response.Notifications;
-using BillIssue.Shared.Models.Response.Notifications.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BillIssue.Api.Controllers
@@ -14,34 +13,35 @@ namespace BillIssue.Api.Controllers
     [ApiController]
     public class NotificationController : BaseController
     {
-        private readonly INotificationFacade _notificationFacade;
+        private readonly OperationFactory _operationFactory;
 
-        public NotificationController(INotificationFacade notificationFacade, ILogger<NotificationController> logger) : base(logger)
+        public NotificationController(OperationFactory operationFactory, ILogger<NotificationController> logger) : base(logger)
         {
-            _notificationFacade = notificationFacade;
+            _operationFactory = operationFactory;
         }
 
         [HttpGet("GetNotifications")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
-        public async Task<GetNotificationsResponse> GetNotifications()
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
+        public async Task<IActionResult> GetNotifications()
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<NotificationDto> notificationDtos = await _notificationFacade.GetUserNotifications(sessionId, new GetNotificationsRequest());
+            GetNotificationsResponse response = await _operationFactory
+                                                        .Get<GetNotificationsOperation>(typeof(GetNotificationsOperation))
+                                                        .Run(new GetNotificationsRequest { SessionUserData = GetSessionModelFromJwt() });
 
-            return new GetNotificationsResponse
-            {
-                NotificationDtos = notificationDtos,
-            };
+            return Ok(response);
         }
 
         [HttpPost("DoNotificationDecision")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> DoNotificationDecision([FromBody] DoNotificationDecisionRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _notificationFacade.DoNotificationDecision(sessionId, request);
+            request.SessionUserData = GetSessionModelFromJwt();
 
-            return Ok();
+            DoNotificationDecisionResponse response = await _operationFactory
+                                                        .Get<DoNotificationDecisionOperation>(typeof(DoNotificationDecisionOperation))
+                                                        .Run(request);
+
+            return Ok(response);
         }
     }
 }

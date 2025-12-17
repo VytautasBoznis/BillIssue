@@ -13,7 +13,6 @@ using BillIssue.Api.Interfaces.Auth;
 using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Interfaces.Email;
 using BillIssue.Api.Interfaces.Multilanguage;
-using BillIssue.Api.Interfaces.Notifications;
 using BillIssue.Api.Interfaces.Project;
 using BillIssue.Api.Interfaces.Schedule;
 using BillIssue.Api.Interfaces.TimeLogEntry;
@@ -58,7 +57,6 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<ISessionFacade, SessionFacade>();
 
             services.AddScoped<IUserFacade, UserFacade>();
-            services.AddScoped<INotificationFacade, NotificationFacade>();
             services.AddScoped<IWorkspaceFacade, WorkspaceFacade>();
             services.AddScoped<IProjectFacade, ProjectFacade>();
             services.AddScoped<IScheduleFacade, ScheduleFacade>();
@@ -94,6 +92,8 @@ namespace BillIssue.Api.Extensions
 
             // Notification validators
             services.AddSingleton<IValidator<GetNotificationsRequest>, GetNotificationsRequestValidator>();
+            services.AddSingleton<IValidator<CreateWorkspaceNotificationRequest>, CreateWorkspaceNotificationRequestValidator>();
+            services.AddSingleton<IValidator<DoNotificationDecisionRequest>, DoNotificationDecisionRequestValidator>();
 
             // Project validators
             services.AddSingleton<IValidator<CreateProjectRequest>, CreateProjectRequestValidator>();
@@ -121,6 +121,8 @@ namespace BillIssue.Api.Extensions
 
             // Notification Operations
             services.AddScoped<GetNotificationsOperation>();
+            services.AddScoped<CreateWorkspaceNotificationOperation>();
+            services.AddScoped<DoNotificationDecisionOperation>();
 
             // Project Operations
             services.AddScoped<CreateProjectOperation>();

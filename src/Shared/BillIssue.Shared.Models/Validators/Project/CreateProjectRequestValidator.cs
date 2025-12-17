@@ -1,9 +1,10 @@
 ﻿using BillIssue.Shared.Models.Request.Project;
+using BillIssue.Shared.Models.Validators.Base;
 using FluentValidation;
 
 namespace BillIssue.Shared.Models.Validators.Project
 {
-    public class CreateProjectRequestValidator: AbstractValidator<CreateProjectRequest>
+    public class CreateProjectRequestValidator: BaseValidator<CreateProjectRequest>
     {
         public CreateProjectRequestValidator()
         {

@@ -3,7 +3,7 @@ using BillIssue.Shared.Models.Response.Notifications.Dto;
 
 namespace BillIssue.Shared.Models.Request.Notifications
 {
-    public class DoNotificationDecisionRequest: BaseRequest
+    public class DoNotificationDecisionRequest: AuthenticatedRequest
     {
         public NotificationDto Notification { get; set; }
         public bool Decision {  get; set; }

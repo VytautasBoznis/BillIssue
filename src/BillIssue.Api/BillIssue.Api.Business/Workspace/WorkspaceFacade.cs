@@ -16,8 +16,6 @@ using Microsoft.Extensions.Logging;
 using Npgsql;
 using Pipelines.Sockets.Unofficial.Arenas;
 using System.Data;
-using BillIssue.Shared.Models.Request.Notifications;
-using BillIssue.Api.Interfaces.Notifications;
 
 namespace BillIssue.Api.Business.Workspace
 {
@@ -27,9 +25,7 @@ namespace BillIssue.Api.Business.Workspace
         private readonly ILogger<WorkspaceFacade> _logger;
 
         private readonly ISessionFacade _sessionFacade;
-        private readonly IUserFacade _userFacade;
         private readonly IProjectFacade _projectFacade;
-        private readonly INotificationFacade _alertFacade;
 
         private const string NewUsersWorkspaceTagline = "{0}'s personal workspace";
         private const string NewProjectTagLine = "First workspace project";
@@ -37,9 +33,7 @@ namespace BillIssue.Api.Business.Workspace
         //TODO: Add fluent validators for all objects
         public WorkspaceFacade(
             ISessionFacade sessionFacade,
-            IUserFacade userFacade,
             IProjectFacade projectFacade,
-            INotificationFacade alertFacade,
             NpgsqlConnection dbConnection,
             ILogger<WorkspaceFacade> logger
         )
@@ -48,9 +42,7 @@ namespace BillIssue.Api.Business.Workspace
             _sessionFacade = sessionFacade;
             _logger = logger;
 
-            _userFacade = userFacade;
             _projectFacade = projectFacade;
-            _alertFacade = alertFacade;
         }
 
         #region Workspace Controll
@@ -222,14 +214,14 @@ namespace BillIssue.Api.Business.Workspace
 
             NpgsqlTransaction transaction = _dbConnection.BeginTransaction();
 
-            await _alertFacade.CreateWorkspaceNotificationInTransaction(
+            /*await _alertFacade.CreateWorkspaceNotificationInTransaction(
                 sessionId, 
                 new CreateWorkspaceNotificationRequest { 
                     WorkspaceId = request.WorkspaceId, 
                     TargetUserEmail = request.NewUserEmail 
                 },
                 transaction
-            );
+            );*/
 
             //TODO: send email to user that there is an invite to a new workspace
 
