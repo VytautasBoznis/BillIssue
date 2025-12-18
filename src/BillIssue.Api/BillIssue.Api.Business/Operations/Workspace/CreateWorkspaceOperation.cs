@@ -1,5 +1,5 @@
 ﻿using BillIssue.Api.Business.Base;
-using BillIssue.Api.Business.Project;
+using BillIssue.Api.Business.Operations.Project;
 using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Models.Exceptions;
 using BillIssue.Shared.Models.Constants;
@@ -13,7 +13,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace BillIssue.Api.Business.Workspace
+namespace BillIssue.Api.Business.Operations.Workspace
 {
     public class CreateWorkspaceOperation : BaseOperation<CreateWorkspaceRequest, CreateWorkspaceResponse>
     {

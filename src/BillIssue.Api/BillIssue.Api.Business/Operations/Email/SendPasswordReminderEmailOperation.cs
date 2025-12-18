@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace BillIssue.Api.Business.Email
+namespace BillIssue.Api.Business.Operations.Email
 {
     public class SendPasswordReminderEmailOperation : BaseOperation<SendPasswordReminderEmailRequest, SendPasswordReminderEmailResponse>
     {

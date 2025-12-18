@@ -9,7 +9,7 @@ using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace BillIssue.Api.Business.Notifications
+namespace BillIssue.Api.Business.Operations.Notifications
 {
     public class GetNotificationsOperation : BaseOperation<GetNotificationsRequest, GetNotificationsResponse>
     {

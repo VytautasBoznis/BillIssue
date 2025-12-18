@@ -16,7 +16,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace BillIssue.Api.Business.Notifications
+namespace BillIssue.Api.Business.Operations.Notifications
 {
     public class DoNotificationDecisionOperation : BaseOperation<DoNotificationDecisionRequest, DoNotificationDecisionResponse>
     {

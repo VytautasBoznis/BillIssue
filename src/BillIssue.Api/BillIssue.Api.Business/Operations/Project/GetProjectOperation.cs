@@ -11,7 +11,7 @@ using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace BillIssue.Api.Business.Project
+namespace BillIssue.Api.Business.Operations.Project
 {
     public class GetProjectOperation : BaseOperation<GetProjectRequest, GetProjectResponse>
     {

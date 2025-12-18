@@ -29,4 +29,8 @@
     <ProjectReference Include="..\BillIssue.Api.Models\BillIssue.Api.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Notifications\" />
+  </ItemGroup>
+
 </Project>

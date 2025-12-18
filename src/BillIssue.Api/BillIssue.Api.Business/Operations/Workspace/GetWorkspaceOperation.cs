@@ -11,7 +11,7 @@ using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace BillIssue.Api.Business.Workspace
+namespace BillIssue.Api.Business.Operations.Workspace
 {
     public class GetWorkspaceOperation : BaseOperation<GetWorkspaceRequest, GetWorkspaceResponse>
     {

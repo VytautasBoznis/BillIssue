@@ -1,5 +1,5 @@
-﻿using BillIssue.Api.Business.Auth;
-using BillIssue.Api.Business.Base;
+﻿using BillIssue.Api.Business.Base;
+using BillIssue.Api.Business.Operations.Auth;
 using BillIssue.Api.Controllers.Base;
 using BillIssue.Api.Interfaces.Auth;
 using BillIssue.Shared.Models.Request.Auth;

@@ -132,6 +132,7 @@ internal class Program
 
         builder.Services
             .AddConfig(configuration)
+            .AddRepositories()
             .RegisterServices()
             .AddValidators()
             .AddOperations()

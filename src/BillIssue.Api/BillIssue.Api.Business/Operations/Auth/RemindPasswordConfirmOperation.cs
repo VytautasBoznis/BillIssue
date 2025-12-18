@@ -1,35 +1,38 @@
 ﻿using BillIssue.Api.Business.Base;
 using BillIssue.Api.Interfaces.Base;
+using BillIssue.Api.Interfaces.Repositories.Auth;
+using BillIssue.Api.Interfaces.Repositories.Confirmations;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Exceptions;
 using BillIssue.Api.Models.Models.Auth;
 using BillIssue.Shared.Models.Constants;
 using BillIssue.Shared.Models.Request.Auth;
 using BillIssue.Shared.Models.Response.Auth;
-using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 
-namespace BillIssue.Api.Business.Auth
+namespace BillIssue.Api.Business.Operations.Auth
 {
     public class RemindPasswordConfirmOperation : BaseOperation<RemindPasswordConfirmRequest, RemindPasswordConfirmResponse>
     {
-       
-        
+        private readonly IAuthRepository _authRepository;
+        private readonly IConfirmationRepository _confirmationRepository;
+
         public RemindPasswordConfirmOperation(
             ILogger<RemindPasswordConfirmOperation> logger, 
-            IUnitOfWorkFactory unitOfWorkFactory, 
+            IUnitOfWorkFactory unitOfWorkFactory,
+            IAuthRepository authRepository,
+            IConfirmationRepository confirmationRepository,
             OperationFactory operationFactory, 
             IValidator<RemindPasswordConfirmRequest> validator) : base(logger, unitOfWorkFactory, operationFactory, validator)
         {
+            _authRepository = authRepository;
+            _confirmationRepository = confirmationRepository;
         }
 
         protected override async Task<RemindPasswordConfirmResponse> Execute(RemindPasswordConfirmRequest request, IUnitOfWork unitOfWork)
         {
-            var dictionary = new Dictionary<string, object> { { "@confirmation_id", request.PasswordReminderGuid } };
-            IEnumerable<UserConfirmationModel> userConfirmationModels = await unitOfWork.Connection.QueryAsync<UserConfirmationModel>("SELECT id, user_id, confirmation_type FROM user_confirmations WHERE id = @confirmation_id", dictionary);
-            UserConfirmationModel? userConfirmationModel = userConfirmationModels.FirstOrDefault();
+            UserConfirmationModel? userConfirmationModel = await _confirmationRepository.GetConfirmationById(request.PasswordReminderGuid, unitOfWork);
 
             if (userConfirmationModel == null)
             {
@@ -42,17 +45,7 @@ namespace BillIssue.Api.Business.Auth
             try
             {
                 await ChangeUserPassword(userConfirmationModel.UserId, request.Password, request.ConfirmPassword, "System", unitOfWork);
-
-                await using NpgsqlCommand deleteUserConfirmation = new NpgsqlCommand("DELETE FROM user_confirmations WHERE id = @userConfirmationId", unitOfWork.Connection, unitOfWork.Transaction)
-                {
-                    Parameters =
-                    {
-                        new("@userConfirmationId", request.PasswordReminderGuid)
-                    }
-                };
-
-                await deleteUserConfirmation.ExecuteNonQueryAsync();
-
+                await _confirmationRepository.DeleteConfirmationAsync(request.PasswordReminderGuid,  unitOfWork);
                 await unitOfWork.CommitAsync();
             }
             catch (Exception ex)
@@ -85,18 +78,7 @@ namespace BillIssue.Api.Business.Auth
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password, AuthConstants.PasswordWorkFactor);
 
-            await using NpgsqlCommand updateUserPassword = new NpgsqlCommand("UPDATE user_users SET password = @passwordHash, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE id = @userId", unitOfWork.Connection, unitOfWork.Transaction)
-            {
-                Parameters =
-                {
-                    new("@userId", userId),
-                    new("@passwordHash", passwordHash),
-                    new("@modifiedBy", modifiedBy),
-                    new("@modifiedOn", DateTime.Now),
-                }
-            };
-
-            await updateUserPassword.ExecuteNonQueryAsync();
+            await _authRepository.UpdatePassword(userId, passwordHash, modifiedBy, unitOfWork);
         }
     }
 }

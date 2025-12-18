@@ -1,5 +1,5 @@
 ﻿using BillIssue.Api.Business.Base;
-using BillIssue.Api.Business.Notifications;
+using BillIssue.Api.Business.Operations.Notifications;
 using BillIssue.Api.Controllers.Base;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Shared.Models.Request.Notifications;

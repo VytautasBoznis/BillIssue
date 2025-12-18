@@ -1,6 +1,7 @@
 ﻿using BillIssue.Api.Business.Base;
-using BillIssue.Api.Business.Notifications;
+using BillIssue.Api.Business.Operations.Notifications;
 using BillIssue.Api.Interfaces.Base;
+using BillIssue.Api.Interfaces.Repositories.Auth;
 using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Exceptions;
@@ -12,7 +13,6 @@ using BillIssue.Shared.Models.Request.Notifications;
 using BillIssue.Shared.Models.Response.Auth;
 using BillIssue.Shared.Models.Response.Auth.Dto;
 using BillIssue.Shared.Models.Response.Notifications;
-using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,10 +21,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BillIssue.Api.Business.Auth
+namespace BillIssue.Api.Business.Operations.Auth
 {
     public class LoginOperation : BaseOperation<LoginRequest, LoginResponse>
     {
+        private readonly IAuthRepository _authRepository;
         private readonly JwtOptions _jwtOptions;
         
         public LoginOperation(
@@ -32,20 +33,16 @@ namespace BillIssue.Api.Business.Auth
             IValidator<LoginRequest> validator,
             IUnitOfWorkFactory unitOfWorkFactory,
             OperationFactory operationFactory,
+            IAuthRepository authRepository,
             IOptions<JwtOptions> jwtOptions) : base(logger, unitOfWorkFactory, operationFactory, validator)
         {
             _jwtOptions = jwtOptions?.Value ?? throw new ArgumentNullException(nameof(jwtOptions));
+            _authRepository = authRepository;
         }
 
         protected override async Task<LoginResponse> Execute(LoginRequest request, IUnitOfWork unitOfWork)
         {
-            var dictionary = new Dictionary<string, object> { { "@email", request.Email } };
-
-            var sessionModels = await unitOfWork
-                                        .Connection
-                                        .QueryAsync<SessionModel>("SELECT id, password, email, role, is_banned as isBanned, first_name as FirstName, last_name as LastName FROM user_users WHERE email = @email", dictionary);
-            
-            SessionModel? sessionModel = sessionModels.FirstOrDefault();
+            SessionModel? sessionModel = await _authRepository.GetSessionModelByEmail(request.Email, unitOfWork);
 
             if (sessionModel == null || !BCrypt.Net.BCrypt.Verify(request.Password, sessionModel.Password))
             {

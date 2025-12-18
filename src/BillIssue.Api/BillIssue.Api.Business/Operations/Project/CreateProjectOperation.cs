@@ -10,7 +10,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace BillIssue.Api.Business.Project
+namespace BillIssue.Api.Business.Operations.Project
 {
     public class CreateProjectOperation : BaseOperation<CreateProjectRequest, CreateProjectResponse>
     {

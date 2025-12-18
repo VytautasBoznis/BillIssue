@@ -1,33 +1,36 @@
 ﻿using BillIssue.Api.Business.Base;
-using BillIssue.Api.Business.Workspace;
+using BillIssue.Api.Business.Operations.Workspace;
 using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Exceptions;
 using BillIssue.Api.Models.Models.Auth;
+using BillIssue.Api.Interfaces.Repositories.Auth;
 using BillIssue.Shared.Models.Authentication;
 using BillIssue.Shared.Models.Constants;
 using BillIssue.Shared.Models.Request.Auth;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Response.Auth;
 using BillIssue.Shared.Models.Response.Workspace;
-using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using RegisterRequest = BillIssue.Shared.Models.Request.Auth.RegisterRequest;
 
-namespace BillIssue.Api.Business.Auth
+namespace BillIssue.Api.Business.Operations.Auth
 {
     public class RegisterOperation : BaseOperation<RegisterRequest, RegisterResponse>
     {
+        private readonly IAuthRepository _authRepository;
         private const string NewUsersWorkspaceTagline = "{0}'s personal workspace";
 
         public RegisterOperation(
             ILogger<RegisterOperation> logger,
             IUnitOfWorkFactory unitOfWorkFactory,
             OperationFactory operationFactory,
+            IAuthRepository authRepository,
             IValidator<RegisterRequest> validator) : base(logger, unitOfWorkFactory, operationFactory, validator)
         {
+            _authRepository = authRepository;
         }
 
         protected override async Task<RegisterResponse> Execute(RegisterRequest request, IUnitOfWork unitOfWork)
@@ -36,10 +39,7 @@ namespace BillIssue.Api.Business.Auth
 
             try
             {
-                var dictionary = new Dictionary<string, object> { { "@email", request.Email } };
-
-                IEnumerable<SessionModel> sessionModels = await unitOfWork.Connection.QueryAsync<SessionModel>("SELECT email FROM user_users WHERE LOWER(email)=LOWER(@email)", dictionary);
-                SessionModel? sessionModel = sessionModels.FirstOrDefault();
+                SessionModel? sessionModel = await _authRepository.GetSessionModelByEmail(request.Email, unitOfWork);
 
                 if (sessionModel != null)
                 {
@@ -50,20 +50,7 @@ namespace BillIssue.Api.Business.Auth
 
                 await unitOfWork.BeginTransactionAsync();
 
-                await using NpgsqlCommand insertUser = new NpgsqlCommand("INSERT INTO user_users (id, email, password, first_name, last_name, created_by) VALUES (@id, @email, @pass, @firstName, @lastName, @createdBy)", unitOfWork.Connection, unitOfWork.Transaction)
-                {
-                    Parameters =
-                    {
-                        new("@id", newUserId),
-                        new("@email", request.Email),
-                        new("@pass", passwordHash),
-                        new("@firstName", request.FirstName),
-                        new("@lastName", request.LastName),
-                        new("@createdBy", request.Email),
-                    }
-                };
-
-                await insertUser.ExecuteNonQueryAsync();
+                await _authRepository.CreateUserAccount(newUserId, passwordHash, request.Email, request.FirstName, request.LastName, unitOfWork);
 
                 CreateWorkspaceRequest createWorksapceRequest = new CreateWorkspaceRequest
                 {

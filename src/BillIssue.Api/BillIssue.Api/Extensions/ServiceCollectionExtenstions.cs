@@ -3,8 +3,14 @@ using BillIssue.Api.Business.Auth;
 using BillIssue.Api.Business.Base;
 using BillIssue.Api.Business.Email;
 using BillIssue.Api.Business.Multilanguage;
-using BillIssue.Api.Business.Notifications;
+using BillIssue.Api.Business.Operations.Auth;
+using BillIssue.Api.Business.Operations.Email;
+using BillIssue.Api.Business.Operations.Notifications;
+using BillIssue.Api.Business.Operations.Project;
+using BillIssue.Api.Business.Operations.Workspace;
 using BillIssue.Api.Business.Project;
+using BillIssue.Api.Business.Repositories.Auth;
+using BillIssue.Api.Business.Repositories.Confirmations;
 using BillIssue.Api.Business.Schedule;
 using BillIssue.Api.Business.TimeLogEntry;
 using BillIssue.Api.Business.Users;
@@ -14,6 +20,8 @@ using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Interfaces.Email;
 using BillIssue.Api.Interfaces.Multilanguage;
 using BillIssue.Api.Interfaces.Project;
+using BillIssue.Api.Interfaces.Repositories.Auth;
+using BillIssue.Api.Interfaces.Repositories.Confirmations;
 using BillIssue.Api.Interfaces.Schedule;
 using BillIssue.Api.Interfaces.TimeLogEntry;
 using BillIssue.Api.Interfaces.User;
@@ -75,6 +83,14 @@ namespace BillIssue.Api.Extensions
                 options.AddPolicy(AuthConstants.AdminRequiredPolicyName, policy =>
                     policy.Requirements.Add(new RoleRequirement(UserRole.Admin)));
             });
+
+            return services;
+        }
+
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IConfirmationRepository, ConfirmationRepository>();
 
             return services;
         }

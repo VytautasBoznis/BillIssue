@@ -1,34 +1,38 @@
 ﻿using BillIssue.Api.Business.Base;
-using BillIssue.Api.Business.Email;
+using BillIssue.Api.Business.Operations.Email;
 using BillIssue.Api.Interfaces.Base;
-using BillIssue.Api.Models.Enums.Auth;
+using BillIssue.Api.Interfaces.Repositories.Auth;
+using BillIssue.Api.Interfaces.Repositories.Confirmations;
 using BillIssue.Api.Models.Models.Auth;
 using BillIssue.Shared.Models.Request.Auth;
 using BillIssue.Shared.Models.Request.Email;
 using BillIssue.Shared.Models.Response.Auth;
 using BillIssue.Shared.Models.Response.Email;
-using Dapper;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 
-namespace BillIssue.Api.Business.Auth
+namespace BillIssue.Api.Business.Operations.Auth
 {
     public class RemindPasswordOperation : BaseOperation<RemindPasswordRequest, RemindPasswordResponse>
     {
+        private readonly IAuthRepository _authRepository;
+        private readonly IConfirmationRepository _confirmationRepository;
+
         public RemindPasswordOperation(
             ILogger<RemindPasswordOperation> logger,
             IUnitOfWorkFactory unitOfWorkFactory,
+            IAuthRepository authRepository,
+            IConfirmationRepository confirmationRepository,
             OperationFactory operationFactory,
             IValidator<RemindPasswordRequest> validator) : base(logger, unitOfWorkFactory, operationFactory, validator)
         {
+            _authRepository = authRepository;
+            _confirmationRepository = confirmationRepository;
         }
 
         protected override async Task<RemindPasswordResponse> Execute(RemindPasswordRequest request, IUnitOfWork unitOfWork)
         {
-            var dictionary = new Dictionary<string, object> { { "@email", request.Email } };
-            IEnumerable<SessionModel> sessionModels = await unitOfWork.Connection.QueryAsync<SessionModel>("SELECT id, email FROM user_users WHERE LOWER(email)=LOWER(@email)", dictionary);
-            SessionModel? sessionModel = sessionModels.FirstOrDefault();
+            SessionModel? sessionModel = await _authRepository.GetSessionModelByEmail(request.Email, unitOfWork);
 
             if (sessionModel == null || sessionModel.Id == Guid.Empty)
             {
@@ -42,18 +46,7 @@ namespace BillIssue.Api.Business.Auth
 
             try
             {
-                await using NpgsqlCommand insertPasswordReminder = new NpgsqlCommand("INSERT INTO user_confirmations (id, user_id, confirmation_type, created_by) VALUES (@id, @userId, @confirmationType, @createdBy)", unitOfWork.Connection, unitOfWork.Transaction)
-                {
-                    Parameters =
-                    {
-                        new("@id", passwordReminderGuid),
-                        new("@userId", sessionModel.Id),
-                        new("@confirmationType", (int) ConfirmationTypeEnum.RemindPassword),
-                        new("@createdBy", "System password reminder"),
-                    }
-                };
-
-                await insertPasswordReminder.ExecuteNonQueryAsync();
+                await _confirmationRepository.CreatePasswordReminderConfirmationAsync(passwordReminderGuid, sessionModel.Id, unitOfWork);
 
                 var sendPassowrdReminderRequest = new SendPasswordReminderEmailRequest
                 {
