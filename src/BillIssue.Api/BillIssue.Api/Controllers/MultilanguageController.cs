@@ -1,10 +1,13 @@
-﻿using BillIssue.Api.ActionFilters;
+﻿using BillIssue.Api.Business.Base;
+using BillIssue.Api.Business.Operations.Multilanguage;
 using BillIssue.Api.Controllers.Base;
-using BillIssue.Api.Interfaces.Multilanguage;
-using BillIssue.Api.Models.Enums.Auth;
+using BillIssue.Api.Models.Constants;
 using BillIssue.Data.Enums;
 using BillIssue.Domain.Response.Multilanguage.Dto;
+using BillIssue.Shared.Models.Authentication;
+using BillIssue.Shared.Models.Request.Multilanguage;
 using BillIssue.Shared.Models.Response.Multilanguage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BillIssue.Api.Controllers
@@ -13,59 +16,83 @@ namespace BillIssue.Api.Controllers
     [ApiController]
     public class MultilanguageController : BaseController
     {
-        private readonly IMultilanguageFacade _multilanguageFacade;
+        private OperationFactory _operationFactory;
 
-        public MultilanguageController(IMultilanguageFacade multilanguageFacade, ILogger<MultilanguageController> logger) : base(logger)
+        public MultilanguageController(
+            ILogger<MultilanguageController> logger,
+            OperationFactory operationFactory) : base(logger)
         {
-            _multilanguageFacade = multilanguageFacade;
+            _operationFactory = operationFactory;
         }
 
         [HttpGet("GetLanguageDictionary/{languageTypeEnum}")]
-        public async Task<GetMultilanguageDictionyResponse> GetLanguageDictionary([FromRoute] LanguageTypeEnum languageTypeEnum)
+        public async Task<IActionResult> GetLanguageDictionary([FromRoute] LanguageTypeEnum languageTypeEnum)
         {
-            return new GetMultilanguageDictionyResponse
-            {
-                LanguageDictionary = await _multilanguageFacade.GetAllMultilanguageItems(languageTypeEnum),
-                MultilanguageCacheBuildTime = await _multilanguageFacade.GetMultilanguageCacheBuildTime()
-            };
+            GetAllMultilanguageItemsRequest request = new GetAllMultilanguageItemsRequest { LanguageTypeEnum = languageTypeEnum };
+
+            GetMultilanguageItemsResponse response = await _operationFactory
+                                                               .Get<GetAllMultilanguageItemsOperation>(typeof(GetAllMultilanguageItemsOperation))
+                                                               .Run(request);
+            return Ok(response);
         }
 
         [HttpGet("GetAllDictionary")]
-        public async Task<GetMultilanguageDictionyResponse> GetAllMultilanguageItems()
+        public async Task<IActionResult> GetAllMultilanguageItems()
         {
-            return new GetMultilanguageDictionyResponse
-            {
-                LanguageDictionary = await _multilanguageFacade.GetAllMultilanguageItems(),
-                MultilanguageCacheBuildTime = await _multilanguageFacade.GetMultilanguageCacheBuildTime()
-            };
+            GetAllMultilanguageItemsRequest request = new GetAllMultilanguageItemsRequest { LanguageTypeEnum = LanguageTypeEnum.All };
+
+            GetMultilanguageItemsResponse response = await _operationFactory
+                                                               .Get<GetAllMultilanguageItemsOperation>(typeof(GetAllMultilanguageItemsOperation))
+                                                               .Run(request);
+            return Ok(response);
         }
 
         [HttpPost("AddTranslation")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.Admin])]
-        public async Task CreateMultilanguageTranslation(MultilanguageItemDto multilanguageItem)
+        [Authorize(Policy = AuthConstants.AdminRequiredPolicyName)]
+        public async Task<IActionResult> CreateMultilanguageTranslation(MultilanguageItemDto multilanguageItem)
         {
-            await _multilanguageFacade.AddMultilanguageItem(multilanguageItem);
+            SessionUserData sessionUserData = GetSessionModelFromJwt();
+
+            CreateMultilanguageItemResponse response = await _operationFactory
+                                                               .Get<CreateMultilanguageItemOperation>(typeof(CreateMultilanguageItemOperation))
+                                                               .Run(new CreateMultilanguageItemRequest
+                                                               {
+                                                                   MultilanguageItem = multilanguageItem,
+                                                                   SessionUserData = sessionUserData,
+                                                               });
+
+            return Ok(response);
         }
 
         [HttpPost("ImportMultilanguageCSV")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.Admin])]
+        [Authorize(Policy = AuthConstants.AdminRequiredPolicyName)]
         public async Task<IActionResult> ImportMultilanguageTranslations([FromForm] IFormFile multilanguageCsvFile)
         {
             Stream multilanguageCsvFileStream = multilanguageCsvFile.OpenReadStream();
-            await _multilanguageFacade.ImportMultilanguageCsv(multilanguageCsvFileStream);
-            await _multilanguageFacade.ClearMultilanguageCaches();
+            ImportMultilanguageCsvResponse response = await _operationFactory
+                                                               .Get<ImportMultilanguageCsvOperation>(typeof(ImportMultilanguageCsvOperation))
+                                                               .Run(new ImportMultilanguageCsvRequest
+                                                               {
+                                                                   FileStream = multilanguageCsvFileStream,
+                                                                   SessionUserData = GetSessionModelFromJwt()
+                                                               });
 
-            return Ok();
+            ClearMultilanguageCachesResponse clearCacheResponse = await _operationFactory
+                                                               .Get<ClearMultilanguageCachesOperation>(typeof(ClearMultilanguageCachesOperation))
+                                                               .Run(new ClearMultilanguageCachesRequest());
+
+            return Ok(response);
         }
 
         [HttpGet("GetAllTranslationsInCSV")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.Admin])]
+        [Authorize(Policy = AuthConstants.AdminRequiredPolicyName)]
         public async Task<FileResult> GetAllTranslationsInCSV()
         {
-            string fileName = "AllMultilanguageItems.csv";
-            byte[] fileBytes = await _multilanguageFacade.GetAllTranslationsInCSV();
+            GetAllTranslationsInCsvResponse translationCsvResponse = await _operationFactory
+                                                                       .Get<GetAllTranslationsInCsvOperation>(typeof(GetAllTranslationsInCsvOperation))
+                                                                       .Run(new GetAllTranslationsInCsvRequest());
 
-            return File(fileBytes, "text/csv", fileName);
+            return File(translationCsvResponse.CsvContentBytes, "text/csv", MultilanguageConstants.CSVFilename);
         }
     }
 }

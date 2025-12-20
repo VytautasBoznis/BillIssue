@@ -13,7 +13,6 @@ using BillIssue.Shared.Models.Response.Auth;
 using BillIssue.Shared.Models.Response.Workspace;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using RegisterRequest = BillIssue.Shared.Models.Request.Auth.RegisterRequest;
 
 namespace BillIssue.Api.Business.Operations.Auth
@@ -73,6 +72,8 @@ namespace BillIssue.Api.Business.Operations.Auth
             }
             catch (Exception ex)
             {
+                await unitOfWork.RollbackAsync();
+
                 if (ex is RegistrationException)
                 {
                     throw;

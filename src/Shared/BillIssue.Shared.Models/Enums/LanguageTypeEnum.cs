@@ -2,7 +2,7 @@
 {
     public enum LanguageTypeEnum: short
     {
-        Unknown = 0,
+        All = 0,
         English = 1,
         Lithuanian = 2,
     }

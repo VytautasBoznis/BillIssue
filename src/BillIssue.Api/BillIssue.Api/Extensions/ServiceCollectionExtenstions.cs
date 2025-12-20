@@ -1,27 +1,26 @@
 ﻿using BillIssue.Api.Authorization;
 using BillIssue.Api.Business.Auth;
 using BillIssue.Api.Business.Base;
-using BillIssue.Api.Business.Email;
-using BillIssue.Api.Business.Multilanguage;
 using BillIssue.Api.Business.Operations.Auth;
 using BillIssue.Api.Business.Operations.Email;
+using BillIssue.Api.Business.Operations.Multilanguage;
 using BillIssue.Api.Business.Operations.Notifications;
 using BillIssue.Api.Business.Operations.Project;
 using BillIssue.Api.Business.Operations.Workspace;
 using BillIssue.Api.Business.Project;
 using BillIssue.Api.Business.Repositories.Auth;
 using BillIssue.Api.Business.Repositories.Confirmations;
+using BillIssue.Api.Business.Repositories.Multilanguage;
 using BillIssue.Api.Business.Schedule;
 using BillIssue.Api.Business.TimeLogEntry;
 using BillIssue.Api.Business.Users;
 using BillIssue.Api.Business.Workspace;
 using BillIssue.Api.Interfaces.Auth;
 using BillIssue.Api.Interfaces.Base;
-using BillIssue.Api.Interfaces.Email;
-using BillIssue.Api.Interfaces.Multilanguage;
 using BillIssue.Api.Interfaces.Project;
 using BillIssue.Api.Interfaces.Repositories.Auth;
 using BillIssue.Api.Interfaces.Repositories.Confirmations;
+using BillIssue.Api.Interfaces.Repositories.Multilanguage;
 using BillIssue.Api.Interfaces.Schedule;
 using BillIssue.Api.Interfaces.TimeLogEntry;
 using BillIssue.Api.Interfaces.User;
@@ -31,11 +30,13 @@ using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Shared.Models.Request.Auth;
 using BillIssue.Shared.Models.Request.Email;
+using BillIssue.Shared.Models.Request.Multilanguage;
 using BillIssue.Shared.Models.Request.Notifications;
 using BillIssue.Shared.Models.Request.Project;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Validators.Auth;
 using BillIssue.Shared.Models.Validators.Email;
+using BillIssue.Shared.Models.Validators.Multilanguage;
 using BillIssue.Shared.Models.Validators.Notifications;
 using BillIssue.Shared.Models.Validators.Project;
 using BillIssue.Shared.Models.Validators.Workspace;
@@ -60,8 +61,6 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IAuthorizationHandler, RoleRequirementHandler>();
             services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
-            services.AddSingleton<IEmailFacade, EmailFacade>();
-            services.AddSingleton<IMultilanguageFacade, MultilanguageFacade>();
             services.AddSingleton<ISessionFacade, SessionFacade>();
 
             services.AddScoped<IUserFacade, UserFacade>();
@@ -91,6 +90,7 @@ namespace BillIssue.Api.Extensions
         {
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IConfirmationRepository, ConfirmationRepository>();
+            services.AddScoped<IMultilanguageRepository, MultilanguageRepository>();
 
             return services;
         }
@@ -102,6 +102,14 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IValidator<RegisterRequest>, RegisterRequestValidator>();
             services.AddSingleton<IValidator<RemindPasswordRequest>, RemindPasswordRequestValidator>();
             services.AddSingleton<IValidator<RemindPasswordConfirmRequest>, RemindPasswordConfirmRequestValidator>();
+
+            // Multilanguage validators
+            services.AddSingleton<IValidator<ClearMultilanguageCachesRequest>, ClearMultilanguageCachesRequestValidator>();
+            services.AddSingleton<IValidator<CreateMultilanguageItemRequest>, CreateMultilanguageItemRequestValidator>();
+            services.AddSingleton<IValidator<GetAllMultilanguageItemsRequest>, GetAllMultilanguageItemsRequestValidator>();
+            services.AddSingleton<IValidator<GetAllTranslationsInCsvRequest>, GetAllTranslationsInCsvRequestValidator>();
+            services.AddSingleton<IValidator<ImportMultilanguageCsvRequest>, ImportMultilanguageCsvRequestValidator>();
+            services.AddSingleton<IValidator<ModifyMultilanguageItemRequest>, ModifyMultilanguageItemRequestValidator>();
 
             // Email validators
             services.AddSingleton<IValidator<SendPasswordReminderEmailRequest>, SendPasswordReminderEmailRequestValidator>();
@@ -131,6 +139,14 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<RegisterOperation>();
             services.AddScoped<RemindPasswordOperation>();
             services.AddScoped<RemindPasswordConfirmOperation>();
+
+            // Multilanguage Operations
+            services.AddScoped<ClearMultilanguageCachesOperation>();
+            services.AddScoped<CreateMultilanguageItemOperation>();
+            services.AddScoped<GetAllMultilanguageItemsOperation>();
+            services.AddScoped<GetAllTranslationsInCsvOperation>();
+            services.AddScoped<ImportMultilanguageCsvOperation>();
+            services.AddScoped<ModifyMultilanguageItemOperation>();
 
             // Email Operations
             services.AddScoped<SendPasswordReminderEmailOperation>();

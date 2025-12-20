@@ -1,6 +1,7 @@
 ﻿using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Interfaces.Repositories.Auth;
 using BillIssue.Api.Models.Models.Auth;
+using BillIssue.Api.Models.Models.Base;
 using Dapper;
 using Npgsql;
 
@@ -20,36 +21,51 @@ namespace BillIssue.Api.Business.Repositories.Auth
 
         public async Task UpdatePassword(Guid userId, string newPasswordHash, string modifiedBy, IUnitOfWork unitOfWork)
         {
-            await using NpgsqlCommand updateUserPassword = new NpgsqlCommand("UPDATE user_users SET password = @passwordHash, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE id = @userId", unitOfWork.Connection, unitOfWork.Transaction)
+            try
             {
-                Parameters =
+                await using NpgsqlCommand updateUserPassword = new NpgsqlCommand("UPDATE user_users SET password = @passwordHash, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE id = @userId", unitOfWork.Connection, unitOfWork.Transaction)
                 {
-                    new("@userId", userId),
-                    new("@passwordHash", newPasswordHash),
-                    new("@modifiedBy", modifiedBy),
-                    new("@modifiedOn", DateTime.Now),
-                }
-            };
+                    Parameters =
+                    {
+                        new("@userId", userId),
+                        new("@passwordHash", newPasswordHash),
+                        new("@modifiedBy", modifiedBy),
+                        new("@modifiedOn", DateTime.Now),
+                    }
+                };
 
-            await updateUserPassword.ExecuteNonQueryAsync();
+                await updateUserPassword.ExecuteNonQueryAsync();
+            }
+            catch
+            {
+                await unitOfWork.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task CreateUserAccount(Guid userId, string passwordHash, string email, string firstName, string lastName, IUnitOfWork unitOfWork)
         {
-            await using NpgsqlCommand insertUser = new NpgsqlCommand("INSERT INTO user_users (id, email, password, first_name, last_name, created_by) VALUES (@id, @email, @pass, @firstName, @lastName, @createdBy)", unitOfWork.Connection, unitOfWork.Transaction)
+            try
             {
-                Parameters =
+                await using NpgsqlCommand insertUser = new NpgsqlCommand("INSERT INTO user_users (id, email, password, first_name, last_name, created_by) VALUES (@id, @email, @pass, @firstName, @lastName, @createdBy)", unitOfWork.Connection, unitOfWork.Transaction)
                 {
-                    new("@id", userId),
-                    new("@email", email),
-                    new("@pass", passwordHash),
-                    new("@firstName", firstName),
-                    new("@lastName", lastName),
-                    new("@createdBy", email),
-                }
-            };
-
-            await insertUser.ExecuteNonQueryAsync();
-        }
+                    Parameters =
+                    {
+                        new("@id", userId),
+                        new("@email", email),
+                        new("@pass", passwordHash),
+                        new("@firstName", firstName),
+                        new("@lastName", lastName),
+                        new("@createdBy", email),
+                    }
+                };
+                await insertUser.ExecuteNonQueryAsync();
+            }
+            catch
+            {
+                await unitOfWork.RollbackAsync();
+                throw;
+            }
+}
     }
 }
