@@ -35,7 +35,7 @@ namespace BillIssue.Api.Business.Operations.Multilanguage
 
             GetMultilanguageItemsResponse allMultilanguageItemResponse = await _operationFactory
                                                                                    .Get<GetAllMultilanguageItemsOperation>(typeof(GetAllMultilanguageItemsOperation))
-                                                                                   .Run(getAllMultilanguageItemsRequest);
+                                                                                   .Run(getAllMultilanguageItemsRequest, unitOfWork);
 
             allMultilanguageItemResponse.LanguageDictionary = allMultilanguageItemResponse.LanguageDictionary.OrderBy(ami => ami.LanguageType).ToList();
 

@@ -1,15 +1,10 @@
-﻿using BillIssue.Api.ActionFilters;
-using BillIssue.Api.Business.Base;
+﻿using BillIssue.Api.Business.Base;
 using BillIssue.Api.Business.Operations.Workspace;
 using BillIssue.Api.Controllers.Base;
-using BillIssue.Api.Interfaces.Auth;
-using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Models.Constants;
-using BillIssue.Api.Models.Enums.Auth;
 using BillIssue.Shared.Models.Authentication;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Response.Workspace;
-using BillIssue.Shared.Models.Response.Workspace.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,14 +14,10 @@ namespace BillIssue.Api.Controllers
     [ApiController]
     public class WorkspaceController : BaseController
     {
-        private readonly IWorkspaceFacade _workspaceFacade;
-        private readonly ISessionFacade _sessionFacade;
         private readonly OperationFactory _operationFactory;
 
-        public WorkspaceController(IWorkspaceFacade WorkspaceFacade, ISessionFacade sessionFacade, ILogger<WorkspaceController> logger, OperationFactory operationFactory) : base(logger)
+        public WorkspaceController(ILogger<WorkspaceController> logger, OperationFactory operationFactory) : base(logger)
         {
-            _workspaceFacade = WorkspaceFacade;
-            _sessionFacade = sessionFacade;
             _operationFactory = operationFactory;
         }
 
@@ -37,27 +28,21 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetWorkspaceResponse response = await _operationFactory
-                                                .Get<GetWorkspaceOperation>(typeof(GetWorkspaceOperation))
-                                                .Run(new GetWorkspaceRequest
-                                                {
-                                                    SessionUserData = session,
-                                                    WorkspaceId = WorkspaceId,
-                                                    LoadWorkspaceUsers = loadUserAssignments
-                                                });
+                                                    .Get<GetWorkspaceOperation>(typeof(GetWorkspaceOperation))
+                                                    .Run(new GetWorkspaceRequest
+                                                    {
+                                                        SessionUserData = session,
+                                                        WorkspaceId = WorkspaceId,
+                                                        LoadWorkspaceUsers = loadUserAssignments
+                                                    });
 
             return Ok(response);
         }
 
         [HttpGet("GetAllWorkspaceSelectionsForUser/{userId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetAllWorkspaceSelectionsForUser(Guid userId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<WorkspaceSelectionDto> result = await _workspaceFacade.GetAllWorkspaceSelectionsForUser(sessionId, new GetWorkspaceSelectionsForUserRequest
-            {
-                UserId = userId
-            });
-
             SessionUserData session = GetSessionModelFromJwt();
 
             GetWorkspaceSelectionsForUserResponse response = await _operationFactory
@@ -72,38 +57,38 @@ namespace BillIssue.Api.Controllers
         }
 
         [HttpGet("GetAllWorkspacesForUser/{userId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetAllWorkspacesForUser(Guid userId)
         {
             SessionUserData session = GetSessionModelFromJwt();
 
             GetAllWorkspacesForUsersResponse response = await _operationFactory
-                                                .Get<GetAllWorkspacesForUserOperation>(typeof(GetAllWorkspacesForUserOperation))
-                                                .Run(new GetAllWorkspacesForUserRequest
-                                                {
-                                                    SessionUserData = session,
-                                                    UserId = userId
-                                                });
+                                                                .Get<GetAllWorkspacesForUserOperation>(typeof(GetAllWorkspacesForUserOperation))
+                                                                .Run(new GetAllWorkspacesForUserRequest
+                                                                {
+                                                                    SessionUserData = session,
+                                                                    UserId = userId
+                                                                });
 
             return Ok(response);
         }
 
         [HttpPost("CreateWorkspace")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> CreateWorkspace([FromBody] CreateWorkspaceRequest request)
         {
             SessionUserData session = GetSessionModelFromJwt();
             request.SessionUserData = session;
 
             CreateWorkspaceResponse response = await _operationFactory
-                                                .Get<CreateWorkspaceOperation>(typeof(CreateWorkspaceOperation))
-                                                .Run(request);
+                                                        .Get<CreateWorkspaceOperation>(typeof(CreateWorkspaceOperation))
+                                                        .Run(request);
 
             return Ok(response);
         }
 
         [HttpPatch("UpdateWorkspace")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> UpdateWorkspace([FromBody] ModifyWorkspaceRequest request)
         {
             SessionUserData session = GetSessionModelFromJwt();
@@ -118,7 +103,7 @@ namespace BillIssue.Api.Controllers
 
 
         [HttpDelete("RemoveWorkspace/{WorkspaceId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> RemoveWorkspace(Guid WorkspaceId)
         {
             SessionUserData session = GetSessionModelFromJwt();
@@ -135,46 +120,62 @@ namespace BillIssue.Api.Controllers
         }
 
         [HttpGet("GetAllWorkspaceUsers/{WorkspaceId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetAllWorkspaceUsers(Guid WorkspaceId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<WorkspaceUserDto> result = await _workspaceFacade.GetAllWorkspaceUsers(sessionId, new GetAllWorkspaceUsersRequest
-            {
-                WorkspaceId = WorkspaceId
-            });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok(new GetAllWorkspaceUsersResponse { WorkspaceUserDtos = result });
+            GetAllWorkspaceUsersResponse response = await _operationFactory
+                                                            .Get<GetAllWorkspaceUsersOperation>(typeof(GetAllWorkspaceUsersOperation))
+                                                            .Run(new GetAllWorkspaceUsersRequest
+                                                            {
+                                                                SessionUserData = session,
+                                                                WorkspaceId = WorkspaceId
+                                                            });
+
+            return Ok(response);
         }
 
         [HttpPost("AddUserToWorkspace")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> AddUserToWorkspace([FromBody] AddUserToWorkspaceRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _workspaceFacade.AddUserToWorkspace(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok();
+            AddUserToWorkspaceResponse response = await _operationFactory
+                                                            .Get<AddUserToWorkspaceOperation>(typeof(AddUserToWorkspaceOperation))
+                                                            .Run(request);
+
+            return Ok(response);
         }
 
         [HttpPatch("UpdateUserInWorkspace")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
-        public async Task<IActionResult> UpdateUserInWorkspace([FromBody] UpdateUserInWorkspaceRequest request)
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
+        public async Task<IActionResult> UpdateUserInWorkspace([FromBody] ModifyUserInWorkspaceRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _workspaceFacade.UpdateUserInWorkspace(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok();
+            ModifyUserInWorkspaceResponse response = await _operationFactory
+                                                            .Get<ModifyUserInWorkspaceOperation>(typeof(ModifyUserInWorkspaceOperation))
+                                                            .Run(request);
+
+            return Ok(response);
         }
 
         [HttpDelete("RemoveUserFromWorkspace")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> RemoveUserFromWorkspace([FromBody] RemoveUserFromWorkspaceRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _workspaceFacade.RemoveUserFromWorkspace(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok();
+            RemoveUserFromWorkspaceResponse response = await _operationFactory
+                                                                .Get<RemoveUserFromWorkspaceOperation>(typeof(RemoveUserFromWorkspaceOperation))
+                                                                .Run(request);
+
+            return Ok(response);
         }
     }
 }

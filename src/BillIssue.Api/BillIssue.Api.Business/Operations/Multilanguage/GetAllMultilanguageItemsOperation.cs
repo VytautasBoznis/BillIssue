@@ -74,7 +74,7 @@ namespace BillIssue.Api.Business.Operations.Multilanguage
             {
                 ClearMultilanguageCachesResponse clearCacheResponse = await _operationFactory
                                                                    .Get<ClearMultilanguageCachesOperation>(typeof(ClearMultilanguageCachesOperation))
-                                                                   .Run(new ClearMultilanguageCachesRequest());
+                                                                   .Run(new ClearMultilanguageCachesRequest(), unitOfWork);
 
                 await BuildMultilanguageCaches(unitOfWork);
                 cachedLanguageDictionary = await _redisDBAsync.StringGetAsync(RedisCacheKeys.LanguageDictionryCacheKeyPrefix + languageType);

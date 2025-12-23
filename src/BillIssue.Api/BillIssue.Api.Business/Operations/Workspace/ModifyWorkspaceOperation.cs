@@ -32,7 +32,7 @@ namespace BillIssue.Api.Business.Operations.Workspace
                                                 {
                                                     SessionUserData = request.SessionUserData,
                                                     WorkspaceId = request.WorkspaceId
-                                                });
+                                                }, unitOfWork);
 
             if (workspaceResponse.WorkspaceDto == null)
             {
@@ -55,7 +55,7 @@ namespace BillIssue.Api.Business.Operations.Workspace
                                                 {
                                                     SessionUserData = request.SessionUserData,
                                                     WorkspaceId = request.WorkspaceId
-                                                });
+                                                }, unitOfWork);
 
             return new ModifyWorkspaceResponse
             {

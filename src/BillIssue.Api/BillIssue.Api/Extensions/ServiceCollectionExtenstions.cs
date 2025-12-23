@@ -68,7 +68,6 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<ISessionFacade, SessionFacade>();
 
             services.AddScoped<IUserFacade, UserFacade>();
-            services.AddScoped<IWorkspaceFacade, WorkspaceFacade>();
             services.AddScoped<IProjectFacade, ProjectFacade>();
             services.AddScoped<IScheduleFacade, ScheduleFacade>();
             services.AddScoped<ITimeLogEntryFacade, TimeLogEntryFacade>();
@@ -138,6 +137,10 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IValidator<ModifyWorkspaceRequest>, ModifyWorkspaceRequestValidator>();
             services.AddSingleton<IValidator<RemoveWorkspaceRequest>, RemoveWorkspaceRequestValidator>();
 
+            // Workspace User validators
+            services.AddSingleton<IValidator<GetAllWorkspaceUsersRequest>, GetAllWorkspaceUsersRequestValidator>();
+            services.AddSingleton<IValidator<ModifyUserInWorkspaceRequest>, ModifyUserInWorkspaceRequestValidator>();
+
             return services;
         }
 
@@ -179,6 +182,10 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<GetAllWorkspacesForUserOperation>();
             services.AddScoped<ModifyWorkspaceOperation>();
             services.AddScoped<RemoveWorkspaceOperation>();
+
+            // Workspace User Operations
+            services.AddScoped<GetAllWorkspaceUsersOperation>();
+            services.AddScoped<ModifyUserInWorkspaceOperation>();
 
             return services;
         }

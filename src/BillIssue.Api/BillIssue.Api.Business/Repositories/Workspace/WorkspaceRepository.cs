@@ -215,5 +215,63 @@ namespace BillIssue.Api.Business.Repositories.Workspace
                 throw new WorkspaceException("Failed to create workspace assignment", ExceptionCodes.WORKSPACE_USER_ASSIGNMENT_FAILED_TO_CREATE);
             }
         }
+
+        public async Task UpdateWorkspaceUserAssignmentDataInTransaction(Guid userId, string userEmail, WorkspaceUserAssignmentDto workspaceAssignmentDto, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand updateUserAssignment = new NpgsqlCommand("UPDATE workspace_user_assignments SET workspace_role = @newRole, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE workspace_id = @cwi AND user_id = @targetUserId", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                    {
+                        new("@cwi", workspaceAssignmentDto.WorkspaceId),
+                        new("@newRole", (int) workspaceAssignmentDto.WorkspaceRole),
+                        new("@targetUserId", workspaceAssignmentDto.UserId),
+                        new("@modifiedBy", userEmail),
+                        new("@modifiedOn", DateTime.UtcNow)
+                    }
+                };
+
+                await updateUserAssignment.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"""
+                    Failed to upadete user in company workspace assignment for workspace: {workspaceAssignmentDto.WorkspaceId} target user id: {workspaceAssignmentDto.UserId} user id: {userId} error: {ex.Message}
+
+                    StackTrace: {ex.StackTrace}
+                    """);
+
+                await unitOfWork.RollbackAsync();
+            }
+        }
+
+        public async Task RemoveWorkspaceUserAssignmentInTracsaction(Guid userId, Guid WorkspaceId, Guid targetUserId, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand deletUserAssignment = new NpgsqlCommand("DELETE FROM workspace_user_assignments WHERE workspace_id = @cwi AND user_id = @targetUserId", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                    {
+                        new("@cwi", WorkspaceId),
+                        new("@targetUserId", targetUserId)
+                    }
+                };
+
+                await deletUserAssignment.ExecuteNonQueryAsync();
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"""
+                    Failed to remove user assignment for workspace: {WorkspaceId} user id: {userId} error: {ex.Message}
+
+                    StackTrace: {ex.StackTrace}
+                    """);
+                await unitOfWork.RollbackAsync();
+            }
+        }
     }
 }

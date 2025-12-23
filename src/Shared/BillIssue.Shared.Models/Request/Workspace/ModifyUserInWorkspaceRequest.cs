@@ -3,7 +3,7 @@ using BillIssue.Shared.Models.Request.Base;
 
 namespace BillIssue.Shared.Models.Request.Workspace
 {
-    public class UpdateUserInWorkspaceRequest: BaseRequest
+    public class ModifyUserInWorkspaceRequest: AuthenticatedRequest
     {
         public Guid WorkspaceId { get; set; }
         public Guid UserId { get; set; }
