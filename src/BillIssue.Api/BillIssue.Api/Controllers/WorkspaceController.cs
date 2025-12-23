@@ -1,10 +1,12 @@
 ﻿using BillIssue.Api.ActionFilters;
+using BillIssue.Api.Business.Base;
+using BillIssue.Api.Business.Operations.Auth;
+using BillIssue.Api.Business.Operations.Workspace;
 using BillIssue.Api.Controllers.Base;
 using BillIssue.Api.Interfaces.Auth;
 using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
-using BillIssue.Api.Models.Models.Auth;
 using BillIssue.Shared.Models.Authentication;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Response.Workspace;
@@ -20,32 +22,31 @@ namespace BillIssue.Api.Controllers
     {
         private readonly IWorkspaceFacade _workspaceFacade;
         private readonly ISessionFacade _sessionFacade;
+        private readonly OperationFactory _operationFactory;
 
-        public WorkspaceController(IWorkspaceFacade WorkspaceFacade, ISessionFacade sessionFacade, ILogger<WorkspaceController> logger) : base(logger)
+        public WorkspaceController(IWorkspaceFacade WorkspaceFacade, ISessionFacade sessionFacade, ILogger<WorkspaceController> logger, OperationFactory operationFactory) : base(logger)
         {
             _workspaceFacade = WorkspaceFacade;
             _sessionFacade = sessionFacade;
+            _operationFactory = operationFactory;
         }
 
         [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         [HttpGet("GetWorkspace/{WorkspaceId}")]
         public async Task<IActionResult> GetWorkspace(Guid WorkspaceId, bool loadUserAssignments)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-
             SessionUserData session = GetSessionModelFromJwt();
 
-            /*string jwtToken = Request.Headers[]
+            GetWorkspaceResponse response = await _operationFactory
+                                                .Get<GetWorkspaceOperation>(typeof(GetWorkspaceOperation))
+                                                .Run(new GetWorkspaceRequest
+                                                {
+                                                    SessionUserData = session,
+                                                    WorkspaceId = WorkspaceId,
+                                                    LoadWorkspaceUsers = loadUserAssignments
+                                                });
 
-            /*WorkspaceDto result = await _workspaceFacade.GetWorkspace(sessionId, new GetWorkspaceRequest
-            {
-                WorkspaceId = WorkspaceId,
-                LoadWorkspaceUsers = loadUserAssignments
-            });
-
-            return Ok(new GetWorkspaceResponse { WorkspaceDto = result });*/
-
-            return Ok();
+            return Ok(response);
         }
 
         [HttpGet("GetAllWorkspaceSelectionsForUser/{userId}")]
@@ -58,7 +59,17 @@ namespace BillIssue.Api.Controllers
                 UserId = userId
             });
 
-            return Ok(new GetWorkspaceSelectionsForUserResponse { WorkspaceSelections = result });
+            SessionUserData session = GetSessionModelFromJwt();
+
+            GetWorkspaceSelectionsForUserResponse response = await _operationFactory
+                                                                        .Get<GetWorkspaceSelectionsForUserOperation>(typeof(GetWorkspaceSelectionsForUserOperation))
+                                                                        .Run(new GetWorkspaceSelectionsForUserRequest
+                                                                        {
+                                                                            SessionUserData = session,
+                                                                            UserId = userId
+                                                                        });
+
+            return Ok(response);
         }
 
         [HttpGet("GetAllWorkspacesForUser/{userId}")]

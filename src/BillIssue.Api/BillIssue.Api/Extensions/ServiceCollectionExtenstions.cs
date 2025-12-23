@@ -11,6 +11,8 @@ using BillIssue.Api.Business.Project;
 using BillIssue.Api.Business.Repositories.Auth;
 using BillIssue.Api.Business.Repositories.Confirmations;
 using BillIssue.Api.Business.Repositories.Multilanguage;
+using BillIssue.Api.Business.Repositories.Project;
+using BillIssue.Api.Business.Repositories.Workspace;
 using BillIssue.Api.Business.Schedule;
 using BillIssue.Api.Business.TimeLogEntry;
 using BillIssue.Api.Business.Users;
@@ -21,6 +23,8 @@ using BillIssue.Api.Interfaces.Project;
 using BillIssue.Api.Interfaces.Repositories.Auth;
 using BillIssue.Api.Interfaces.Repositories.Confirmations;
 using BillIssue.Api.Interfaces.Repositories.Multilanguage;
+using BillIssue.Api.Interfaces.Repositories.Project;
+using BillIssue.Api.Interfaces.Repositories.Workspace;
 using BillIssue.Api.Interfaces.Schedule;
 using BillIssue.Api.Interfaces.TimeLogEntry;
 using BillIssue.Api.Interfaces.User;
@@ -91,6 +95,8 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IConfirmationRepository, ConfirmationRepository>();
             services.AddScoped<IMultilanguageRepository, MultilanguageRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
 
             return services;
         }
@@ -122,10 +128,12 @@ namespace BillIssue.Api.Extensions
             // Project validators
             services.AddSingleton<IValidator<CreateProjectRequest>, CreateProjectRequestValidator>();
             services.AddSingleton<IValidator<GetProjectRequest>, GetProjectRequestValidator>();
-            
+            services.AddSingleton<IValidator<GetProjectSelectionsForWorkspacesRequest>, GetProjectSelectionsForWorkspacesRequestValidator>();
+
             // Workspace validators
             services.AddSingleton<IValidator<GetWorkspaceRequest>, GetWorkspaceRequestValidator>();
             services.AddSingleton<IValidator<CreateWorkspaceRequest>, CreateWorkspaceRequestValidator>();
+            services.AddSingleton<IValidator<GetWorkspaceSelectionsForUserRequest>, GetWorkspaceSelectionsForUserRequestValidator>();
 
             return services;
         }
@@ -159,10 +167,12 @@ namespace BillIssue.Api.Extensions
             // Project Operations
             services.AddScoped<CreateProjectOperation>();
             services.AddScoped<GetProjectOperation>();
+            services.AddScoped<GetProjectSelectionsForWorkspacesOperation>();
 
             // Workspace Operations
             services.AddScoped<CreateWorkspaceOperation>();
             services.AddScoped<GetWorkspaceOperation>();
+            services.AddScoped<GetWorkspaceSelectionsForUserOperation>();
 
             return services;
         }
