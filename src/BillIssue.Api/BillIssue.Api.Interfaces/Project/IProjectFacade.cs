@@ -13,7 +13,7 @@ namespace BillIssue.Api.Interfaces.Project
         public Task<ProjectDto> GetProject(string sessionId, GetProjectRequest request);
         public Task RemoveProject(string sessionId, RemoveProjectRequest request);
         public Task ModifyProject(string sessionId, ModifyProjectRequest request);
-        public Task<List<ProjectSearchDto>> GetUserProjectsInWorkspace(string sessionId, GetUserProjectsInWorkspaceForUserRequest request);
+        public Task<List<ProjectSearchDto>> GetUserProjectsInWorkspace(string sessionId, GetProjectsInWorkspaceForUserRequest request);
         #endregion
 
         #region Project worktype management

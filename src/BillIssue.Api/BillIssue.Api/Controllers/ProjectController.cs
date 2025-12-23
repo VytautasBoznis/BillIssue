@@ -1,12 +1,16 @@
 ﻿using BillIssue.Api.ActionFilters;
+using BillIssue.Api.Business.Base;
+using BillIssue.Api.Business.Operations.Project;
 using BillIssue.Api.Controllers.Base;
 using BillIssue.Api.Interfaces.Project;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
-using Microsoft.AspNetCore.Mvc;
+using BillIssue.Shared.Models.Authentication;
 using BillIssue.Shared.Models.Request.Project;
-using BillIssue.Shared.Models.Response.Project.Dto;
 using BillIssue.Shared.Models.Response.Project;
+using BillIssue.Shared.Models.Response.Project.Dto;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BillIssue.Api.Controllers
 {
@@ -15,64 +19,93 @@ namespace BillIssue.Api.Controllers
     public class ProjectController : BaseController
     {
         private readonly IProjectFacade _projectFacade;
-        public ProjectController(IProjectFacade projectFacade, ILogger<ProjectController> logger) : base(logger)
+        private readonly OperationFactory _operationFactory;
+        public ProjectController(IProjectFacade projectFacade, OperationFactory operationFactory, ILogger<ProjectController> logger) : base(logger)
         {
             _projectFacade = projectFacade;
+            _operationFactory = operationFactory;
         }
 
         #region Project
 
         [HttpGet("GetProject/{projectId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetProject(Guid projectId, bool loadUserAssignments)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            ProjectDto result = await _projectFacade.GetProject(sessionId, new GetProjectRequest { ProjectId = projectId, LoadUserAssignments = loadUserAssignments });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok(new GetProjectResponse { ProjectDto = result});
+            GetProjectResponse response = await _operationFactory
+                                                    .Get<GetProjectOperation>(typeof(GetProjectOperation))
+                                                    .Run(new GetProjectRequest
+                                                    {
+                                                        SessionUserData = session,
+                                                        ProjectId = projectId,
+                                                        LoadUserAssignments  = loadUserAssignments
+                                                    });
+
+            return Ok(response);
         }
 
         [HttpPost("CreateProject")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> CreateProject([FromBody] CreateProjectRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            ProjectDto result = await _projectFacade.CreateProject(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok(new CreateProjectResponse { ProjectDto = result });
+            CreateProjectResponse response = await _operationFactory
+                                                    .Get<CreateProjectOperation>(typeof(CreateProjectOperation))
+                                                    .Run(request);
+
+            return Ok(response);
         }
 
         [HttpPatch("ModifyProject")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> ModifyProject([FromBody] ModifyProjectRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _projectFacade.ModifyProject(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok();
+            ModifyProjectResponse response = await _operationFactory
+                                                    .Get<ModifyProjectOperation>(typeof(ModifyProjectOperation))
+                                                    .Run(request);
+
+            return Ok(response);
         }
 
         [HttpDelete("RemoveProject/{projectId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> RemoveProject(Guid projectId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _projectFacade.RemoveProject(sessionId, new RemoveProjectRequest
-            {
-                ProjectId = projectId
-            });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok();
+            RemoveProjectResponse response = await _operationFactory
+                                                    .Get<RemoveProjectOperation>(typeof(RemoveProjectOperation))
+                                                    .Run(new RemoveProjectRequest
+                                                    {
+                                                        ProjectId = projectId,
+                                                        SessionUserData = session
+                                                    });
+
+            return Ok(response);
         }
 
         [HttpGet("GetProjectsForUserInWorkspace/{workspaceId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetProjectsForUserInWorkspace(Guid workspaceId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<ProjectSearchDto> result = await _projectFacade.GetUserProjectsInWorkspace(sessionId, new GetUserProjectsInWorkspaceForUserRequest { WorkspaceId = workspaceId });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok(new GetUserProjectsInWorkspaceForUserResponse { ProjectSearchDtos = result });
+            GetProjectsInWorkspaceForUserResponse response = await _operationFactory
+                                                                    .Get<GetProjectsForUserInWorkspaceOperation>(typeof(GetProjectsForUserInWorkspaceOperation))
+                                                                    .Run(new GetProjectsInWorkspaceForUserRequest
+                                                                    {
+                                                                        WorkspaceId = workspaceId,
+                                                                        SessionUserData = session
+                                                                    });
+
+            return Ok(response);
         }
 
         #endregion

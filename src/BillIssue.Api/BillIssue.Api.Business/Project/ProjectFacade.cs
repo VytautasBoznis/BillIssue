@@ -193,7 +193,7 @@ namespace BillIssue.Api.Business.Project
             transaction.Commit();
         }
 
-        public async Task<List<ProjectSearchDto>> GetUserProjectsInWorkspace(string sessionId, GetUserProjectsInWorkspaceForUserRequest request)
+        public async Task<List<ProjectSearchDto>> GetUserProjectsInWorkspace(string sessionId, GetProjectsInWorkspaceForUserRequest request)
         {
             SessionModel sessionModel = await _sessionFacade.GetSessionModel(sessionId);
 

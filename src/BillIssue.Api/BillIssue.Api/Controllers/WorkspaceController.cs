@@ -21,8 +21,8 @@ namespace BillIssue.Api.Controllers
             _operationFactory = operationFactory;
         }
 
-        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         [HttpGet("GetWorkspace/{WorkspaceId}")]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetWorkspace(Guid WorkspaceId, bool loadUserAssignments)
         {
             SessionUserData session = GetSessionModelFromJwt();

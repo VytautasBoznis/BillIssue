@@ -16,7 +16,6 @@ using BillIssue.Api.Business.Repositories.Workspace;
 using BillIssue.Api.Business.Schedule;
 using BillIssue.Api.Business.TimeLogEntry;
 using BillIssue.Api.Business.Users;
-using BillIssue.Api.Business.Workspace;
 using BillIssue.Api.Interfaces.Auth;
 using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Interfaces.Project;
@@ -28,7 +27,6 @@ using BillIssue.Api.Interfaces.Repositories.Workspace;
 using BillIssue.Api.Interfaces.Schedule;
 using BillIssue.Api.Interfaces.TimeLogEntry;
 using BillIssue.Api.Interfaces.User;
-using BillIssue.Api.Interfaces.Workspace;
 using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
@@ -128,6 +126,9 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IValidator<CreateProjectRequest>, CreateProjectRequestValidator>();
             services.AddSingleton<IValidator<GetProjectRequest>, GetProjectRequestValidator>();
             services.AddSingleton<IValidator<GetProjectSelectionsForWorkspacesRequest>, GetProjectSelectionsForWorkspacesRequestValidator>();
+            services.AddSingleton<IValidator<ModifyProjectRequest>, ModifyProjectRequestValidator>();
+            services.AddSingleton<IValidator<RemoveProjectRequest>, RemoveProjectRequestValidator>();
+            services.AddSingleton<IValidator<GetProjectsInWorkspaceForUserRequest>, GetProjectsInWorkspaceForUserRequestValidator>();
 
             // Workspace validators
             services.AddSingleton<IValidator<GetWorkspaceRequest>, GetWorkspaceRequestValidator>();
@@ -174,6 +175,9 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<CreateProjectOperation>();
             services.AddScoped<GetProjectOperation>();
             services.AddScoped<GetProjectSelectionsForWorkspacesOperation>();
+            services.AddScoped<GetProjectsForUserInWorkspaceOperation>();
+            services.AddScoped<ModifyProjectOperation>();
+            services.AddScoped<RemoveProjectOperation>();
 
             // Workspace Operations
             services.AddScoped<CreateWorkspaceOperation>();
