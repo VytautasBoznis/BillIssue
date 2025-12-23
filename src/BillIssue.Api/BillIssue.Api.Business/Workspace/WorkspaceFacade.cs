@@ -148,7 +148,7 @@ namespace BillIssue.Api.Business.Workspace
             await _projectFacade.CreateProjectForNewUser(newUserId, newWorkspaceId, firstName, email, transaction);
         }
 
-        public async Task<WorkspaceDto> UpdateWorkspace(string sessionId, UpdateWorkspaceRequest request)
+        public async Task<WorkspaceDto> UpdateWorkspace(string sessionId, ModifyWorkspaceRequest request)
         {
             SessionModel sessionModel = await _sessionFacade.GetSessionModel(sessionId);
             WorkspaceDto workspaceDto = GetWorkspaceDataWithPermissionCheck(sessionModel.Id, request.WorkspaceId, WorkspaceUserRole.Administrator, sessionModel.Role == UserRole.Admin);

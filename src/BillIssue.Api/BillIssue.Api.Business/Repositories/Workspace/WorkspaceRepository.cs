@@ -7,6 +7,7 @@ using BillIssue.Shared.Models.Response.Workspace.Dto;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using System.Transactions;
 
 namespace BillIssue.Api.Business.Repositories.Workspace
 {
@@ -33,6 +34,21 @@ namespace BillIssue.Api.Business.Repositories.Workspace
                     AND ww.is_deleted = false", dictionary);
 
             return workspaceUsers.ToList();
+        }
+
+        public async Task<List<WorkspaceSearchDto>> GetAllWorkspaceDataForUser(Guid userId, IUnitOfWork unitOfWork)
+        {
+            var dictionary = new Dictionary<string, object> { { "@ui", userId } };
+
+            IEnumerable<WorkspaceSearchDto> workspaceDtos = await unitOfWork.Connection.QueryAsync<WorkspaceSearchDto>(@"
+                SELECT cw.id, cw.name, cw.description, cwua.workspace_role as UserRole, cw.is_deleted as IsDeleted
+                FROM workspace_user_assignments cwua
+                    JOIN workspace_workspaces cw
+                        ON cwua.workspace_id = cw.id
+                WHERE
+                    cwua.user_id = @ui", dictionary);
+
+            return workspaceDtos.ToList();
         }
 
         public async Task<WorkspaceDto> GetWorkspaceDataWithPermissionCheck(Guid userId, Guid WorkspaceId, WorkspaceUserRole minimalRole, IUnitOfWork unitOfWork, bool isAdmin = false)
@@ -108,6 +124,63 @@ namespace BillIssue.Api.Business.Repositories.Workspace
             }
 
             return newWorkspaceId;
+        }
+        
+        public async Task ModifyWorkspaceInTransaction(Guid userId, string userEmail, WorkspaceDto WorkspaceDto, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand updateWorkspace = new NpgsqlCommand("UPDATE workspace_workspaces SET name = @newName, description = @newDescription, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE id = @wi", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                    {
+                        new("@wi", WorkspaceDto.Id),
+                        new("@newName", WorkspaceDto.Name),
+                        new("@newDescription", WorkspaceDto.Description),
+                        new("@modifiedBy", userEmail),
+                        new("@modifiedOn", DateTime.UtcNow)
+                    }
+                };
+
+                await updateWorkspace.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"""
+                    Failed to upadete company workspace: {WorkspaceDto.Id} for user with user id {userId} error: {ex.Message}
+
+                    StackTrace: {ex.StackTrace}
+                    """);
+                await unitOfWork.RollbackAsync();
+            }
+        }
+
+        public async Task MarkWorkspaceAsDeleted(Guid userId, string userEmail, Guid WorkspaceId, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand markCompnayWorkspaceAsDeleted = new NpgsqlCommand("UPDATE workspace_workspaces SET is_Deleted = @isDeleted, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE id = @wi", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                    {
+                        new("@wi", WorkspaceId),
+                        new("@isDeleted", true),
+                        new("@modifiedBy", userEmail),
+                        new("@modifiedOn", DateTime.UtcNow)
+                    }
+                };
+
+                await markCompnayWorkspaceAsDeleted.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"""
+                    Failed to mark company workspace as deleted company workspace id: {WorkspaceId} for user with user id {userId} error: {ex.Message}
+
+                    StackTrace: {ex.StackTrace}
+                    """);
+                await unitOfWork.RollbackAsync();
+            }
         }
 
         public async Task CreateWorkspaceUserAssignmentInTransaction(Guid userId, string userEmail, WorkspaceUserAssignmentDto workspaceAssignmentDto, IUnitOfWork unitOfWork)

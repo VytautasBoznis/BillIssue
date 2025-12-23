@@ -1,6 +1,5 @@
 ﻿using BillIssue.Api.ActionFilters;
 using BillIssue.Api.Business.Base;
-using BillIssue.Api.Business.Operations.Auth;
 using BillIssue.Api.Business.Operations.Workspace;
 using BillIssue.Api.Controllers.Base;
 using BillIssue.Api.Interfaces.Auth;
@@ -76,33 +75,45 @@ namespace BillIssue.Api.Controllers
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
         public async Task<IActionResult> GetAllWorkspacesForUser(Guid userId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<WorkspaceSearchDto> result = await _workspaceFacade.GetAllWorkspacesForUser(sessionId, new GetAllWorkspacesForUserRequest
-            {
-                UserId = userId
-            });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok(new GetAllWorkspacesForUsersResponse { WorkspaceDtos = result });
+            GetAllWorkspacesForUsersResponse response = await _operationFactory
+                                                .Get<GetAllWorkspacesForUserOperation>(typeof(GetAllWorkspacesForUserOperation))
+                                                .Run(new GetAllWorkspacesForUserRequest
+                                                {
+                                                    SessionUserData = session,
+                                                    UserId = userId
+                                                });
+
+            return Ok(response);
         }
 
         [HttpPost("CreateWorkspace")]
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
         public async Task<IActionResult> CreateWorkspace([FromBody] CreateWorkspaceRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            WorkspaceDto result = await _workspaceFacade.CreateWorkspace(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok(new CreateWorkspaceResponse { WorkspaceDto = result });
+            CreateWorkspaceResponse response = await _operationFactory
+                                                .Get<CreateWorkspaceOperation>(typeof(CreateWorkspaceOperation))
+                                                .Run(request);
+
+            return Ok(response);
         }
 
         [HttpPatch("UpdateWorkspace")]
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
-        public async Task<IActionResult> UpdateWorkspace([FromBody] UpdateWorkspaceRequest request)
+        public async Task<IActionResult> UpdateWorkspace([FromBody] ModifyWorkspaceRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            WorkspaceDto result = await _workspaceFacade.UpdateWorkspace(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok(new UpdateWorkspaceResponse { WorkspaceDto = result });
+            ModifyWorkspaceResponse response = await _operationFactory
+                                                        .Get<ModifyWorkspaceOperation>(typeof(ModifyWorkspaceOperation))
+                                                        .Run(request);
+
+            return Ok(response);
         }
 
 
@@ -110,13 +121,17 @@ namespace BillIssue.Api.Controllers
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
         public async Task<IActionResult> RemoveWorkspace(Guid WorkspaceId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _workspaceFacade.RemoveWorkspace(sessionId, new RemoveWorkspaceRequest
-            {
-                WorkspaceId = WorkspaceId
-            });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok();
+            RemoveWorkspaceResponse response = await _operationFactory
+                                                        .Get<RemoveWorkspaceOperation>(typeof(RemoveWorkspaceOperation))
+                                                        .Run(new RemoveWorkspaceRequest
+                                                        {
+                                                            SessionUserData = session,
+                                                            WorkspaceId = WorkspaceId
+                                                        });
+
+            return Ok(response);
         }
 
         [HttpGet("GetAllWorkspaceUsers/{WorkspaceId}")]
