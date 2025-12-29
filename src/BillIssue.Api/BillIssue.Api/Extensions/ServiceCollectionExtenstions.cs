@@ -130,6 +130,13 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IValidator<RemoveProjectRequest>, RemoveProjectRequestValidator>();
             services.AddSingleton<IValidator<GetProjectsInWorkspaceForUserRequest>, GetProjectsInWorkspaceForUserRequestValidator>();
 
+            // Project worktype validators
+            services.AddSingleton<IValidator<GetProjectWorktypeRequest>, GetProjectWorktypeRequestValidator>();
+            services.AddSingleton<IValidator<GetAllProjectWorktypesRequest>,  GetAllProjectWorktypesRequestValidator>();
+            services.AddSingleton<IValidator<CreateProjectWorktypeRequest>, CreateProjectWorktypeRequestValidator>();
+            services.AddSingleton<IValidator<ModifyProjectWorktypeRequest>, ModifyProjectWorktypeRequestValidator>();
+            services.AddSingleton<IValidator<RemoveProjectWorktypeRequest>, RemoveProjectWorktypeRequestValidator>();
+
             // Workspace validators
             services.AddSingleton<IValidator<GetWorkspaceRequest>, GetWorkspaceRequestValidator>();
             services.AddSingleton<IValidator<CreateWorkspaceRequest>, CreateWorkspaceRequestValidator>();
@@ -178,6 +185,13 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<GetProjectsForUserInWorkspaceOperation>();
             services.AddScoped<ModifyProjectOperation>();
             services.AddScoped<RemoveProjectOperation>();
+
+            // Project Worktype Operations
+            services.AddScoped<GetProjectWorktypeOperation>();
+            services.AddScoped<GetAllProjectWorktypesOperation>();
+            services.AddScoped<CreateProjectWorktypeOperation>();
+            services.AddScoped<ModifyProjectWorktypeOperation>();
+            services.AddScoped<RemoveProjectWorktypeOperation>();
 
             // Workspace Operations
             services.AddScoped<CreateWorkspaceOperation>();

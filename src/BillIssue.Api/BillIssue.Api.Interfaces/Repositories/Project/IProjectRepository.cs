@@ -19,5 +19,10 @@ namespace BillIssue.Api.Interfaces.Repositories.Project
 
         Task CreateUserAssignmentInTransaction(Guid userId, string userEmail, ProjectUserAssignmentDto newUserAssignment, IUnitOfWork unitOfWork);
         Task<List<ProjectUserAssignmentDto>> GetProjectUserAssignmentDtos(Guid projectId, IUnitOfWork unitOfWork);
+
+        Task<ProjectWorktypeDto> GetProjectWorktypeWithPermissionCheck(Guid userId, Guid projectWorktypeId, ProjectUserRoles minimumRole, bool isUserAdmin, IUnitOfWork unitOfWork);
+        Task CreateProjectWorktypeInTransaction(Guid userId, string userEmail, ProjectWorktypeDto newProjectWorktype, IUnitOfWork unitOfWork);
+        Task ModifyProjectWorktypeInTransaction(Guid userId, string userEmail, ProjectWorktypeDto newProjectWorktypeValues, IUnitOfWork unitOfWork);
+        Task MarkProjectWorktypeAsDeletedInTransaction(Guid userId, string userEmail, Guid projectId, Guid projectWorktypeId, IUnitOfWork unitOfWork);
     }
 }

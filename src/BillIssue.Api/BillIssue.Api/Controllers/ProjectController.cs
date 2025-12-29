@@ -113,57 +113,83 @@ namespace BillIssue.Api.Controllers
         #region Project worktype
 
         [HttpGet("GetProjectWorktype/{projectWorktypeId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetProjectWorktype(Guid projectWorktypeId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            ProjectWorktypeDto result = await _projectFacade.GetProjectWorktype(sessionId, new GetProjectWorktypeRequest { ProjectWorktypeId = projectWorktypeId });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok(new GetProjectWorktypeResponse { ProjectWorktypeDto = result });
+            GetProjectWorktypeResponse response = await _operationFactory
+                                                            .Get<GetProjectWorktypeOperation>(typeof(GetProjectWorktypeOperation))
+                                                            .Run(new GetProjectWorktypeRequest
+                                                            {
+                                                                ProjectWorktypeId = projectWorktypeId,
+                                                                SessionUserData = session
+                                                            });
+
+            return Ok(response);
         }
 
         [HttpGet("GetAllProjectWorktypes/{projectId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetAllProjectWorktypes(Guid projectId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<ProjectWorktypeDto> result = await _projectFacade.GetAllProjectWorktypes(sessionId, new GetAllProjectWorktypesRequest { ProjectId = projectId });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok(new GetAllProjectWorktypesResponse { ProjectWorktypeDtos = result });
+            GetAllProjectWorktypesResponse response = await _operationFactory
+                                                                .Get<GetAllProjectWorktypesOperation>(typeof(GetAllProjectWorktypesOperation))
+                                                                .Run(new GetAllProjectWorktypesRequest
+                                                                {
+                                                                    ProjectId = projectId,
+                                                                    SessionUserData = session
+                                                                });
+
+            return Ok(response);
         }
 
         [HttpPost("CreateProjectWorktype")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> CreateProjectWorktype([FromBody] CreateProjectWorktypeRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _projectFacade.CreateProjectWorktype(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok();
+            CreateProjectWorktypeResponse response = await _operationFactory
+                                                                .Get<CreateProjectWorktypeOperation>(typeof(CreateProjectWorktypeOperation))
+                                                                .Run(request);
+
+            return Ok(response);
         }
 
         [HttpPatch("ModifyProjectWorktype")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> ModifyProjectWorktype([FromBody] ModifyProjectWorktypeRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _projectFacade.ModifyProjectWorktype(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok();
+            ModifyProjectWorktypeResponse response = await _operationFactory
+                                                                .Get<ModifyProjectWorktypeOperation>(typeof(ModifyProjectWorktypeOperation))
+                                                                .Run(request);
+
+            return Ok(response);
         }
 
         [HttpDelete("RemoveProjectWorktype/{projectId}/{projectWorktypeId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> RemoveProjectWorktype(Guid projectId, Guid projectWorktypeId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _projectFacade.RemoveProjectWorktype(sessionId, new RemoveProjectWorktypeRequest
-            {
-                ProjectId = projectId,
-                ProjectWorktypeId = projectWorktypeId
-            });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok();
+            RemoveProjectWorktypeResponse response = await _operationFactory
+                                                                .Get<RemoveProjectWorktypeOperation>(typeof(RemoveProjectWorktypeOperation))
+                                                                .Run(new RemoveProjectWorktypeRequest
+                                                                {
+                                                                    ProjectId = projectId,
+                                                                    ProjectWorktypeId = projectWorktypeId,
+                                                                    SessionUserData = session
+                                                                });
+
+            return Ok(session);
         }
 
         #endregion

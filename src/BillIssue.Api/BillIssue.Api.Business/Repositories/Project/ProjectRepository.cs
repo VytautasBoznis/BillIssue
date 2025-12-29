@@ -314,5 +314,152 @@ namespace BillIssue.Api.Business.Repositories.Project
 
             return projectUserAssignments.ToList();
         }
+
+        public async Task<ProjectWorktypeDto> GetProjectWorktypeWithPermissionCheck(Guid userId, Guid projectWorktypeId, ProjectUserRoles minimumRole, bool isUserAdmin, IUnitOfWork unitOfWork)
+        {
+            var dictionary = new Dictionary<string, object> { { "@pwi", projectWorktypeId } };
+
+            ProjectWorktypeDto projectWorktypeDto = await unitOfWork.Connection.QueryFirstOrDefaultAsync<ProjectWorktypeDto>(@"SELECT 
+	                pw.id as ProjectWorktypeId,
+	                pw.project_id as ProjectId,
+	                pp.name as ProjectName,
+	                pw.name as Name,
+	                pw.description as Description,
+	                pw.is_billable as IsBillable,
+	                pw.is_deleted as IsDeleted	
+                FROM
+	                project_worktypes pw
+	                JOIN project_projects pp
+		                ON pw.project_id = pp.id
+                WHERE
+	                pw.id = @pwi", dictionary);
+
+            if (projectWorktypeDto == null)
+            {
+                _logger.LogError($"User with user id: {userId} tried to get an unknow project worktype with id: {projectWorktypeId}.");
+                throw new ProjectException("Project worktype not found", ExceptionCodes.PROJECT_WORKTYPE_NOT_FOUND);
+            }
+
+            if (projectWorktypeDto.IsDeleted)
+            {
+                _logger.LogError($"User with user id: {userId} tried to get an a project worktype that is deleted project worktype with id: {projectWorktypeId}.");
+                throw new ProjectException("Project worktype not found", ExceptionCodes.PROJECT_WORKTYPE_NOT_FOUND);
+            }
+
+            dictionary.Add("@ui", userId);
+            dictionary.Add("@ur", (int)minimumRole);
+
+            ProjectUserAssignmentDto projectUserAssignmentDto = await unitOfWork.Connection.QueryFirstOrDefaultAsync<ProjectUserAssignmentDto>(@"
+                SELECT pua.id as UserAssignmentId, pua.project_id as ProjectId, pua.user_id as UserId, pua.project_role as Role
+                FROM project_user_assignments pua
+	                JOIN project_projects pp
+		                ON pp.id = pua.project_id
+	                JOIN project_worktypes pw
+		                ON pw.project_id = pp.id
+                WHERE pua.user_id = @ui
+                    AND pw.id = @pwi
+                    AND pua.project_role >= @ur", dictionary);
+
+            if (projectUserAssignmentDto == null && !isUserAdmin)
+            {
+                _logger.LogError($"User with user id: {userId} tried to access project worktype with id: {projectWorktypeId} that he did not have access to.");
+                throw new ProjectException("Project not found", ExceptionCodes.PROJECT_WORKTYPE_NOT_FOUND);
+            }
+
+            return projectWorktypeDto;
+        }
+
+        public async Task CreateProjectWorktypeInTransaction(Guid userId, string userEmail, ProjectWorktypeDto newProjectWorktype, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand insertProjectWorktype = new NpgsqlCommand("INSERT INTO project_worktypes (project_id, name, description, is_billable, created_by) VALUES (@projectId, @name, @description, @isBillable, @createdBy)", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                        {
+                            new("@projectId", newProjectWorktype.ProjectId),
+                            new("@name", newProjectWorktype.Name),
+                            new("@description", newProjectWorktype.Description),
+                            new("@isBillable", newProjectWorktype.IsBillable),
+                            new("@createdBy", userEmail),
+                        }
+                };
+
+                await insertProjectWorktype.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"""
+                    Failed to create project worktype for project id: {newProjectWorktype.ProjectId}, user id: {userId} exception message: {ex.Message} 
+
+                     stacktrace: {ex.StackTrace}
+                    """);
+
+                await unitOfWork.RollbackAsync();
+
+                throw new ProjectException("Failed to create projects worktype", ExceptionCodes.PROJECT_WORKTYPE_FAILED_TO_CREATE);
+            }
+        }
+
+        public async Task ModifyProjectWorktypeInTransaction(Guid userId, string userEmail, ProjectWorktypeDto newProjectWorktypeValues, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand updateWorktype = new NpgsqlCommand("UPDATE project_worktypes SET name = @newName, description = @newDescription, is_billable = @billable, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE project_id = @pi AND id = @pwi", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                    {
+                        new("@pi", newProjectWorktypeValues.ProjectId),
+                        new("@pwi", newProjectWorktypeValues.ProjectWorktypeId),
+                        new("@newName", newProjectWorktypeValues.Name),
+                        new("@newDescription", newProjectWorktypeValues.Description),
+                        new("@billable", newProjectWorktypeValues.IsBillable),
+                        new("@modifiedBy", userEmail),
+                        new("@modifiedOn", DateTime.UtcNow)
+                    }
+                };
+
+                await updateWorktype.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"""
+                    Failed to upadete project worktype id: {newProjectWorktypeValues.ProjectWorktypeId} in project id: {newProjectWorktypeValues.ProjectId} for user with user id {userId} error: {ex.Message}
+
+                    StackTrace: {ex.StackTrace}
+                    """);
+                await unitOfWork.RollbackAsync();
+            }
+        }
+
+        public async Task MarkProjectWorktypeAsDeletedInTransaction(Guid userId, string userEmail, Guid projectId, Guid projectWorktypeId, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand markProjectWorktypeAsDeleted = new NpgsqlCommand("UPDATE project_worktypes SET is_deleted = @isDeleted, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE project_id = @pi AND id = @pwi", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                    {
+                        new("@pi", projectId),
+                        new("@pwi", projectWorktypeId),
+                        new("@isDeleted", true),
+                        new("@modifiedBy", userEmail),
+                        new("@modifiedOn", DateTime.UtcNow)
+                    }
+                };
+
+                await markProjectWorktypeAsDeleted.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"""
+                    Failed mark project worktype as deleted project worktype id: {projectWorktypeId} in project id: {projectId} for user with user id {userId} error: {ex.Message}
+
+                    StackTrace: {ex.StackTrace}
+                    """);
+
+                await unitOfWork.RollbackAsync();
+            }
+        }
     }
 }
