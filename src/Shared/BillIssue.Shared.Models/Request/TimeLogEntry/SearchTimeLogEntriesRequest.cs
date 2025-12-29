@@ -4,7 +4,7 @@ using System.Data;
 
 namespace BillIssue.Shared.Models.Request.TimeLogEntry
 {
-    public class SearchTimeLogEntriesRequest: BaseRequest
+    public class SearchTimeLogEntriesRequest: AuthenticatedRequest
     {
         public Guid WorkspaceId { get; set; }
         public Guid? ProjectId { get; set; }

@@ -5,20 +5,21 @@ using BillIssue.Api.Business.Operations.Email;
 using BillIssue.Api.Business.Operations.Multilanguage;
 using BillIssue.Api.Business.Operations.Notifications;
 using BillIssue.Api.Business.Operations.Project;
+using BillIssue.Api.Business.Operations.TimeLogEntry;
 using BillIssue.Api.Business.Operations.Workspace;
 using BillIssue.Api.Business.Repositories.Auth;
 using BillIssue.Api.Business.Repositories.Confirmations;
 using BillIssue.Api.Business.Repositories.Multilanguage;
 using BillIssue.Api.Business.Repositories.Project;
+using BillIssue.Api.Business.Repositories.TimeLogEntry;
 using BillIssue.Api.Business.Repositories.Workspace;
-using BillIssue.Api.Business.TimeLogEntry;
 using BillIssue.Api.Interfaces.Base;
 using BillIssue.Api.Interfaces.Repositories.Auth;
 using BillIssue.Api.Interfaces.Repositories.Confirmations;
 using BillIssue.Api.Interfaces.Repositories.Multilanguage;
 using BillIssue.Api.Interfaces.Repositories.Project;
+using BillIssue.Api.Interfaces.Repositories.TimeLogEntry;
 using BillIssue.Api.Interfaces.Repositories.Workspace;
-using BillIssue.Api.Interfaces.TimeLogEntry;
 using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
@@ -27,12 +28,14 @@ using BillIssue.Shared.Models.Request.Email;
 using BillIssue.Shared.Models.Request.Multilanguage;
 using BillIssue.Shared.Models.Request.Notifications;
 using BillIssue.Shared.Models.Request.Project;
+using BillIssue.Shared.Models.Request.TimeLogEntry;
 using BillIssue.Shared.Models.Request.Workspace;
 using BillIssue.Shared.Models.Validators.Auth;
 using BillIssue.Shared.Models.Validators.Email;
 using BillIssue.Shared.Models.Validators.Multilanguage;
 using BillIssue.Shared.Models.Validators.Notifications;
 using BillIssue.Shared.Models.Validators.Project;
+using BillIssue.Shared.Models.Validators.TimeLogEntry;
 using BillIssue.Shared.Models.Validators.Workspace;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -54,9 +57,6 @@ namespace BillIssue.Api.Extensions
         {
             services.AddSingleton<IAuthorizationHandler, RoleRequirementHandler>();
             services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
-
-            services.AddScoped<ITimeLogEntryFacade, TimeLogEntryFacade>();
-            services.AddScoped<ITimeLogEntrySearchFacade, TimeLogEntrySearchFacade>();
 
             return services;
         }
@@ -81,6 +81,7 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<IMultilanguageRepository, MultilanguageRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+            services.AddScoped<ITimeLogEntryRepository, TimeLogEntryRepository>();
 
             return services;
         }
@@ -142,6 +143,14 @@ namespace BillIssue.Api.Extensions
             // Workspace User validators
             services.AddSingleton<IValidator<GetAllWorkspaceUsersRequest>, GetAllWorkspaceUsersRequestValidator>();
             services.AddSingleton<IValidator<ModifyUserInWorkspaceRequest>, ModifyUserInWorkspaceRequestValidator>();
+
+            // TimeLogging entry validators
+            services.AddSingleton<IValidator<GetTimeLogEntryRequest>, GetTimeLogEntryRequestValidator>();
+            services.AddSingleton<IValidator<CreateTimeLogEntryRequest>, CreateTimeLogEntryRequestValidator>();
+            services.AddSingleton<IValidator<ModifyTimeLogEntryRequest>, ModifyTimeLogEntryRequestValidator>();
+            services.AddSingleton<IValidator<RemoveTimeLogEntryRequest>, RemoveTimeLogEntryRequestValidator>();
+            services.AddSingleton<IValidator<SearchTimeLogEntriesRequest>, SearchTimeLogEntriesRequestValidator>();
+            services.AddSingleton<IValidator<GetWeekOfTimeEntriesRequest>, GetWeekOfTimeEntriesRequestValidator>();
 
             return services;
         }
@@ -205,6 +214,14 @@ namespace BillIssue.Api.Extensions
             // Workspace User Operations
             services.AddScoped<GetAllWorkspaceUsersOperation>();
             services.AddScoped<ModifyUserInWorkspaceOperation>();
+
+            // Timelogging entry Operations
+            services.AddScoped<GetTimeLogEntryOperation>();
+            services.AddScoped<CreateTimeLogEntryOperation>();
+            services.AddScoped<ModifyTimeLogEntryOperation>();
+            services.AddScoped<RemoveTimeLogEntryOperation>();
+            services.AddScoped<SearchTimeLogEntriesOperation>();
+            services.AddScoped<GetWeekOfTimeEntriesOperation>();
 
             return services;
         }

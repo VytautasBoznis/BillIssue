@@ -1,12 +1,14 @@
 ﻿using BillIssue.Api.ActionFilters;
+using BillIssue.Api.Business.Base;
+using BillIssue.Api.Business.Operations.TimeLogEntry;
 using BillIssue.Api.Controllers.Base;
-using BillIssue.Api.Interfaces.TimeLogEntry;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
-using Microsoft.AspNetCore.Mvc;
+using BillIssue.Shared.Models.Authentication;
 using BillIssue.Shared.Models.Request.TimeLogEntry;
-using BillIssue.Shared.Models.Response.TimeLogEntry.Dto;
 using BillIssue.Shared.Models.Response.TimeLogEntry;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BillIssue.Api.Controllers
 {
@@ -14,62 +16,77 @@ namespace BillIssue.Api.Controllers
     [ApiController]
     public class TimeLoggingController : BaseController
     {
-        private readonly ITimeLogEntryFacade _timeLogEntryFacade;
-        private readonly ITimeLogEntrySearchFacade _timeLogEntrySearchFacade;
+        private readonly OperationFactory _operationFactory;
 
         public TimeLoggingController(
-            ITimeLogEntryFacade timeLogEntryFacade,
-            ITimeLogEntrySearchFacade timeLogEntrySearchFacade,
-            ILogger<TimeLoggingController> logger
+            ILogger<TimeLoggingController> logger,
+            OperationFactory operationFactory
         ) : base(logger)
         {
-            _timeLogEntryFacade = timeLogEntryFacade;
-            _timeLogEntrySearchFacade = timeLogEntrySearchFacade;
+            _operationFactory = operationFactory;
         }
 
         #region Time Log Entry CRUD
 
         [HttpGet("GetTimeLogEntry/{timeLogEntryId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetTimeLogEntry(Guid timeLogEntryId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            TimeLogEntryDto result = await _timeLogEntryFacade.GetTimeLogEntry(sessionId, new GetTimeLogEntryRequest { TimeLogEntryId = timeLogEntryId });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok(new GetTimeLogEntryResponse { TimeLogEntryDto = result });
+            GetTimeLogEntryResponse response = await _operationFactory
+                                                        .Get<GetTimeLogEntryOperation>(typeof(GetTimeLogEntryOperation))
+                                                        .Run(new GetTimeLogEntryRequest { 
+                                                            SessionUserData = session, 
+                                                            TimeLogEntryId = timeLogEntryId 
+                                                        });
+
+            return Ok(response);
         }
 
         [HttpPost("CreateTimeLogEntry")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> CreateTimeLogEntry([FromBody] CreateTimeLogEntryRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            TimeLogEntryDto result = await _timeLogEntryFacade.CreateTimeLogEntry(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok(new CreateTimeLogEntryResponse { TimeLogEntryDto = result });
+            CreateTimeLogEntryResponse response = await _operationFactory
+                                                            .Get<CreateTimeLogEntryOperation>(typeof(CreateTimeLogEntryOperation))
+                                                            .Run(request);
+
+            return Ok(response);
         }
 
         [HttpPatch("ModifyTimeLogEntry")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> ModifyTimeLogEntry([FromBody] ModifyTimeLogEntryRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            TimeLogEntryDto result = await _timeLogEntryFacade.ModifyTimeLogEntry(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok(new ModifyTimeLogEntryResponse { TimeLogEntryDto = result });
+            ModifyTimeLogEntryResponse response = await _operationFactory
+                                                            .Get<ModifyTimeLogEntryOperation>(typeof(ModifyTimeLogEntryOperation))
+                                                            .Run(request);
+
+            return Ok(response);
         }
 
         [HttpDelete("RemoveTimeLogEntry/{timeLogEntryId}")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
-        public async Task<IActionResult> RemoveProject(Guid timeLogEntryId)
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
+        public async Task<IActionResult> RemoveTimeLogEntry(Guid timeLogEntryId)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            await _timeLogEntryFacade.RemoveTimeLogEntry(sessionId, new RemoveTimeLogEntryRequest
-            {
-                TimeLogEntryId = timeLogEntryId
-            });
+            SessionUserData session = GetSessionModelFromJwt();
 
-            return Ok();
+            RemoveTimeLogEntryResponse response = await _operationFactory
+                                                            .Get<RemoveTimeLogEntryOperation>(typeof(RemoveTimeLogEntryOperation))
+                                                            .Run(new RemoveTimeLogEntryRequest
+                                                            {
+                                                                TimeLogEntryId = timeLogEntryId,
+                                                                SessionUserData = session
+                                                            });
+
+            return Ok(response);
         }
 
         #endregion
@@ -80,20 +97,28 @@ namespace BillIssue.Api.Controllers
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
         public async Task<IActionResult> SearchTimeLogEntries([FromBody] SearchTimeLogEntriesRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<TimeLogEntryDto> result = await _timeLogEntrySearchFacade.SearchTimeLogEntries(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok(new SearchTimeLogEntriesResponse { TimeLogEntryDtos = result });
+            SearchTimeLogEntriesResponse response = await _operationFactory
+                                                            .Get<SearchTimeLogEntriesOperation>(typeof(SearchTimeLogEntriesOperation))
+                                                            .Run(request);
+
+            return Ok(response);
         }
 
         [HttpPost("GetWeekOfTimeEntries")]
         [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
         public async Task<IActionResult> GetWeekOfTimeEntries([FromBody] GetWeekOfTimeEntriesRequest request)
         {
-            string sessionId = Request.Headers[AuthConstants.AuthTokenHeaderName];
-            List<TimeLogEntriesForDay> result = await _timeLogEntrySearchFacade.GetWeekOfTimeEntries(sessionId, request);
+            SessionUserData session = GetSessionModelFromJwt();
+            request.SessionUserData = session;
 
-            return Ok(new GetWeekOfTimeEntriesResponse { TimeLogEntriesForWeek = result });
+            GetWeekOfTimeEntriesResponse response = await _operationFactory
+                                                            .Get<GetWeekOfTimeEntriesOperation>(typeof(GetWeekOfTimeEntriesOperation))
+                                                            .Run(request);
+
+            return Ok(response);
         }
 
         #endregion

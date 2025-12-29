@@ -2,7 +2,7 @@
 
 namespace BillIssue.Shared.Models.Request.TimeLogEntry
 {
-    public class ModifyTimeLogEntryRequest: BaseRequest
+    public class ModifyTimeLogEntryRequest: AuthenticatedRequest
     {
         public Guid TimeLogEntryId { get; set; }
         public Guid ProjectId { get; set; }
