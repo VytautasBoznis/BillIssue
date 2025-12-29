@@ -1,5 +1,4 @@
 ﻿using BillIssue.Api.Authorization;
-using BillIssue.Api.Business.Auth;
 using BillIssue.Api.Business.Base;
 using BillIssue.Api.Business.Operations.Auth;
 using BillIssue.Api.Business.Operations.Email;
@@ -7,26 +6,19 @@ using BillIssue.Api.Business.Operations.Multilanguage;
 using BillIssue.Api.Business.Operations.Notifications;
 using BillIssue.Api.Business.Operations.Project;
 using BillIssue.Api.Business.Operations.Workspace;
-using BillIssue.Api.Business.Project;
 using BillIssue.Api.Business.Repositories.Auth;
 using BillIssue.Api.Business.Repositories.Confirmations;
 using BillIssue.Api.Business.Repositories.Multilanguage;
 using BillIssue.Api.Business.Repositories.Project;
 using BillIssue.Api.Business.Repositories.Workspace;
-using BillIssue.Api.Business.Schedule;
 using BillIssue.Api.Business.TimeLogEntry;
-using BillIssue.Api.Business.Users;
-using BillIssue.Api.Interfaces.Auth;
 using BillIssue.Api.Interfaces.Base;
-using BillIssue.Api.Interfaces.Project;
 using BillIssue.Api.Interfaces.Repositories.Auth;
 using BillIssue.Api.Interfaces.Repositories.Confirmations;
 using BillIssue.Api.Interfaces.Repositories.Multilanguage;
 using BillIssue.Api.Interfaces.Repositories.Project;
 using BillIssue.Api.Interfaces.Repositories.Workspace;
-using BillIssue.Api.Interfaces.Schedule;
 using BillIssue.Api.Interfaces.TimeLogEntry;
-using BillIssue.Api.Interfaces.User;
 using BillIssue.Api.Models.ConfigurationOptions;
 using BillIssue.Api.Models.Constants;
 using BillIssue.Api.Models.Enums.Auth;
@@ -63,11 +55,6 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IAuthorizationHandler, RoleRequirementHandler>();
             services.AddSingleton<IUnitOfWorkFactory, UnitOfWorkFactory>();
 
-            services.AddSingleton<ISessionFacade, SessionFacade>();
-
-            services.AddScoped<IUserFacade, UserFacade>();
-            services.AddScoped<IProjectFacade, ProjectFacade>();
-            services.AddScoped<IScheduleFacade, ScheduleFacade>();
             services.AddScoped<ITimeLogEntryFacade, TimeLogEntryFacade>();
             services.AddScoped<ITimeLogEntrySearchFacade, TimeLogEntrySearchFacade>();
 
@@ -137,6 +124,13 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IValidator<ModifyProjectWorktypeRequest>, ModifyProjectWorktypeRequestValidator>();
             services.AddSingleton<IValidator<RemoveProjectWorktypeRequest>, RemoveProjectWorktypeRequestValidator>();
 
+            // Project user validators
+            services.AddSingleton<IValidator<GetProjectUsersRequest>, GetProjectUsersRequestValidator>();
+            services.AddSingleton<IValidator<GetProjectsForUserRequest>, GetProjectsForUserRequestValidator>();
+            services.AddSingleton<IValidator<AddUserAssignmentToProjectRequest>,  AddUserAssignmentToProjectRequestValidator>();
+            services.AddSingleton<IValidator<ModifyUserAssingmentInProjectRequest>,  ModifyUserAssingmentInProjectRequestValidator>();
+            services.AddSingleton<IValidator<RemoveUserAssingmentFromProjectRequest>,  RemoveUserAssingmentFromProjectRequestValidator>();
+
             // Workspace validators
             services.AddSingleton<IValidator<GetWorkspaceRequest>, GetWorkspaceRequestValidator>();
             services.AddSingleton<IValidator<CreateWorkspaceRequest>, CreateWorkspaceRequestValidator>();
@@ -192,6 +186,13 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<CreateProjectWorktypeOperation>();
             services.AddScoped<ModifyProjectWorktypeOperation>();
             services.AddScoped<RemoveProjectWorktypeOperation>();
+
+            // Project User Operations
+            services.AddScoped<GetProjectUsersOperation>();
+            services.AddScoped<GetProjectsForUserOperation>();
+            services.AddScoped<AddUserAssignmentToProjectOperation>();
+            services.AddScoped<ModifyUserAssingmentInProjectOperation>();
+            services.AddScoped<RemoveUserAssingmentFromProjectOperation>();
 
             // Workspace Operations
             services.AddScoped<CreateWorkspaceOperation>();

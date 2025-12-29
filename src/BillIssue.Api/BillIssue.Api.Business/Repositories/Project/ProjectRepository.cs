@@ -461,5 +461,89 @@ namespace BillIssue.Api.Business.Repositories.Project
                 await unitOfWork.RollbackAsync();
             }
         }
+
+        public async Task<List<ProjectDto>> GetAllProjectsWhereUserIsAssigned(Guid userId ,IUnitOfWork unitOfWork)
+        {
+            var dictionary = new Dictionary<string, object> { { "@ui", userId } };
+            IEnumerable<ProjectDto> projectDtos = await unitOfWork.Connection.QueryAsync<ProjectDto>(@"SELECT pp.id as ProjectId, pp.name, pp.description
+            FROM project_projects pp
+	            JOIN project_user_assigments pua
+		            ON pp.id = pua.project_id
+            WHERE
+	            pua.user_id = @ui
+                AND pp.is_deleted = false", dictionary);
+
+            if (projectDtos == null || projectDtos.Count() == 0)
+            {
+                return [];
+            }
+
+            dictionary.Add("@pids", string.Join(",", projectDtos.Select(p => p.ProjectId)));
+            IEnumerable<ProjectUserAssignmentDto> projectUserAssignmentDtos = await unitOfWork.Connection.QueryAsync<ProjectUserAssignmentDto>(@"
+            SELECT pua.id as UserAssignmentId, pua.ProjectId as ProjectId, pua.user_id, pua.project_role 
+            FROM project_user_assignments pua 
+            WHERE pua.user_id = @ui AND pua.project_id in (@pids)", dictionary);
+
+            foreach (ProjectDto project in projectDtos)
+            {
+                ProjectUserAssignmentDto userAssignment = projectUserAssignmentDtos.FirstOrDefault(puad => puad.UserId == userId && puad.ProjectId == project.ProjectId);
+                project.ProjectUserAssignments = new List<ProjectUserAssignmentDto>() { userAssignment };
+            }
+
+            return projectDtos.ToList();
+        }
+
+        public async Task ModifyUserAssignmentInTransaction(Guid userId, string userEmail, ProjectUserAssignmentDto newUserAssignment, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand modifyUserAssginment = new NpgsqlCommand("UPDATE project_user_assignments SET project_role = @projectRole, modified_by = @modifiedBy, modified_on = @modifiedOn WHERE id = @id", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                    {
+                        new("@id", newUserAssignment.UserAssignmentId),
+                        new("@projectRole", (int) newUserAssignment.Role),
+                        new("@modifiedBy", userEmail),
+                        new("@modifiedOn", DateTime.UtcNow)
+                    }
+                };
+
+                await modifyUserAssginment.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"""
+                    Failed to modify user assignment with id: {newUserAssignment.UserAssignmentId} in project id: {newUserAssignment.ProjectId} for user with user id {userId} error: {ex.Message}
+
+                    StackTrace: {ex.StackTrace}
+                    """);
+                await unitOfWork.RollbackAsync();
+            }
+        }
+
+        public async Task DeleteUserAssignmentInTransaction(Guid userId, string userEmail, ProjectUserAssignmentDto targetUserAssignment, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                await using NpgsqlCommand deleteUserAssignment = new NpgsqlCommand("DELETE FROM project_user_assignments WHERE id = @id", unitOfWork.Connection, unitOfWork.Transaction)
+                {
+                    Parameters =
+                    {
+                        new("@id", targetUserAssignment.UserAssignmentId),
+                    }
+                };
+
+                await deleteUserAssignment.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"""
+                    Failed to Delete user assignment with id: {targetUserAssignment.UserAssignmentId} in project id: {targetUserAssignment.ProjectId} for user with user id {userId} error: {ex.Message}
+
+                    StackTrace: {ex.StackTrace}
+                    """);
+                await unitOfWork.RollbackAsync();
+            }
+        }
     }
 }

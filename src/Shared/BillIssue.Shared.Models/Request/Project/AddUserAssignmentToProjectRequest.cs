@@ -3,7 +3,7 @@ using BillIssue.Shared.Models.Request.Base;
 
 namespace BillIssue.Shared.Models.Request.Project
 {
-    public class AddUserAssignmentToProjectRequest: BaseRequest
+    public class AddUserAssignmentToProjectRequest: AuthenticatedRequest
     {
         public Guid ProjectId { get; set; }
         public Guid UserId { get; set; }

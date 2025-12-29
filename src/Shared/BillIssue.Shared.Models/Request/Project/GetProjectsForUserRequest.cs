@@ -2,7 +2,7 @@
 
 namespace BillIssue.Shared.Models.Request.Project
 {
-    public class GetProjectsForUserRequest: BaseRequest
+    public class GetProjectsForUserRequest: AuthenticatedRequest
     {
     }
 }

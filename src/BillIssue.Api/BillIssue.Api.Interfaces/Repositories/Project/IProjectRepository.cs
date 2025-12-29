@@ -24,5 +24,9 @@ namespace BillIssue.Api.Interfaces.Repositories.Project
         Task CreateProjectWorktypeInTransaction(Guid userId, string userEmail, ProjectWorktypeDto newProjectWorktype, IUnitOfWork unitOfWork);
         Task ModifyProjectWorktypeInTransaction(Guid userId, string userEmail, ProjectWorktypeDto newProjectWorktypeValues, IUnitOfWork unitOfWork);
         Task MarkProjectWorktypeAsDeletedInTransaction(Guid userId, string userEmail, Guid projectId, Guid projectWorktypeId, IUnitOfWork unitOfWork);
+
+        Task<List<ProjectDto>> GetAllProjectsWhereUserIsAssigned(Guid userId, IUnitOfWork unitOfWork);
+        Task ModifyUserAssignmentInTransaction(Guid userId, string userEmail, ProjectUserAssignmentDto newUserAssignment, IUnitOfWork unitOfWork);
+        Task DeleteUserAssignmentInTransaction(Guid userId, string userEmail, ProjectUserAssignmentDto targetUserAssignment, IUnitOfWork unitOfWork);
     }
 }

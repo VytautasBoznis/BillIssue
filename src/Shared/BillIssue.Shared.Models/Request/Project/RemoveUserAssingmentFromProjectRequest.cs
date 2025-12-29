@@ -2,7 +2,7 @@
 
 namespace BillIssue.Shared.Models.Request.Project
 {
-    public class RemoveUserAssingmentFromProjectRequest: BaseRequest
+    public class RemoveUserAssingmentFromProjectRequest: AuthenticatedRequest
     {
         public Guid ProjectId { get; set; }
         public Guid ProjectUserAssignmentId { get; set; }
