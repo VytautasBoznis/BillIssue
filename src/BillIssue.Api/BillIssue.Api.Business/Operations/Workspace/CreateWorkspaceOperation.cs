@@ -53,17 +53,18 @@ namespace BillIssue.Api.Business.Operations.Workspace
             };
             
             await _operationFactory
-                    .Get<CreateProjectOperation>(typeof(CreateProjectOperation))
+                    .Get<CreateProjectOperation>()
                     .Run(createProjectRequest, unitOfWork);
 
             GetWorkspaceRequest getWorkspaceRequest = new()
             {
                 SessionUserData = request.SessionUserData,
+                CreatedFromController = false,
                 WorkspaceId = newWorkspaceId
             };
 
             GetWorkspaceResponse getWorkspaceResponse = await _operationFactory
-                                                                .Get<GetWorkspaceOperation>(typeof(GetWorkspaceOperation))
+                                                                .Get<GetWorkspaceOperation>()
                                                                 .Run(getWorkspaceRequest, unitOfWork);
 
             return new CreateWorkspaceResponse

@@ -55,7 +55,7 @@ namespace BillIssue.Api.Business.Operations.Auth
                 };
 
                 SendPasswordReminderEmailResponse sendPasswordReminderResponse = await _operationFactory
-                                                                                        .Get<SendPasswordReminderEmailOperation>(typeof(SendPasswordReminderEmailOperation))
+                                                                                        .Get<SendPasswordReminderEmailOperation>()
                                                                                         .Run(sendPassowrdReminderRequest, unitOfWork);
 
                 await unitOfWork.CommitAsync();

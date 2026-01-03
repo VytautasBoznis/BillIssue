@@ -22,7 +22,7 @@ namespace BillIssue.Api.Controllers
         public async Task<IActionResult> Login(LoginRequest request)
         {
             LoginResponse response = await _operationFactory
-                                                .Get<LoginOperation>(typeof(LoginOperation))
+                                                .Get<LoginOperation>()
                                                 .Run(request);
 
             return Ok(response);
@@ -32,7 +32,7 @@ namespace BillIssue.Api.Controllers
         public async Task<IActionResult> Register(RegisterRequest request)
         {
             RegisterResponse response = await _operationFactory
-                                               .Get<RegisterOperation>(typeof(RegisterOperation))
+                                               .Get<RegisterOperation>()
                                                .Run(request);
 
             return Ok(response);
@@ -57,7 +57,7 @@ namespace BillIssue.Api.Controllers
         {
             //TODO add critical error handlers (E.G sendgrid is down so we handle the 500 but we need to say to the user to comeback later)
             RemindPasswordResponse response = await _operationFactory
-                                                       .Get<RemindPasswordOperation>(typeof(RemindPasswordOperation))
+                                                       .Get<RemindPasswordOperation>()
                                                        .Run(request);
 
             return Ok();
@@ -67,7 +67,7 @@ namespace BillIssue.Api.Controllers
         public async Task<OkResult> RemindPasswordConfirmation(RemindPasswordConfirmRequest request)
         {
             RemindPasswordConfirmResponse response = await _operationFactory
-                                                               .Get<RemindPasswordConfirmOperation>(typeof(RemindPasswordConfirmOperation))
+                                                               .Get<RemindPasswordConfirmOperation>()
                                                                .Run(request);
             return Ok();
         }

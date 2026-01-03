@@ -27,10 +27,11 @@ namespace BillIssue.Api.Business.Operations.Project
         protected override async Task<RemoveProjectResponse> Execute(RemoveProjectRequest request, IUnitOfWork unitOfWork)
         {
             GetProjectResponse getProjectResponse = await _operationFactory
-                                                                .Get<GetProjectOperation>(typeof(GetProjectOperation))
+                                                                .Get<GetProjectOperation>()
                                                                 .Run(new GetProjectRequest
                                                                 {
                                                                     SessionUserData = request.SessionUserData,
+                                                                    CreatedFromController = false,
                                                                     ProjectId = request.ProjectId,
                                                                 }, unitOfWork);
 

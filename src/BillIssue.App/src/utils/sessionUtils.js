@@ -11,7 +11,7 @@ export const setUserAuthData = (userSessionData) => {
       throw new Error('User session data not found');
     }
 
-    if (!userSessionData.authToken) {
+    if (!userSessionData.jwtToken) {
       throw new Error('No auth token found in user session data');
     }
 
@@ -23,7 +23,7 @@ export const setUserAuthData = (userSessionData) => {
   }
 };
 
-export const getUserAuthToken = () => {
+export const getUserJwtToken = () => {
   const serializedSessionData = Cookies.get(USER_SESSION_DATA);
 
   try {
@@ -33,7 +33,7 @@ export const getUserAuthToken = () => {
       throw new Error('No auth token found in user session data');
     }
 
-    return sessionData.authToken;
+    return sessionData.jwtToken;
   }
   catch(ex) {
     logout(true);

@@ -35,10 +35,11 @@ namespace BillIssue.Api.Business.Operations.Workspace
         protected override async Task<AddUserToWorkspaceResponse> Execute(AddUserToWorkspaceRequest request, IUnitOfWork unitOfWork)
         {
             GetWorkspaceResponse workspaceResponse = await _operationFactory
-                                                .Get<GetWorkspaceOperation>(typeof(GetWorkspaceOperation))
+                                                .Get<GetWorkspaceOperation>()
                                                 .Run(new GetWorkspaceRequest
                                                 {
                                                     SessionUserData = request.SessionUserData,
+                                                    CreatedFromController = false,
                                                     WorkspaceId = request.WorkspaceId
                                                 }, unitOfWork);
 
@@ -49,10 +50,11 @@ namespace BillIssue.Api.Business.Operations.Workspace
             }
 
             GetAllWorkspaceUsersResponse workspaceUsersResponse = await _operationFactory
-                                                                        .Get<GetAllWorkspaceUsersOperation>(typeof(GetAllWorkspaceUsersOperation))
+                                                                        .Get<GetAllWorkspaceUsersOperation>()
                                                                         .Run(new GetAllWorkspaceUsersRequest
                                                                         {
                                                                             SessionUserData = request.SessionUserData,
+                                                                            CreatedFromController = false,
                                                                             WorkspaceId = request.WorkspaceId
                                                                         }, unitOfWork);
 
@@ -64,10 +66,11 @@ namespace BillIssue.Api.Business.Operations.Workspace
             await unitOfWork.BeginTransactionAsync();
 
             CreateWorkspaceNotificationResponse createWorkspaceNotificationResponse = await _operationFactory
-                                                                        .Get<CreateWorkspaceNotificationOperation>(typeof(CreateWorkspaceNotificationOperation))
+                                                                        .Get<CreateWorkspaceNotificationOperation>()
                                                                         .Run(new CreateWorkspaceNotificationRequest
                                                                         {
                                                                             SessionUserData = request.SessionUserData,
+                                                                            CreatedFromController = false,
                                                                             WorkspaceId = request.WorkspaceId,
                                                                             TargetUserEmail = request.NewUserEmail
                                                                         }, unitOfWork);

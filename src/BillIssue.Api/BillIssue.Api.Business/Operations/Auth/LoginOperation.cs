@@ -58,7 +58,7 @@ namespace BillIssue.Api.Business.Operations.Auth
             string jwtToken = GenerateJwtToken(sessionModel);
 
             GetNotificationsResponse notificationsResponse = await _operationFactory
-                                                                        .Get<GetNotificationsOperation>(typeof(GetNotificationsOperation))
+                                                                        .Get<GetNotificationsOperation>()
                                                                         .Run(new GetNotificationsRequest
                                                                         {
                                                                             SessionUserData = new SessionUserData

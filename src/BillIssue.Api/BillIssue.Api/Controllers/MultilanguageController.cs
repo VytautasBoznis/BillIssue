@@ -31,7 +31,7 @@ namespace BillIssue.Api.Controllers
             GetAllMultilanguageItemsRequest request = new GetAllMultilanguageItemsRequest { LanguageTypeEnum = languageTypeEnum };
 
             GetMultilanguageItemsResponse response = await _operationFactory
-                                                               .Get<GetAllMultilanguageItemsOperation>(typeof(GetAllMultilanguageItemsOperation))
+                                                               .Get<GetAllMultilanguageItemsOperation>()
                                                                .Run(request);
             return Ok(response);
         }
@@ -42,7 +42,7 @@ namespace BillIssue.Api.Controllers
             GetAllMultilanguageItemsRequest request = new GetAllMultilanguageItemsRequest { LanguageTypeEnum = LanguageTypeEnum.All };
 
             GetMultilanguageItemsResponse response = await _operationFactory
-                                                               .Get<GetAllMultilanguageItemsOperation>(typeof(GetAllMultilanguageItemsOperation))
+                                                               .Get<GetAllMultilanguageItemsOperation>()
                                                                .Run(request);
             return Ok(response);
         }
@@ -54,7 +54,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData sessionUserData = GetSessionModelFromJwt();
 
             CreateMultilanguageItemResponse response = await _operationFactory
-                                                               .Get<CreateMultilanguageItemOperation>(typeof(CreateMultilanguageItemOperation))
+                                                               .Get<CreateMultilanguageItemOperation>()
                                                                .Run(new CreateMultilanguageItemRequest
                                                                {
                                                                    MultilanguageItem = multilanguageItem,
@@ -70,7 +70,7 @@ namespace BillIssue.Api.Controllers
         {
             Stream multilanguageCsvFileStream = multilanguageCsvFile.OpenReadStream();
             ImportMultilanguageCsvResponse response = await _operationFactory
-                                                               .Get<ImportMultilanguageCsvOperation>(typeof(ImportMultilanguageCsvOperation))
+                                                               .Get<ImportMultilanguageCsvOperation>()
                                                                .Run(new ImportMultilanguageCsvRequest
                                                                {
                                                                    FileStream = multilanguageCsvFileStream,
@@ -78,7 +78,7 @@ namespace BillIssue.Api.Controllers
                                                                });
 
             ClearMultilanguageCachesResponse clearCacheResponse = await _operationFactory
-                                                               .Get<ClearMultilanguageCachesOperation>(typeof(ClearMultilanguageCachesOperation))
+                                                               .Get<ClearMultilanguageCachesOperation>()
                                                                .Run(new ClearMultilanguageCachesRequest());
 
             return Ok(response);
@@ -89,7 +89,7 @@ namespace BillIssue.Api.Controllers
         public async Task<FileResult> GetAllTranslationsInCSV()
         {
             GetAllTranslationsInCsvResponse translationCsvResponse = await _operationFactory
-                                                                       .Get<GetAllTranslationsInCsvOperation>(typeof(GetAllTranslationsInCsvOperation))
+                                                                       .Get<GetAllTranslationsInCsvOperation>()
                                                                        .Run(new GetAllTranslationsInCsvRequest());
 
             return File(translationCsvResponse.CsvContentBytes, "text/csv", MultilanguageConstants.CSVFilename);

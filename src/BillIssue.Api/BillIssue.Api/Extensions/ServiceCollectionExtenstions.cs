@@ -139,6 +139,7 @@ namespace BillIssue.Api.Extensions
             services.AddSingleton<IValidator<GetAllWorkspacesForUserRequest>, GetAllWorkspacesForUserRequestValidator>();
             services.AddSingleton<IValidator<ModifyWorkspaceRequest>, ModifyWorkspaceRequestValidator>();
             services.AddSingleton<IValidator<RemoveWorkspaceRequest>, RemoveWorkspaceRequestValidator>();
+            services.AddSingleton<IValidator<RemoveUserFromWorkspaceRequest>, RemoveUserFromWorkspaceRequestValidator>();
 
             // Workspace User validators
             services.AddSingleton<IValidator<GetAllWorkspaceUsersRequest>, GetAllWorkspaceUsersRequestValidator>();
@@ -210,6 +211,7 @@ namespace BillIssue.Api.Extensions
             services.AddScoped<GetAllWorkspacesForUserOperation>();
             services.AddScoped<ModifyWorkspaceOperation>();
             services.AddScoped<RemoveWorkspaceOperation>();
+            services.AddScoped<RemoveUserFromWorkspaceOperation>();
 
             // Workspace User Operations
             services.AddScoped<GetAllWorkspaceUsersOperation>();

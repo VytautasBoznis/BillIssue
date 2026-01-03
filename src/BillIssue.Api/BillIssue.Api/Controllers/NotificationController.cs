@@ -25,7 +25,7 @@ namespace BillIssue.Api.Controllers
         public async Task<IActionResult> GetNotifications()
         {
             GetNotificationsResponse response = await _operationFactory
-                                                        .Get<GetNotificationsOperation>(typeof(GetNotificationsOperation))
+                                                        .Get<GetNotificationsOperation>()
                                                         .Run(new GetNotificationsRequest { SessionUserData = GetSessionModelFromJwt() });
 
             return Ok(response);
@@ -38,7 +38,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = GetSessionModelFromJwt();
 
             DoNotificationDecisionResponse response = await _operationFactory
-                                                        .Get<DoNotificationDecisionOperation>(typeof(DoNotificationDecisionOperation))
+                                                        .Get<DoNotificationDecisionOperation>()
                                                         .Run(request);
 
             return Ok(response);

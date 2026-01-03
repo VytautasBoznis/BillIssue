@@ -29,10 +29,17 @@ namespace BillIssue.Api.Business.Base
 
             _logger.LogInformation("Starting operation {OperationName}", this.GetType().Name);
 
+            bool ownsUnitOfWork = unitOfWork == null;
             IUnitOfWork internalUnitOfWork = unitOfWork ?? await _unitOfWorkFactory.CreateAsync();
             var response = await Execute(request, internalUnitOfWork);
-            
+
             _logger.LogInformation("Finished operation {OperationName}", this.GetType().Name);
+
+            if (ownsUnitOfWork && internalUnitOfWork != null)
+            {
+                await internalUnitOfWork.DisposeAsync();
+            }
+
             return response;
         }
 

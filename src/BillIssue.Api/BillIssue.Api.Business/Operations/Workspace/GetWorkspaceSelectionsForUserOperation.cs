@@ -54,11 +54,13 @@ namespace BillIssue.Api.Business.Operations.Workspace
 
             GetProjectSelectionsForWorkspacesRequest getProjectSelectionsForWorkspacesRequest = new GetProjectSelectionsForWorkspacesRequest
             {
+                SessionUserData = request.SessionUserData,
+                CreatedFromController = false,
                 WorkspaceIds = allUserWorkspaceSelections.Select(aucws => aucws.Id).Distinct().ToList()
             };
 
             GetProjectSelectionsForWorkspacesResponse projectSelectionsForWorkspacesResponse =  await _operationFactory
-                                                                                                        .Get<GetProjectSelectionsForWorkspacesOperation>(typeof(GetProjectSelectionsForWorkspacesOperation))
+                                                                                                        .Get<GetProjectSelectionsForWorkspacesOperation>()
                                                                                                         .Run(getProjectSelectionsForWorkspacesRequest, unitOfWork);
 
             if (projectSelectionsForWorkspacesResponse.ProjectSelectionDtos.Count == 0)

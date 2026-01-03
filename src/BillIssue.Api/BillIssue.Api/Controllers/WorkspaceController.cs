@@ -28,7 +28,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetWorkspaceResponse response = await _operationFactory
-                                                    .Get<GetWorkspaceOperation>(typeof(GetWorkspaceOperation))
+                                                    .Get<GetWorkspaceOperation>()
                                                     .Run(new GetWorkspaceRequest
                                                     {
                                                         SessionUserData = session,
@@ -46,7 +46,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetWorkspaceSelectionsForUserResponse response = await _operationFactory
-                                                                        .Get<GetWorkspaceSelectionsForUserOperation>(typeof(GetWorkspaceSelectionsForUserOperation))
+                                                                        .Get<GetWorkspaceSelectionsForUserOperation>()
                                                                         .Run(new GetWorkspaceSelectionsForUserRequest
                                                                         {
                                                                             SessionUserData = session,
@@ -63,7 +63,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetAllWorkspacesForUsersResponse response = await _operationFactory
-                                                                .Get<GetAllWorkspacesForUserOperation>(typeof(GetAllWorkspacesForUserOperation))
+                                                                .Get<GetAllWorkspacesForUserOperation>()
                                                                 .Run(new GetAllWorkspacesForUserRequest
                                                                 {
                                                                     SessionUserData = session,
@@ -81,7 +81,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             CreateWorkspaceResponse response = await _operationFactory
-                                                        .Get<CreateWorkspaceOperation>(typeof(CreateWorkspaceOperation))
+                                                        .Get<CreateWorkspaceOperation>()
                                                         .Run(request);
 
             return Ok(response);
@@ -95,7 +95,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             ModifyWorkspaceResponse response = await _operationFactory
-                                                        .Get<ModifyWorkspaceOperation>(typeof(ModifyWorkspaceOperation))
+                                                        .Get<ModifyWorkspaceOperation>()
                                                         .Run(request);
 
             return Ok(response);
@@ -109,7 +109,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             RemoveWorkspaceResponse response = await _operationFactory
-                                                        .Get<RemoveWorkspaceOperation>(typeof(RemoveWorkspaceOperation))
+                                                        .Get<RemoveWorkspaceOperation>()
                                                         .Run(new RemoveWorkspaceRequest
                                                         {
                                                             SessionUserData = session,
@@ -126,7 +126,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetAllWorkspaceUsersResponse response = await _operationFactory
-                                                            .Get<GetAllWorkspaceUsersOperation>(typeof(GetAllWorkspaceUsersOperation))
+                                                            .Get<GetAllWorkspaceUsersOperation>()
                                                             .Run(new GetAllWorkspaceUsersRequest
                                                             {
                                                                 SessionUserData = session,
@@ -144,7 +144,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             AddUserToWorkspaceResponse response = await _operationFactory
-                                                            .Get<AddUserToWorkspaceOperation>(typeof(AddUserToWorkspaceOperation))
+                                                            .Get<AddUserToWorkspaceOperation>()
                                                             .Run(request);
 
             return Ok(response);
@@ -158,7 +158,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             ModifyUserInWorkspaceResponse response = await _operationFactory
-                                                            .Get<ModifyUserInWorkspaceOperation>(typeof(ModifyUserInWorkspaceOperation))
+                                                            .Get<ModifyUserInWorkspaceOperation>()
                                                             .Run(request);
 
             return Ok(response);
@@ -172,7 +172,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             RemoveUserFromWorkspaceResponse response = await _operationFactory
-                                                                .Get<RemoveUserFromWorkspaceOperation>(typeof(RemoveUserFromWorkspaceOperation))
+                                                                .Get<RemoveUserFromWorkspaceOperation>()
                                                                 .Run(request);
 
             return Ok(response);

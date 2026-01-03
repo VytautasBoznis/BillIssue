@@ -5,7 +5,7 @@ const TimeLoggingService = {
   async logTimeEntry(timeEntry, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await timeloggingClient.LogTimeEntry(sessionData.authToken, timeEntry, onError);
+      const response = await timeloggingClient.LogTimeEntry(sessionData.jwtToken, timeEntry, onError);
       return response.timeLogEntryDto;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to save time entry");
@@ -14,7 +14,7 @@ const TimeLoggingService = {
   async editTimeEntry(timeEntry, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await timeloggingClient.EditTimeEntry(sessionData.authToken, timeEntry, onError);
+      const response = await timeloggingClient.EditTimeEntry(sessionData.jwtToken, timeEntry, onError);
       return response.timeLogEntryDto;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to edit time entry");
@@ -23,7 +23,7 @@ const TimeLoggingService = {
   async deleteTimeEntry(timeEntryId, onError) {
     try {
       const sessionData = getUserSessionData();
-      await timeloggingClient.DeleteTimeEntry(sessionData.authToken, timeEntryId, onError);
+      await timeloggingClient.DeleteTimeEntry(sessionData.jwtToken, timeEntryId, onError);
       return true;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to delete time entry");
@@ -32,7 +32,7 @@ const TimeLoggingService = {
   async loadWeeksTimeEntries(timeEntryLookupFilter, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await timeloggingClient.GetWeekOfTimeEntries(sessionData.authToken, timeEntryLookupFilter, onError);
+      const response = await timeloggingClient.GetWeekOfTimeEntries(sessionData.jwtToken, timeEntryLookupFilter, onError);
       return response.timeLogEntriesForWeek;
     } catch (error) {
       onError(error.response?.data?.message || "Failed load time entries for week");
@@ -41,7 +41,7 @@ const TimeLoggingService = {
   async searchTimeLoggingEntries(searchTimeLoggingEntriesRequest, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await timeloggingClient.SearchTimeLogEntries(sessionData.authToken, searchTimeLoggingEntriesRequest, onError);
+      const response = await timeloggingClient.SearchTimeLogEntries(sessionData.jwtToken, searchTimeLoggingEntriesRequest, onError);
       return response.timeLogEntryDtos;
     } catch (error) {
       onError(error.response?.data?.message || "Failed searching for time entries");

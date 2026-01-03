@@ -2,7 +2,7 @@ import flattenDeep from 'lodash/flattenDeep';
 import React from 'react';
 import { Route, Routes as ReactRoutes } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
-import { getUserAuthToken } from '../utils/sessionUtils';
+import { getUserJwtToken } from '../utils/sessionUtils';
 
 const generateFlattenRoutes = (routes) => {
   if (!routes) return [];
@@ -10,7 +10,7 @@ const generateFlattenRoutes = (routes) => {
 }
 
 const isAuthorized = () => {
-  return !!getUserAuthToken();
+  return !!getUserJwtToken();
 }
 
 export const renderRoutes = (mainRoutes) => {

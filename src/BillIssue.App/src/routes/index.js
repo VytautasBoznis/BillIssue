@@ -13,7 +13,7 @@ import {
   WorkspaceManagementPage,
   WorkspaceCreationPage,
 } from "../pages";
-import { getUserAuthToken } from "../utils/sessionUtils";
+import { getUserJwtToken } from "../utils/sessionUtils";
 import { renderRoutes } from "./generate-routes";
 
 export const routes = [
@@ -43,7 +43,7 @@ export const routes = [
 },
 {
     layout: MainLayout,
-    isAuthorized: () => { return !!getUserAuthToken(); },
+    isAuthorized: () => { return !!getUserJwtToken(); },
     routes: [
       {
         name: 'timeLogging',

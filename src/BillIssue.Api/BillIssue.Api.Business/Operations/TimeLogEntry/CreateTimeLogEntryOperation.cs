@@ -48,11 +48,13 @@ namespace BillIssue.Api.Business.Operations.TimeLogEntry
 
             GetTimeLogEntryRequest getTimeLogEntryRequest = new GetTimeLogEntryRequest
             {
+                SessionUserData = request.SessionUserData,
+                CreatedFromController = false,
                 TimeLogEntryId = newTimeLogEntryId,
             };
 
             GetTimeLogEntryResponse getTimeLogEntryResponse = await _operationFactory
-                                                                        .Get<GetTimeLogEntryOperation>(typeof(GetTimeLogEntryOperation))
+                                                                        .Get<GetTimeLogEntryOperation>()
                                                                         .Run(getTimeLogEntryRequest, unitOfWork);
 
             CreateTimeLogEntryResponse response = new CreateTimeLogEntryResponse

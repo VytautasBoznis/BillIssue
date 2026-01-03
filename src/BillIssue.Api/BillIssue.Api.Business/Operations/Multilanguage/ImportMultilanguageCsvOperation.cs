@@ -91,7 +91,7 @@ namespace BillIssue.Api.Business.Operations.Multilanguage
             if (multilanguageIndex == null)
             {
                 CreateMultilanguageItemResponse createResponse = await _operationFactory
-                                                                           .Get<CreateMultilanguageItemOperation>(typeof(CreateMultilanguageItemOperation))
+                                                                           .Get<CreateMultilanguageItemOperation>()
                                                                            .Run(new CreateMultilanguageItemRequest
                                                                            {
                                                                                MultilanguageItem = item,
@@ -104,7 +104,7 @@ namespace BillIssue.Api.Business.Operations.Multilanguage
             else
             {
                 ModifyMultilanguageItemResponse modifyResponse = await _operationFactory
-                                                                           .Get<ModifyMultilanguageItemOperation>(typeof(ModifyMultilanguageItemOperation))
+                                                                           .Get<ModifyMultilanguageItemOperation>()
                                                                            .Run(new ModifyMultilanguageItemRequest
                                                                            {
                                                                                MultilanguageItem = item,

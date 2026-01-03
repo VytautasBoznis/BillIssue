@@ -1,4 +1,6 @@
-﻿namespace BillIssue.Api.Business.Base
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace BillIssue.Api.Business.Base
 {
     public class OperationFactory
     {
@@ -9,14 +11,9 @@
             _provider = provider;
         }
 
-        public T Get<T>(Type operationType) where T : class
+        public T Get<T>() where T : class
         {
-            if (_provider.GetService(operationType) is not T svc)
-            {
-                throw new InvalidOperationException($"No registered operation for {operationType.FullName}");
-            }
-
-            return svc;
+            return _provider.GetRequiredService<T>();
         }
     }
 }

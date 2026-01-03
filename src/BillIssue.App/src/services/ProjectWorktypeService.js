@@ -5,7 +5,7 @@ const ProjectWorktypeService = {
   async getProjectById(projectWorktypeId, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await projectWorktypeClient.GetProjectWorktypeById(sessionData.authToken, projectWorktypeId, onError);
+      const response = await projectWorktypeClient.GetProjectWorktypeById(sessionData.jwtToken, projectWorktypeId, onError);
       return response.projectWorktypeDto;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to get project worktype data");
@@ -14,7 +14,7 @@ const ProjectWorktypeService = {
   async removeProjectWorktype(projectId, projectWorktypeId, onError) {
     try {
       const sessionData = getUserSessionData();
-      await projectWorktypeClient.RemoveProjectWorktype(sessionData.authToken, projectId, projectWorktypeId, onError);
+      await projectWorktypeClient.RemoveProjectWorktype(sessionData.jwtToken, projectId, projectWorktypeId, onError);
       return true;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to remove worktype project");
@@ -23,7 +23,7 @@ const ProjectWorktypeService = {
   async modifyProjectWorktype(modifyProjectWorktypeRequest, onError) {
     try {
       const sessionData = getUserSessionData();
-      await projectWorktypeClient.ModifyProjectWorktype(sessionData.authToken, modifyProjectWorktypeRequest, onError);
+      await projectWorktypeClient.ModifyProjectWorktype(sessionData.jwtToken, modifyProjectWorktypeRequest, onError);
       return true;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to modify project worktype");

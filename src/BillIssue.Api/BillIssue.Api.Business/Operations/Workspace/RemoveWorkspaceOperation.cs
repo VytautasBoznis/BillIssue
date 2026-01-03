@@ -28,10 +28,11 @@ namespace BillIssue.Api.Business.Operations.Workspace
         {
 
             GetWorkspaceResponse workspaceResponse = await _operationFactory
-                                                .Get<GetWorkspaceOperation>(typeof(GetWorkspaceOperation))
+                                                .Get<GetWorkspaceOperation>()
                                                 .Run(new GetWorkspaceRequest
                                                 {
                                                     SessionUserData = request.SessionUserData,
+                                                    CreatedFromController = false,
                                                     WorkspaceId = request.WorkspaceId
                                                 }, unitOfWork);
 

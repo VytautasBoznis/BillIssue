@@ -30,8 +30,8 @@ const Header = ({setIsOpen, sidebarOpen}) => {
 
   return (
     <header className='header-content app-header'>
-      <div className='logo-container'>
-          Logo
+      <div className='logo-container' href="#">
+          Bill Issue
       </div>
       <div className='menu-button-container'>
         <div className="mb-4 menu-button" onClick={() => setIsOpen(!sidebarOpen)}>

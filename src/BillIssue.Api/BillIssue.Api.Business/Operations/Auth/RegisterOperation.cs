@@ -65,7 +65,7 @@ namespace BillIssue.Api.Business.Operations.Auth
                 };
 
                 CreateWorkspaceResponse createWorkspaceResponse = await _operationFactory
-                                                                            .Get<CreateWorkspaceOperation>(typeof(CreateWorkspaceOperation))
+                                                                            .Get<CreateWorkspaceOperation>()
                                                                             .Run(createWorksapceRequest, unitOfWork);
                 
                 await unitOfWork.CommitAsync();
@@ -91,7 +91,7 @@ namespace BillIssue.Api.Business.Operations.Auth
             };
 
             LoginResponse loginResponse = await _operationFactory
-                                                    .Get<LoginOperation>(typeof(LoginOperation))
+                                                    .Get<LoginOperation>()
                                                     .Run(loginRequest, unitOfWork);
 
             return new RegisterResponse()

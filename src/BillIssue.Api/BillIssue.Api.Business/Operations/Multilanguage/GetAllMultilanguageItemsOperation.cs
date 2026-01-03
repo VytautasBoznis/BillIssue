@@ -73,7 +73,7 @@ namespace BillIssue.Api.Business.Operations.Multilanguage
             if (cachedLanguageDictionary == RedisValue.Null)
             {
                 ClearMultilanguageCachesResponse clearCacheResponse = await _operationFactory
-                                                                   .Get<ClearMultilanguageCachesOperation>(typeof(ClearMultilanguageCachesOperation))
+                                                                   .Get<ClearMultilanguageCachesOperation>()
                                                                    .Run(new ClearMultilanguageCachesRequest(), unitOfWork);
 
                 await BuildMultilanguageCaches(unitOfWork);

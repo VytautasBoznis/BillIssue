@@ -35,7 +35,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetTimeLogEntryResponse response = await _operationFactory
-                                                        .Get<GetTimeLogEntryOperation>(typeof(GetTimeLogEntryOperation))
+                                                        .Get<GetTimeLogEntryOperation>()
                                                         .Run(new GetTimeLogEntryRequest { 
                                                             SessionUserData = session, 
                                                             TimeLogEntryId = timeLogEntryId 
@@ -52,7 +52,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             CreateTimeLogEntryResponse response = await _operationFactory
-                                                            .Get<CreateTimeLogEntryOperation>(typeof(CreateTimeLogEntryOperation))
+                                                            .Get<CreateTimeLogEntryOperation>()
                                                             .Run(request);
 
             return Ok(response);
@@ -66,7 +66,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             ModifyTimeLogEntryResponse response = await _operationFactory
-                                                            .Get<ModifyTimeLogEntryOperation>(typeof(ModifyTimeLogEntryOperation))
+                                                            .Get<ModifyTimeLogEntryOperation>()
                                                             .Run(request);
 
             return Ok(response);
@@ -79,7 +79,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             RemoveTimeLogEntryResponse response = await _operationFactory
-                                                            .Get<RemoveTimeLogEntryOperation>(typeof(RemoveTimeLogEntryOperation))
+                                                            .Get<RemoveTimeLogEntryOperation>()
                                                             .Run(new RemoveTimeLogEntryRequest
                                                             {
                                                                 TimeLogEntryId = timeLogEntryId,
@@ -94,28 +94,28 @@ namespace BillIssue.Api.Controllers
         #region Time Log Entry Search
 
         [HttpPost("SearchTimeLogEntries")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> SearchTimeLogEntries([FromBody] SearchTimeLogEntriesRequest request)
         {
             SessionUserData session = GetSessionModelFromJwt();
             request.SessionUserData = session;
 
             SearchTimeLogEntriesResponse response = await _operationFactory
-                                                            .Get<SearchTimeLogEntriesOperation>(typeof(SearchTimeLogEntriesOperation))
+                                                            .Get<SearchTimeLogEntriesOperation>()
                                                             .Run(request);
 
             return Ok(response);
         }
 
         [HttpPost("GetWeekOfTimeEntries")]
-        [TypeFilter(typeof(AuthorizationFilter), Arguments = [UserRole.User])]
+        [Authorize(Policy = AuthConstants.UserRequiredPolicyName)]
         public async Task<IActionResult> GetWeekOfTimeEntries([FromBody] GetWeekOfTimeEntriesRequest request)
         {
             SessionUserData session = GetSessionModelFromJwt();
             request.SessionUserData = session;
 
             GetWeekOfTimeEntriesResponse response = await _operationFactory
-                                                            .Get<GetWeekOfTimeEntriesOperation>(typeof(GetWeekOfTimeEntriesOperation))
+                                                            .Get<GetWeekOfTimeEntriesOperation>()
                                                             .Run(request);
 
             return Ok(response);

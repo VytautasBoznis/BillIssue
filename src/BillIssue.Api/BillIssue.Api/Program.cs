@@ -6,7 +6,6 @@ using BillIssue.Api.OperationFilters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Npgsql;
 using Serilog;
 using StackExchange.Redis;
 using System.Text;
@@ -101,15 +100,6 @@ internal class Program
         });
 
         builder.Services.AddAuthorization();
-
-        builder.Services.AddSingleton<NpgsqlConnection>(sp =>
-            {
-                NpgsqlConnection connection = new NpgsqlConnection(builder.Configuration.GetValue<string>(AppSettingKeys.DatabaseConnectionKey));
-                connection.Open();
-
-                return connection;
-            }
-        );
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 

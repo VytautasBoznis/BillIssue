@@ -11,7 +11,7 @@ class HttpClient {
     });
   }
 
-  async request(endpoint, method, data, onError, authToken) {
+  async request(endpoint, method, data, onError, jwtToken) {
     try {
       const request = {
         url: endpoint,
@@ -22,9 +22,9 @@ class HttpClient {
         request.data = data;
       }
 
-      if (authToken) {
+      if (jwtToken) {
         request.headers = {
-          'AuthToken': authToken
+          'Authorization': `Bearer ${jwtToken}`
         };
       }
 
@@ -57,107 +57,107 @@ class AuthHttpClient extends HttpClient {
 }
 
 class UserHttpClient extends HttpClient {
-  async getSessionUserData(authToken, onError) {
-    return this.request(`/User/GetCurrentSessionUserData`, "GET", null, onError, authToken);
+  async getSessionUserData(jwtToken, onError) {
+    return this.request(`/User/GetCurrentSessionUserData`, "GET", null, onError, jwtToken);
   }
 }
 
 class WorkspaceHttpClient extends HttpClient {
-  async GetWorkspaceById(authToken, workspaceId, loadUserData, onError) {
-    return this.request(`/Workspace/GetWorkspace/${workspaceId}?loadUserAssignments=${loadUserData}`, "GET", null, onError, authToken);
+  async GetWorkspaceById(jwtToken, workspaceId, loadUserData, onError) {
+    return this.request(`/Workspace/GetWorkspace/${workspaceId}?loadUserAssignments=${loadUserData}`, "GET", null, onError, jwtToken);
   }
-  async GetAllWorkspaceUsers(authToken, workspaceId, onError) {
-    return this.request(`/Workspace/GetAllWorkspaceUsers/${workspaceId}`, "GET", null, onError, authToken);
+  async GetAllWorkspaceUsers(jwtToken, workspaceId, onError) {
+    return this.request(`/Workspace/GetAllWorkspaceUsers/${workspaceId}`, "GET", null, onError, jwtToken);
   }
-  async UpdateWorkspace(authToken, workspaceData, onError) {
-    return this.request(`/Workspace/UpdateWorkspace`, "PATCH", workspaceData, onError, authToken);
+  async UpdateWorkspace(jwtToken, workspaceData, onError) {
+    return this.request(`/Workspace/UpdateWorkspace`, "PATCH", workspaceData, onError, jwtToken);
   }
-  async CreateWorkspace(authToken, workspaceData, onError) {
-    return this.request(`/Workspace/CreateWorkspace`, "POST", workspaceData, onError, authToken);
+  async CreateWorkspace(jwtToken, workspaceData, onError) {
+    return this.request(`/Workspace/CreateWorkspace`, "POST", workspaceData, onError, jwtToken);
   }
-  async RemoveWorkspace(authToken, workspaceId, onError) {
-    return this.request(`/Workspace/RemoveWorkspace/${workspaceId}`, "DELETE", null, onError, authToken);
+  async RemoveWorkspace(jwtToken, workspaceId, onError) {
+    return this.request(`/Workspace/RemoveWorkspace/${workspaceId}`, "DELETE", null, onError, jwtToken);
   }
-  async GetAllWorkspacesForUser(authToken, userId, onError) {
-    return this.request(`/Workspace/GetAllWorkspacesForUser/${userId}`, "GET", null, onError, authToken);
+  async GetAllWorkspacesForUser(jwtToken, userId, onError) {
+    return this.request(`/Workspace/GetAllWorkspacesForUser/${userId}`, "GET", null, onError, jwtToken);
   }
-  async GetAllWorkspaceSelections(authToken, userId, onError) {
-    return this.request(`/Workspace/GetAllWorkspaceSelectionsForUser/${userId}`, "GET", null, onError, authToken);
+  async GetAllWorkspaceSelections(jwtToken, userId, onError) {
+    return this.request(`/Workspace/GetAllWorkspaceSelectionsForUser/${userId}`, "GET", null, onError, jwtToken);
   }
-  async AddUserToWorkspace(authToken, addUserRequest, onError) {
-    return this.request(`/Workspace/AddUserToWorkspace`, "POST", addUserRequest, onError, authToken);
+  async AddUserToWorkspace(jwtToken, addUserRequest, onError) {
+    return this.request(`/Workspace/AddUserToWorkspace`, "POST", addUserRequest, onError, jwtToken);
   }
-  async UpdateUserInWorkspace(authToken, modifyUserRequest, onError) {
-    return this.request(`/Workspace/UpdateUserInWorkspace`, "PATCH", modifyUserRequest, onError, authToken);
+  async UpdateUserInWorkspace(jwtToken, modifyUserRequest, onError) {
+    return this.request(`/Workspace/UpdateUserInWorkspace`, "PATCH", modifyUserRequest, onError, jwtToken);
   }  
-  async RemoveUserAssingmentFromProject(authToken, request, onError) {
-    return this.request(`/Workspace/RemoveUserFromWorkspace`, "DELETE", request, onError, authToken);
+  async RemoveUserAssingmentFromProject(jwtToken, request, onError) {
+    return this.request(`/Workspace/RemoveUserFromWorkspace`, "DELETE", request, onError, jwtToken);
   }
 }
 
 class TimeLoggingHttpClient extends HttpClient {
-  async DeleteTimeEntry(authToken, timelogEntryId, onError) {
-    return this.request(`/TimeLogging/RemoveTimeLogEntry/${timelogEntryId}`, "DELETE", null, onError, authToken);
+  async DeleteTimeEntry(jwtToken, timelogEntryId, onError) {
+    return this.request(`/TimeLogging/RemoveTimeLogEntry/${timelogEntryId}`, "DELETE", null, onError, jwtToken);
   }
-  async EditTimeEntry(authToken, timelogEntry, onError) {
-    return this.request(`/TimeLogging/ModifyTimeLogEntry`, "PATCH", timelogEntry, onError, authToken);
+  async EditTimeEntry(jwtToken, timelogEntry, onError) {
+    return this.request(`/TimeLogging/ModifyTimeLogEntry`, "PATCH", timelogEntry, onError, jwtToken);
   }
-  async LogTimeEntry(authToken, timelogEntry, onError) {
-    return this.request(`/TimeLogging/CreateTimeLogEntry`, "POST", timelogEntry, onError, authToken);
+  async LogTimeEntry(jwtToken, timelogEntry, onError) {
+    return this.request(`/TimeLogging/CreateTimeLogEntry`, "POST", timelogEntry, onError, jwtToken);
   }
-  async GetWeekOfTimeEntries(authToken, timeEntryLookupFilter, onError) {
-    return this.request(`/TimeLogging/GetWeekOfTimeEntries`, "POST", timeEntryLookupFilter, onError, authToken);
+  async GetWeekOfTimeEntries(jwtToken, timeEntryLookupFilter, onError) {
+    return this.request(`/TimeLogging/GetWeekOfTimeEntries`, "POST", timeEntryLookupFilter, onError, jwtToken);
   }
-  async SearchTimeLogEntries(authToken, searchTimeLoggingEntriesRequest, onError) {
-    return this.request(`/TimeLogging/SearchTimeLogEntries`, "POST", searchTimeLoggingEntriesRequest, onError, authToken);
+  async SearchTimeLogEntries(jwtToken, searchTimeLoggingEntriesRequest, onError) {
+    return this.request(`/TimeLogging/SearchTimeLogEntries`, "POST", searchTimeLoggingEntriesRequest, onError, jwtToken);
   }
 }
 
 class ProjectHttpClient extends HttpClient {
-  async GetProjectById(authToken, projectId, loadUserAssignments, onError) {
-    return this.request(`/Project/GetProject/${projectId}?loadUserAssignments=${loadUserAssignments ? 'true' : 'false'}`, "GET", null, onError, authToken);
+  async GetProjectById(jwtToken, projectId, loadUserAssignments, onError) {
+    return this.request(`/Project/GetProject/${projectId}?loadUserAssignments=${loadUserAssignments ? 'true' : 'false'}`, "GET", null, onError, jwtToken);
   }
-  async GetProjectsForUserInWorkspace(authToken, workspaceId, onError) {
-    return this.request(`/Project/GetProjectsForUserInWorkspace/${workspaceId}`, "GET", null, onError, authToken);
+  async GetProjectsForUserInWorkspace(jwtToken, workspaceId, onError) {
+    return this.request(`/Project/GetProjectsForUserInWorkspace/${workspaceId}`, "GET", null, onError, jwtToken);
   }
-  async CreateProject(authToken, request, onError) {
-    return this.request(`/Project/CreateProject`, "POST", request, onError, authToken);
+  async CreateProject(jwtToken, request, onError) {
+    return this.request(`/Project/CreateProject`, "POST", request, onError, jwtToken);
   }
-  async ModifyProject(authToken, request, onError) {
-    return this.request(`/Project/ModifyProject`, "PATCH", request, onError, authToken);
+  async ModifyProject(jwtToken, request, onError) {
+    return this.request(`/Project/ModifyProject`, "PATCH", request, onError, jwtToken);
   }
-  async RemoveProject(authToken, projectId, onError) {
-    return this.request(`/Project/RemoveProject/${projectId}`, "DELETE", null, onError, authToken);
+  async RemoveProject(jwtToken, projectId, onError) {
+    return this.request(`/Project/RemoveProject/${projectId}`, "DELETE", null, onError, jwtToken);
   }
-  async CreateUserAssignmentToProject(authToken, request, onError) {
-    return this.request(`/Project/AddUserAssignmentToProject`, "POST", request, onError, authToken);
+  async CreateUserAssignmentToProject(jwtToken, request, onError) {
+    return this.request(`/Project/AddUserAssignmentToProject`, "POST", request, onError, jwtToken);
   }
-  async RemoveUserAssingmentFromProject(authToken, request, onError) {
-    return this.request(`/Project/RemoveUserAssingmentFromProject/${request.projectId}/${request.projectUserAssignmentId}`, "DELETE", null, onError, authToken);
+  async RemoveUserAssingmentFromProject(jwtToken, request, onError) {
+    return this.request(`/Project/RemoveUserAssingmentFromProject/${request.projectId}/${request.projectUserAssignmentId}`, "DELETE", null, onError, jwtToken);
   }
-  async ModifyUserAssingmentInProject(authToken, request, onError) {
-    return this.request(`/Project/ModifyUserAssingmentInProject`, "PATCH", request, onError, authToken);
+  async ModifyUserAssingmentInProject(jwtToken, request, onError) {
+    return this.request(`/Project/ModifyUserAssingmentInProject`, "PATCH", request, onError, jwtToken);
   }
 }
 
 class ProjectWorktypeHttpClient extends HttpClient {
-  async GetProjectWorktypeById(authToken, projectWorktypeId, onError) {
-    return this.request(`/Project/GetProjectWorktype/${projectWorktypeId}`, "GET", null, onError, authToken);
+  async GetProjectWorktypeById(jwtToken, projectWorktypeId, onError) {
+    return this.request(`/Project/GetProjectWorktype/${projectWorktypeId}`, "GET", null, onError, jwtToken);
   }
-  async RemoveProjectWorktype(authToken, projectId, projectWorktypeId, onError) {
-    return this.request(`/Project/RemoveProjectWorktype/${projectId}/${projectWorktypeId}`, "DELETE", null, onError, authToken);
+  async RemoveProjectWorktype(jwtToken, projectId, projectWorktypeId, onError) {
+    return this.request(`/Project/RemoveProjectWorktype/${projectId}/${projectWorktypeId}`, "DELETE", null, onError, jwtToken);
   }
-  async ModifyProjectWorktype(authToken, request, onError) {
-    return this.request(`/Project/ModifyProjectWorktype`, "PATCH", request, onError, authToken);
+  async ModifyProjectWorktype(jwtToken, request, onError) {
+    return this.request(`/Project/ModifyProjectWorktype`, "PATCH", request, onError, jwtToken);
   }
 }
 
 class NotificationHttpClient extends HttpClient {
-  async GetNotifications(authToken, onError) {
-    return this.request(`/Notification/GetNotifications/`, "GET", null, onError, authToken);
+  async GetNotifications(jwtToken, onError) {
+    return this.request(`/Notification/GetNotifications/`, "GET", null, onError, jwtToken);
   }  
-  async DoNotificationDecision(authToken, request, onError) {
-    return this.request(`/Notification/DoNotificationDecision`, "POST", request, onError, authToken);
+  async DoNotificationDecision(jwtToken, request, onError) {
+    return this.request(`/Notification/DoNotificationDecision`, "POST", request, onError, jwtToken);
   }
 }
 

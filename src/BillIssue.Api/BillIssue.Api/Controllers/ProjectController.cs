@@ -29,7 +29,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetProjectResponse response = await _operationFactory
-                                                    .Get<GetProjectOperation>(typeof(GetProjectOperation))
+                                                    .Get<GetProjectOperation>()
                                                     .Run(new GetProjectRequest
                                                     {
                                                         SessionUserData = session,
@@ -48,7 +48,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             CreateProjectResponse response = await _operationFactory
-                                                    .Get<CreateProjectOperation>(typeof(CreateProjectOperation))
+                                                    .Get<CreateProjectOperation>()
                                                     .Run(request);
 
             return Ok(response);
@@ -62,7 +62,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             ModifyProjectResponse response = await _operationFactory
-                                                    .Get<ModifyProjectOperation>(typeof(ModifyProjectOperation))
+                                                    .Get<ModifyProjectOperation>()
                                                     .Run(request);
 
             return Ok(response);
@@ -75,7 +75,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             RemoveProjectResponse response = await _operationFactory
-                                                    .Get<RemoveProjectOperation>(typeof(RemoveProjectOperation))
+                                                    .Get<RemoveProjectOperation>()
                                                     .Run(new RemoveProjectRequest
                                                     {
                                                         ProjectId = projectId,
@@ -92,7 +92,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetProjectsInWorkspaceForUserResponse response = await _operationFactory
-                                                                    .Get<GetProjectsForUserInWorkspaceOperation>(typeof(GetProjectsForUserInWorkspaceOperation))
+                                                                    .Get<GetProjectsForUserInWorkspaceOperation>()
                                                                     .Run(new GetProjectsInWorkspaceForUserRequest
                                                                     {
                                                                         WorkspaceId = workspaceId,
@@ -113,7 +113,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetProjectWorktypeResponse response = await _operationFactory
-                                                            .Get<GetProjectWorktypeOperation>(typeof(GetProjectWorktypeOperation))
+                                                            .Get<GetProjectWorktypeOperation>()
                                                             .Run(new GetProjectWorktypeRequest
                                                             {
                                                                 ProjectWorktypeId = projectWorktypeId,
@@ -130,7 +130,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetAllProjectWorktypesResponse response = await _operationFactory
-                                                                .Get<GetAllProjectWorktypesOperation>(typeof(GetAllProjectWorktypesOperation))
+                                                                .Get<GetAllProjectWorktypesOperation>()
                                                                 .Run(new GetAllProjectWorktypesRequest
                                                                 {
                                                                     ProjectId = projectId,
@@ -148,7 +148,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             CreateProjectWorktypeResponse response = await _operationFactory
-                                                                .Get<CreateProjectWorktypeOperation>(typeof(CreateProjectWorktypeOperation))
+                                                                .Get<CreateProjectWorktypeOperation>()
                                                                 .Run(request);
 
             return Ok(response);
@@ -162,7 +162,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             ModifyProjectWorktypeResponse response = await _operationFactory
-                                                                .Get<ModifyProjectWorktypeOperation>(typeof(ModifyProjectWorktypeOperation))
+                                                                .Get<ModifyProjectWorktypeOperation>()
                                                                 .Run(request);
 
             return Ok(response);
@@ -175,7 +175,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             RemoveProjectWorktypeResponse response = await _operationFactory
-                                                                .Get<RemoveProjectWorktypeOperation>(typeof(RemoveProjectWorktypeOperation))
+                                                                .Get<RemoveProjectWorktypeOperation>()
                                                                 .Run(new RemoveProjectWorktypeRequest
                                                                 {
                                                                     ProjectId = projectId,
@@ -197,7 +197,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetProjectUsersResponse response = await _operationFactory
-                                                        .Get<GetProjectUsersOperation>(typeof(GetProjectUsersOperation))
+                                                        .Get<GetProjectUsersOperation>()
                                                         .Run(new GetProjectUsersRequest
                                                         {
                                                             ProjectId = projectId,
@@ -214,7 +214,7 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             GetProjectsForUserResponse response = await _operationFactory
-                                                            .Get<GetProjectsForUserOperation>(typeof(GetProjectsForUserOperation))
+                                                            .Get<GetProjectsForUserOperation>()
                                                             .Run(new GetProjectsForUserRequest
                                                             {
                                                                 SessionUserData = session
@@ -231,7 +231,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             AddUserAssignmentToProjectResponse response = await _operationFactory
-                                                                    .Get<AddUserAssignmentToProjectOperation>(typeof(AddUserAssignmentToProjectOperation))
+                                                                    .Get<AddUserAssignmentToProjectOperation>()
                                                                     .Run(request);
 
             return Ok(response);
@@ -245,7 +245,7 @@ namespace BillIssue.Api.Controllers
             request.SessionUserData = session;
 
             ModifyUserAssingmentInProjectResponse response = await _operationFactory
-                                                                    .Get<ModifyUserAssingmentInProjectOperation>(typeof(ModifyUserAssingmentInProjectOperation))
+                                                                    .Get<ModifyUserAssingmentInProjectOperation>()
                                                                     .Run(request);
 
             return Ok(response);
@@ -258,12 +258,12 @@ namespace BillIssue.Api.Controllers
             SessionUserData session = GetSessionModelFromJwt();
 
             RemoveUserAssingmentFromProjectResponse response = await _operationFactory
-                                                                        .Get<RemoveUserAssingmentFromProjectOperation>(typeof(RemoveUserAssingmentFromProjectOperation))
+                                                                        .Get<RemoveUserAssingmentFromProjectOperation>()
                                                                         .Run(new RemoveUserAssingmentFromProjectRequest
                                                                         {
                                                                             ProjectId = projectId,
                                                                             ProjectUserAssignmentId = projectUserAssignmentId,
-                                                                            SessionUserData = session                                                                        
+                                                                            SessionUserData = session
                                                                         });
 
             return Ok(response);

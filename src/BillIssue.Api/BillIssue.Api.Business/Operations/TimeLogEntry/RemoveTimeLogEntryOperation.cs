@@ -26,11 +26,13 @@ namespace BillIssue.Api.Business.Operations.TimeLogEntry
         {
             GetTimeLogEntryRequest getTimeLogEntryRequest = new GetTimeLogEntryRequest
             {
+                SessionUserData = request.SessionUserData,
+                CreatedFromController = false,
                 TimeLogEntryId = request.TimeLogEntryId,
             };
 
             GetTimeLogEntryResponse getTimeLogEntryResponse = await _operationFactory
-                                                                        .Get<GetTimeLogEntryOperation>(typeof(GetTimeLogEntryOperation))
+                                                                        .Get<GetTimeLogEntryOperation>()
                                                                         .Run(getTimeLogEntryRequest, unitOfWork);
 
             await unitOfWork.BeginTransactionAsync();

@@ -28,10 +28,11 @@ namespace BillIssue.Api.Business.Operations.Workspace
         protected override async Task<RemoveUserFromWorkspaceResponse> Execute(RemoveUserFromWorkspaceRequest request, IUnitOfWork unitOfWork)
         {
             GetWorkspaceResponse workspaceResponse = await _operationFactory
-                                                                .Get<GetWorkspaceOperation>(typeof(GetWorkspaceOperation))
+                                                                .Get<GetWorkspaceOperation>()
                                                                 .Run(new GetWorkspaceRequest
                                                                 {
                                                                     SessionUserData = request.SessionUserData,
+                                                                    CreatedFromController = false,
                                                                     WorkspaceId = request.WorkspaceId
                                                                 }, unitOfWork);
 

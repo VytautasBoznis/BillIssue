@@ -6,7 +6,7 @@ const WorkspaceService = {
   async getWorkspaceById(workspaceId, loadUserData = false, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await workspaceClient.GetWorkspaceById(sessionData.authToken, workspaceId, loadUserData, onError);
+      const response = await workspaceClient.GetWorkspaceById(sessionData.jwtToken, workspaceId, loadUserData, onError);
       return response.workspaceDto;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to get workspace data");
@@ -15,7 +15,7 @@ const WorkspaceService = {
   async getAllWorkspaceUsers(workspaceId, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await workspaceClient.GetAllWorkspaceUsers(sessionData.authToken, workspaceId, onError);
+      const response = await workspaceClient.GetAllWorkspaceUsers(sessionData.jwtToken, workspaceId, onError);
       return response.workspaceUserDtos;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to get all workspace users");
@@ -24,7 +24,7 @@ const WorkspaceService = {
   async updateWorkspace(workspaceData, onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await workspaceClient.UpdateWorkspace(sessionData.authToken, workspaceData, onError);
+      const response = await workspaceClient.UpdateWorkspace(sessionData.jwtToken, workspaceData, onError);
       return response.workspaceDto;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to update workspace data");
@@ -33,7 +33,7 @@ const WorkspaceService = {
   async createWorkspace(workspaceData, onError) {
     try {
       const sessionData = getUserSessionData();
-      await workspaceClient.CreateWorkspace(sessionData.authToken, workspaceData, onError);
+      await workspaceClient.CreateWorkspace(sessionData.jwtToken, workspaceData, onError);
       return true;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to create workspace");
@@ -42,7 +42,7 @@ const WorkspaceService = {
   async removeWorkspace(workspaceId, onError) {
     try {
       const sessionData = getUserSessionData();
-      await workspaceClient.RemoveWorkspace(sessionData.authToken, workspaceId, onError);
+      await workspaceClient.RemoveWorkspace(sessionData.jwtToken, workspaceId, onError);
       return true;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to remove workspace");
@@ -51,7 +51,7 @@ const WorkspaceService = {
   async loadWorkspacesForUser(onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await workspaceClient.GetAllWorkspacesForUser(sessionData.authToken, sessionData.userId, onError);
+      const response = await workspaceClient.GetAllWorkspacesForUser(sessionData.jwtToken, sessionData.userId, onError);
       return response.workspaceDtos || [];
     } catch (error) {
       onError(error.response?.data?.message || "Workspace data loading failed");
@@ -78,7 +78,7 @@ const WorkspaceService = {
   async loadUserWorkspaceSelections(onError) {
     try {
       const sessionData = getUserSessionData();
-      const response = await workspaceClient.GetAllWorkspaceSelections(sessionData.authToken, sessionData.userId, onError);
+      const response = await workspaceClient.GetAllWorkspaceSelections(sessionData.jwtToken, sessionData.userId, onError);
       return response.workspaceSelections || [];
     } catch (error) {
       onError(error.response?.data?.message || "Workspace data loading failed");
@@ -87,7 +87,7 @@ const WorkspaceService = {
   async addWorkspaceUser(addUserRequest, onError) {
     try {
       const sessionData = getUserSessionData();
-      await workspaceClient.AddUserToWorkspace(sessionData.authToken, addUserRequest, onError);
+      await workspaceClient.AddUserToWorkspace(sessionData.jwtToken, addUserRequest, onError);
       return true;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to add user to user to workspace");
@@ -96,7 +96,7 @@ const WorkspaceService = {
   async modifyWorkspaceUser(modifyUserRequest, onError) {
     try {
       const sessionData = getUserSessionData();
-      await workspaceClient.UpdateUserInWorkspace(sessionData.authToken, modifyUserRequest, onError);
+      await workspaceClient.UpdateUserInWorkspace(sessionData.jwtToken, modifyUserRequest, onError);
       return true;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to modify user in workspace");
@@ -105,7 +105,7 @@ const WorkspaceService = {
   async removeWorkspaceUser(removeUserRequest, onError) {
     try {
       const sessionData = getUserSessionData();
-      await workspaceClient.RemoveUserAssingmentFromProject(sessionData.authToken, removeUserRequest, onError);
+      await workspaceClient.RemoveUserAssingmentFromProject(sessionData.jwtToken, removeUserRequest, onError);
       return true;
     } catch (error) {
       onError(error.response?.data?.message || "Failed to remove user in workspace");
