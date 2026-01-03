@@ -27,6 +27,7 @@ stages:
 
           # Build React app
           - script: |
+              cd src/BillIssue.App
               npm install
               npm run build
             displayName: 'Build React app'
