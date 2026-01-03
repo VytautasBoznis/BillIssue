@@ -17,12 +17,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{08E9AC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BillIssue.Shared.Models", "src\Shared\BillIssue.Shared.Models\BillIssue.Shared.Models.csproj", "{20981161-4836-4FB2-914E-460E16E386EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BillIssue.Api.DatabaseMigrations", "src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\BillIssue.Api.DatabaseMigrations.csproj", "{24B355EB-46F0-40E1-B09F-DCF28207FC1F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B722547D-875D-4251-92F6-79191401C3B5}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseMigrations", "DatabaseMigrations", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BillIssue.Api.DatabaseMigrations", "src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\BillIssue.Api.DatabaseMigrations.csproj", "{8F18B15B-AE68-F113-082E-78B6C26DAA5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,8 +52,10 @@ Global
 		{20981161-4836-4FB2-914E-460E16E386EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20981161-4836-4FB2-914E-460E16E386EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20981161-4836-4FB2-914E-460E16E386EF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24B355EB-46F0-40E1-B09F-DCF28207FC1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24B355EB-46F0-40E1-B09F-DCF28207FC1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F18B15B-AE68-F113-082E-78B6C26DAA5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F18B15B-AE68-F113-082E-78B6C26DAA5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F18B15B-AE68-F113-082E-78B6C26DAA5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F18B15B-AE68-F113-082E-78B6C26DAA5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,7 +66,7 @@ Global
 		{F113CBBF-DA39-4FA9-8E4E-055D1C4DAC2F} = {0B1FFB1A-EDF1-4132-B47B-431D0C2E2815}
 		{0617EE87-F065-4283-B875-0D1AC5299A41} = {0B1FFB1A-EDF1-4132-B47B-431D0C2E2815}
 		{20981161-4836-4FB2-914E-460E16E386EF} = {08E9ACCA-7865-4BB8-9C37-9504C7038346}
-		{24B355EB-46F0-40E1-B09F-DCF28207FC1F} = {0B1FFB1A-EDF1-4132-B47B-431D0C2E2815}
+		{8F18B15B-AE68-F113-082E-78B6C26DAA5C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A3240E2E-7F7B-4729-ACC8-2FCF2A6327AA}

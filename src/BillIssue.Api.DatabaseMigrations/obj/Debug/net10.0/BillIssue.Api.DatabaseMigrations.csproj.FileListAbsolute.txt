@@ -1,0 +1,12 @@
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\BillIssue.Api.DatabaseMigrations.GeneratedMSBuildEditorConfig.editorconfig
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\BillIssue.Api.DatabaseMigrations.AssemblyInfoInputs.cache
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\BillIssue.Api.DatabaseMigrations.AssemblyInfo.cs
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\BillIssue.Api.DatabaseMigrations.csproj.CoreCompileInputs.cache
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\BillIssue.Api.DatabaseMigrations.sourcelink.json
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\bin\Debug\net10.0\BillIssue.Api.DatabaseMigrations.deps.json
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\bin\Debug\net10.0\BillIssue.Api.DatabaseMigrations.dll
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\bin\Debug\net10.0\BillIssue.Api.DatabaseMigrations.pdb
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\BillIssue.Api.DatabaseMigrations.dll
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\refint\BillIssue.Api.DatabaseMigrations.dll
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\BillIssue.Api.DatabaseMigrations.pdb
+C:\Dev\BillIssue\src\BillIssue.Api\BillIssue.Api.DatabaseMigrations\obj\Debug\net10.0\ref\BillIssue.Api.DatabaseMigrations.dll
