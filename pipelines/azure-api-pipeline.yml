@@ -25,14 +25,16 @@ variables:
   resourceGroupName: 'BIllIssue'
 
 stages:
-
 # =========================
 # BUILD STAGE
 # =========================
-
 - stage: Build
   displayName: 'Build & Publish'
   jobs:
+  - job: BuildJob
+    displayName: 'Build Job'
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
     - task: UseDotNet@2
       displayName: 'Install .NET 10 SDK'
@@ -42,20 +44,20 @@ stages:
         includePreviewVersions: true
 
     - task: DotNetCoreCLI@2
-      displayName: 'Restore NuGet packages'
+      displayName: 'Restore'
       inputs:
         command: 'restore'
         projects: '$(solution)'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Build solution'
+      displayName: 'Build'
       inputs:
         command: 'build'
         projects: '$(solution)'
         arguments: '--configuration $(buildConfiguration) --no-restore'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Run tests'
+      displayName: 'Test'
       inputs:
         command: 'test'
         projects: '$(solution)'
@@ -63,7 +65,7 @@ stages:
         publishTestResults: true
 
     - task: DotNetCoreCLI@2
-      displayName: 'Publish API'
+      displayName: 'Publish'
       inputs:
         command: 'publish'
         projects: '$(solution)'
@@ -71,11 +73,11 @@ stages:
         zipAfterPublish: true
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish build artifacts'
+      displayName: 'Publish Artifact'
       inputs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: 'drop'
-    
+
 # =========================
 # DEPLOY STAGE
 # =========================
@@ -84,9 +86,11 @@ stages:
   dependsOn: Build
   condition: succeeded()
   jobs:
-  - deployment: DeployWeb
+  - deployment: DeployJob
     displayName: 'Deploy API'
     environment: 'production'
+    pool:
+      vmImage: 'ubuntu-latest'
     strategy:
       runOnce:
         deploy:
