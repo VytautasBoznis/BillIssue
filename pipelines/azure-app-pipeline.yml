@@ -1,0 +1,79 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/BillIssue.App/**
+      - src/pipelines/azure-app-pipeline.yml
+
+pool:
+  name: 'local-agents'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  NODE_VERSION: '20'
+
+stages:
+  - stage: Build
+    displayName: 'Build React App'
+    jobs:
+      - job: Build
+        displayName: 'Install & Build'
+        steps:
+          # Install Node.js 20
+          - task: UseNode@1
+            inputs:
+              version: '$(NODE_VERSION)'
+
+          # Cache node_modules
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(Pipeline.Workspace)/.npm
+          
+          # Install dependencies
+          - script: |
+              npm ci --cache $(Pipeline.Workspace)/.npm
+            displayName: 'Install dependencies'
+
+          # Build React app
+          - script: |
+              npm run build
+            displayName: 'Build React app'
+
+          # Publish build artifacts
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: 'build'
+              artifact: 'react-app-build'
+              publishLocation: 'pipeline'
+
+  - stage: Deploy
+    displayName: 'Deploy to Azure App Service'
+    dependsOn: Build
+    jobs:
+      - deployment: Deploy
+        displayName: 'Deploy React App'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                # Download build artifact
+                - task: DownloadPipelineArtifact@2
+                  inputs:
+                    artifact: 'react-app-build'
+                    path: '$(Pipeline.Workspace)/build'
+
+                # Deploy to Azure App Service
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
+                    appType: 'webAppLinux'
+                    appName: '$(AZURE_APP_NAME)'
+                    resourceGroupName: '$(AZURE_RESOURCE_GROUP)'
+                    package: '$(Pipeline.Workspace)/build'

@@ -11,7 +11,7 @@ trigger:
     include:
       - src/BillIssue.Api/**
       - src/Shared/**
-      - src/pipelines/**
+      - src/pipelines/azure-api-pipeline.yml
 
 pool:
   name: 'local-agents'
