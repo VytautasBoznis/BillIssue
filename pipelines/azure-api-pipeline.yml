@@ -4,7 +4,13 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
 trigger:
-- main
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - src/BillIssue.Api/**
+      - src/Shared/**
 
 pool:
   name: 'local-agents'
