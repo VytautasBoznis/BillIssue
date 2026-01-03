@@ -27,7 +27,7 @@ stages:
 
           # Build React app
           - script: |
-              npm ci
+              npm install
               npm run build
             displayName: 'Build React app'
 
