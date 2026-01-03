@@ -64,7 +64,11 @@ internal class Program
             });
         });
 
-        IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
+        IConfiguration configuration = new ConfigurationBuilder()
+                                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                                            .AddEnvironmentVariables()
+                                            .Build();
+
         Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
         builder.Host.UseSerilog();
 
