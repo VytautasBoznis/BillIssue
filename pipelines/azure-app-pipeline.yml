@@ -35,7 +35,7 @@ stages:
           # Publish build artifacts
           - task: PublishPipelineArtifact@1
             inputs:
-              targetPath: 'build'
+              targetPath: 'src/BillIssue.App/build'
               artifact: 'react-app-build'
               publishLocation: 'pipeline'
 
