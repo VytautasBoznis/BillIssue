@@ -25,21 +25,9 @@ stages:
             inputs:
               version: '$(NODE_VERSION)'
 
-          # Cache node_modules
-          - task: Cache@2
-            inputs:
-              key: 'npm | "$(Agent.OS)" | package-lock.json'
-              restoreKeys: |
-                npm | "$(Agent.OS)"
-              path: $(Pipeline.Workspace)/.npm
-          
-          # Install dependencies
-          - script: |
-              npm ci --cache $(Pipeline.Workspace)/.npm
-            displayName: 'Install dependencies'
-
           # Build React app
           - script: |
+              npm ci
               npm run build
             displayName: 'Build React app'
 
