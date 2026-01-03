@@ -29,8 +29,6 @@ stages:
   displayName: 'Build & Publish'
   jobs:
   - job: Build
-    pool:
-      vmImage: 'ubuntu-latest'
     steps:
     - task: UseDotNet@2
       displayName: 'Install .NET 10 SDK'
@@ -83,8 +81,6 @@ stages:
   condition: succeeded()
   jobs:
   - job: Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
     steps:
     - download: current
       artifact: drop
