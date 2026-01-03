@@ -54,23 +54,20 @@ stages:
     displayName: 'Deploy to Azure App Service'
     dependsOn: Build
     jobs:
-      - deployment: Deploy
+      - job: Deploy
         displayName: 'Deploy React App'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                # Download build artifact
-                - task: DownloadPipelineArtifact@2
-                  inputs:
-                    artifact: 'react-app-build'
-                    path: '$(Pipeline.Workspace)/build'
+        steps:
+          # Download build artifact
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: 'react-app-build'
+              path: '$(Pipeline.Workspace)/build'
 
-                # Deploy to Azure App Service
-                - task: AzureWebApp@1
-                  inputs:
-                    azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
-                    appType: 'webAppLinux'
-                    appName: '$(AZURE_APP_NAME)'
-                    resourceGroupName: '$(AZURE_RESOURCE_GROUP)'
-                    package: '$(Pipeline.Workspace)/build'
+          # Deploy to Azure App Service
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
+              appType: 'webAppLinux'        # Change to 'webApp' if Windows
+              appName: '$(AZURE_APP_NAME)'
+              resourceGroupName: '$(AZURE_RESOURCE_GROUP)'
+              package: '$(Pipeline.Workspace)/build'
