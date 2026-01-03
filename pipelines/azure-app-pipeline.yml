@@ -24,6 +24,12 @@ stages:
           - task: UseNode@1
             inputs:
               version: '$(NODE_VERSION)'
+              
+          - script: |
+              echo "REACT_APP_API_URL=$(REACT_APP_API_URL)" > src/BillIssue.App/.env
+            displayName: 'Write .env file'
+            env:
+              REACT_APP_API_URL: $(REACT_APP_API_URL)
 
           # Build React app
           - script: |
