@@ -15,20 +15,48 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@1
+variables:
+  buildConfiguration: 'Release'
 
-- task: NuGetCommand@2
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET 10 SDK'
   inputs:
-    restoreSolution: '$(solution)'
+    packageType: 'sdk'
+    version: '10.0.x'
+    includePreviewVersions: true
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'restore'
+    projects: '**/*.csproj'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
+  displayName: 'Build solution'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+# - task: DotNetCoreCLI@2
+  # displayName: 'Run tests'
+  # inputs:
+    # command: 'test'
+    # projects: '**/*Tests/*.csproj'
+    # arguments: '--configuration $(buildConfiguration) --no-build'
+    # publishTestResults: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish app'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish build artifacts'
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
